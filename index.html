@@ -200,6 +200,30 @@
   footer em{font-family:'Cormorant Garamond',serif;color:var(--acc)}
   footer .lineage{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:var(--ink3);letter-spacing:1px}
 
+  /* setup hint shown only when seed data detected */
+  .setup-hint{
+    grid-column:span 12;
+    background:linear-gradient(180deg, rgba(226,194,91,0.08), rgba(226,194,91,0.04));
+    border:1px solid var(--warn);
+    padding:16px 20px;
+    position:relative;
+    display:none;
+  }
+  .setup-hint.show{display:block}
+  .setup-hint h3{
+    font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;color:var(--warn);
+    margin:0 0 8px;display:flex;align-items:center;gap:10px;
+  }
+  .setup-hint h3::before{content:"⚙";font-size:20px}
+  .setup-hint ol{margin:8px 0 4px 20px;padding:0;font-size:12px;line-height:1.7;color:var(--ink)}
+  .setup-hint ol li{margin-bottom:4px}
+  .setup-hint code{background:var(--bg3);padding:1px 6px;color:var(--warn);font-size:11px;border:1px solid var(--line)}
+  .setup-hint .dismiss{
+    position:absolute;top:8px;right:12px;cursor:pointer;color:var(--ink3);
+    background:transparent;border:none;font-size:18px;
+  }
+  .setup-hint .dismiss:hover{color:var(--warn)}
+
   /* refresh button */
   .refresh{
     background:transparent;color:var(--acc);border:1px solid var(--acc);
@@ -239,6 +263,23 @@
 </header>
 
 <main>
+  <!-- FIRST-TIME SETUP HINT (only shown when seed data is detected) -->
+  <section class="setup-hint" id="setupHint">
+    <button class="dismiss" id="dismissHint" title="Dismiss">×</button>
+    <h3>First-time setup needed</h3>
+    <p style="font-size:12px;color:var(--ink2);margin:4px 0 8px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px">
+      You're seeing the embedded seed data, which means GitHub Actions hasn't fetched fresh data yet. Three quick steps:
+    </p>
+    <ol>
+      <li>Go to your repo's <b>Settings → Actions → General</b> and set workflow permissions to <code>Read and write permissions</code></li>
+      <li>Go to the <b>Actions</b> tab → click <code>Fetch Silver Data</code> → click <b>Run workflow</b></li>
+      <li>Wait ~30 seconds, then refresh this page. The banner above should turn green and show "LIVE."</li>
+    </ol>
+    <p style="font-size:11px;color:var(--ink3);margin-top:8px;font-family:'JetBrains Mono'">
+      The workflow runs automatically every 30 minutes after the first trigger. Full instructions are in <code>README.md</code>.
+    </p>
+  </section>
+
   <!-- VERDICT ROW -->
   <section class="panel verdict-main" style="grid-column:span 12">
     <h2>Verdict <span class="num">v3 · synthesis</span></h2>
@@ -398,108 +439,12 @@ const FALLBACK = {
 let LIVE_DATA = JSON.parse(JSON.stringify(FALLBACK));  // start with fallback, upgrade with live
 LIVE_DATA.dataSource = 'snapshot';
 
-/* --- Live data fetching: multi-source strategy ---------------------
-   Primary: goldprice.org & gold-api.com — confirmed browser-CORS-friendly,
-     no API key required, return live silver and gold spot.
-   Secondary: Yahoo Finance via CORS proxies — for context assets
-     (DXY, VIX, copper, oil, S&P, miner ETF). May be blocked.
-   Tertiary: snapshot fallback values from FALLBACK constant.
+/* --- Live data fetching: same-origin JSON --------------------------
+   The dashboard reads data/latest.json which is refreshed every 30
+   minutes by the GitHub Actions workflow (scripts/fetch-data.js).
+   Same origin = no CORS issues. If the file isn't there yet, falls
+   back to the snapshot embedded above.
 ------------------------------------------------------------------ */
-
-const CORS_PROXIES = [
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-];
-
-function withTimeout(promise, ms){
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
-  ]);
-}
-
-// === Metals: try goldprice.org first (gives both + change in one call) ===
-async function fetchGoldpriceOrg(){
-  const url = 'https://data-asg.goldprice.org/dbXRates/USD';
-  const resp = await withTimeout(fetch(url), 6000);
-  if (!resp.ok) throw new Error('goldprice.org: ' + resp.status);
-  const data = await resp.json();
-  const item = data.items[0];
-  if (!item || !item.xagPrice) throw new Error('goldprice.org: no data');
-  return {
-    silver: {
-      spot: item.xagPrice,
-      prev: item.xagClose ?? (item.xagPrice - item.chgXag),
-      change: item.chgXag,
-      changePct: item.pcXag,
-    },
-    gold: {
-      spot: item.xauPrice,
-      prev: item.xauClose ?? (item.xauPrice - item.chgXau),
-      change: item.chgXau,
-      changePct: item.pcXau,
-    },
-    source: 'goldprice.org',
-  };
-}
-
-// === Metals: gold-api.com as backup (separate calls, no prev close) ===
-async function fetchGoldApiCom(){
-  const [agResp, auResp] = await Promise.all([
-    withTimeout(fetch('https://api.gold-api.com/price/XAG'), 6000),
-    withTimeout(fetch('https://api.gold-api.com/price/XAU'), 6000),
-  ]);
-  if (!agResp.ok || !auResp.ok) throw new Error('gold-api.com failed');
-  const ag = await agResp.json();
-  const au = await auResp.json();
-  // gold-api.com doesn't include prev close — compute change vs fallback snapshot
-  return {
-    silver: {
-      spot: ag.price,
-      prev: FALLBACK.silver.spot,
-      change: ag.price - FALLBACK.silver.spot,
-      changePct: (ag.price - FALLBACK.silver.spot)/FALLBACK.silver.spot * 100,
-    },
-    gold: {
-      spot: au.price,
-      prev: FALLBACK.gold.spot,
-      change: au.price - FALLBACK.gold.spot,
-      changePct: (au.price - FALLBACK.gold.spot)/FALLBACK.gold.spot * 100,
-    },
-    source: 'gold-api.com',
-  };
-}
-
-async function fetchMetals(){
-  try { return await fetchGoldpriceOrg(); }
-  catch(e1) {
-    try { return await fetchGoldApiCom(); }
-    catch(e2) { throw new Error('all metal APIs failed: ' + e1.message + ' / ' + e2.message); }
-  }
-}
-
-// === Context assets: try Yahoo via proxy chain ===
-async function fetchYahooViaProxy(symbol, range='3mo', interval='1d'){
-  const target = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}`;
-  for (const proxify of CORS_PROXIES){
-    try {
-      const resp = await withTimeout(fetch(proxify(target)), 7000);
-      if (!resp.ok) continue;
-      const text = await resp.text();
-      let data;
-      try { data = JSON.parse(text); }
-      catch(e){
-        try {
-          const wrapped = JSON.parse(text);
-          data = wrapped.contents ? JSON.parse(wrapped.contents) : null;
-        } catch(e2){ continue; }
-      }
-      if (data?.chart?.result?.[0]) return data.chart.result[0];
-    } catch(e){ continue; }
-  }
-  return null;
-}
 
 function setBannerState(state, message){
   const banner = document.querySelector('.live-banner');
@@ -510,130 +455,79 @@ function setBannerState(state, message){
   document.getElementById('liveStatus').textContent = message;
 }
 
-async function fetchLiveData(){
-  setBannerState('loading', 'fetching live data…');
-  const log = [];
-  let metalsOk = false;
-  let metalsSource = '';
-
-  // === PRIORITY 1: Live metals ===
-  try {
-    const m = await fetchMetals();
-    LIVE_DATA.silver = m.silver;
-    LIVE_DATA.gold = m.gold;
-    metalsOk = true;
-    metalsSource = m.source;
-    log.push({ ok: true, label: `metals (${m.source})` });
-
-    // Append today's live silver to historical series
-    if (LIVE_DATA.series.length > 0) {
-      LIVE_DATA.series[LIVE_DATA.series.length - 1] = m.silver.spot;
-    }
-    // Update last day's OHLC close with live spot
-    if (LIVE_DATA.recentOHLC.length > 0) {
-      const last = LIVE_DATA.recentOHLC[LIVE_DATA.recentOHLC.length - 1];
-      last.c = m.silver.spot;
-      last.h = Math.max(last.h, m.silver.spot);
-      last.l = Math.min(last.l, m.silver.spot);
-    }
-  } catch(e) {
-    log.push({ ok: false, label: 'metals (all sources failed)' });
-  }
-
-  // === PRIORITY 2: Context assets via Yahoo proxy (in parallel) ===
-  const contextSymbols = {
-    dxy:    'DX-Y.NYB',
-    copper: 'HG=F',
-    oil:    'CL=F',
-    vix:    '%5EVIX',
-    spx:    '%5EGSPC',
-    sil:    'SIL',
-  };
-
-  const contextResults = await Promise.all(
-    Object.entries(contextSymbols).map(async ([key, sym]) => {
-      const result = await fetchYahooViaProxy(sym);
-      if (result?.meta?.regularMarketPrice) {
-        const meta = result.meta;
-        LIVE_DATA[key] = {
-          spot: meta.regularMarketPrice,
-          prev: meta.chartPreviousClose,
-          change: meta.regularMarketPrice - meta.chartPreviousClose,
-          changePct: (meta.regularMarketPrice - meta.chartPreviousClose)/meta.chartPreviousClose * 100,
-        };
-        return { key, ok: true };
-      }
-      return { key, ok: false };
-    })
-  );
-  contextResults.forEach(r => log.push({ ok: r.ok, label: r.key }));
-
-  // === PRIORITY 3: Silver historical bars via Yahoo proxy ===
-  try {
-    const silverHist = await fetchYahooViaProxy('SI=F', '3mo', '1d');
-    if (silverHist?.indicators?.quote?.[0]) {
-      const q = silverHist.indicators.quote[0];
-      const ts = silverHist.timestamp;
-      const closes = q.close.filter(x => x != null);
-      if (closes.length >= 30) {
-        LIVE_DATA.series = closes;
-        // If metals API gave us a fresher current spot, replace last close with it
-        if (metalsOk && LIVE_DATA.silver?.spot) {
-          LIVE_DATA.series[LIVE_DATA.series.length - 1] = LIVE_DATA.silver.spot;
-        }
-      }
-      const ohlc = [];
-      for (let i = Math.max(0, ts.length - 6); i < ts.length; i++) {
-        if (q.close[i] != null) {
-          ohlc.push({
-            date: new Date(ts[i]*1000).toISOString().split('T')[0],
-            o: q.open[i], h: q.high[i], l: q.low[i], c: q.close[i],
-            v: q.volume[i] || 0,
-          });
-        }
-      }
-      if (ohlc.length >= 5) {
-        LIVE_DATA.recentOHLC = ohlc;
-        // Update last day's close with live metals spot if available
-        if (metalsOk && LIVE_DATA.silver?.spot) {
-          const last = LIVE_DATA.recentOHLC[LIVE_DATA.recentOHLC.length - 1];
-          last.c = LIVE_DATA.silver.spot;
-          last.h = Math.max(last.h, LIVE_DATA.silver.spot);
-          last.l = Math.min(last.l, LIVE_DATA.silver.spot);
-        }
-      }
-      log.push({ ok: true, label: `silver history (${closes.length} bars)` });
-    } else {
-      log.push({ ok: false, label: 'silver history' });
-    }
-  } catch(e) {
-    log.push({ ok: false, label: 'silver history' });
-  }
-
-  // === Update status banner ===
+function timeAgo(isoString){
+  const then = new Date(isoString);
   const now = new Date();
-  const tsStr = now.toLocaleString('en-US', {
-    month: 'short', day: 'numeric',
-    hour: 'numeric', minute: '2-digit'
-  });
-  const okCount = log.filter(l => l.ok).length;
-  const totalCount = log.length;
+  const diffSec = Math.floor((now - then) / 1000);
+  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffSec < 3600) return `${Math.floor(diffSec/60)}m ago`;
+  if (diffSec < 86400) return `${Math.floor(diffSec/3600)}h ago`;
+  return `${Math.floor(diffSec/86400)}d ago`;
+}
 
-  if (metalsOk && okCount === totalCount) {
-    LIVE_DATA.dataSource = 'live';
-    LIVE_DATA.asOf = tsStr;
-    setBannerState('ok', `LIVE · ${tsStr} · ${metalsSource} + Yahoo (${okCount}/${totalCount})`);
-  } else if (metalsOk) {
-    LIVE_DATA.dataSource = 'partial';
-    LIVE_DATA.asOf = tsStr;
-    setBannerState('stale', `LIVE metals · ${okCount}/${totalCount} context · ${metalsSource}`);
-  } else {
+async function fetchLiveData(){
+  setBannerState('loading', 'loading latest data…');
+  try {
+    // Cache-bust to ensure we get the latest JSON
+    const resp = await fetch('data/latest.json?t=' + Date.now(), {
+      cache: 'no-cache'
+    });
+    if (!resp.ok) throw new Error(`data file: HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    // Update LIVE_DATA from the fetched JSON
+    if (data.silver) LIVE_DATA.silver = data.silver;
+    if (data.gold)   LIVE_DATA.gold   = data.gold;
+    if (data.dxy)    LIVE_DATA.dxy    = data.dxy;
+    if (data.copper) LIVE_DATA.copper = data.copper;
+    if (data.oil)    LIVE_DATA.oil    = data.oil;
+    if (data.vix)    LIVE_DATA.vix    = data.vix;
+    if (data.spx)    LIVE_DATA.spx    = data.spx;
+    if (data.sil)    LIVE_DATA.sil    = data.sil;
+    if (data.series && data.series.length >= 30) LIVE_DATA.series = data.series;
+    if (data.recentOHLC && data.recentOHLC.length >= 5) LIVE_DATA.recentOHLC = data.recentOHLC;
+
+    LIVE_DATA.fetchedAt = data.fetchedAt;
+    LIVE_DATA.fetchLog = data.log || [];
+    LIVE_DATA.sources = data.sources || {};
+    LIVE_DATA.healthyCount = data.healthyCount ?? 0;
+    LIVE_DATA.totalCount = data.totalCount ?? 8;
+
+    const ago = timeAgo(data.fetchedAt);
+    const ageMin = (Date.now() - new Date(data.fetchedAt).getTime()) / 60000;
+
+    // Determine status based on data age and health
+    const isSeedData = data.healthyCount === 0 ||
+      (data.sources && Object.values(data.sources).every(s => s === 'snapshot'));
+
+    if (isSeedData) {
+      LIVE_DATA.dataSource = 'snapshot';
+      setBannerState('error', 'using seed data · GitHub Action hasn\'t run yet');
+      // Show setup hint if user hasn't dismissed it
+      if (!localStorage.getItem('kelly-hint-dismissed')) {
+        document.getElementById('setupHint').classList.add('show');
+      }
+    } else {
+      // Hide hint once we have live data
+      document.getElementById('setupHint').classList.remove('show');
+      if (ageMin > 90) {
+        // Data older than 90 minutes — workflow may have stopped
+        LIVE_DATA.dataSource = 'stale';
+        setBannerState('stale', `data is ${ago} · GitHub Action may be paused`);
+      } else if (data.healthyCount < data.totalCount) {
+        LIVE_DATA.dataSource = 'partial';
+        setBannerState('stale', `live · ${ago} · ${data.healthyCount}/${data.totalCount} sources`);
+      } else {
+        LIVE_DATA.dataSource = 'live';
+        setBannerState('ok', `LIVE · updated ${ago} · all ${data.totalCount} sources healthy`);
+      }
+    }
+    return true;
+  } catch(e) {
     LIVE_DATA.dataSource = 'snapshot';
-    setBannerState('error', `live fetch failed · using snapshot · ${tsStr}`);
+    setBannerState('error', 'no data file found · using embedded snapshot');
+    return false;
   }
-
-  LIVE_DATA.fetchLog = log;
-  return metalsOk;
 }
 
 /* --- Compute v3 signals ------------------------------------------- */
@@ -1108,9 +1002,15 @@ function render(){
 
   // Update source label
   const srcEl = document.getElementById('spotSource');
-  if (d.dataSource === 'live') srcEl.textContent = 'spot · live · ' + d.asOf;
-  else if (d.dataSource === 'partial') srcEl.textContent = 'spot · live metals · partial context';
-  else srcEl.textContent = 'spot · ' + (d.asOf || 'snapshot');
+  if (d.fetchedAt) {
+    const ago = timeAgo(d.fetchedAt);
+    if (d.dataSource === 'live') srcEl.textContent = 'spot · live · updated ' + ago;
+    else if (d.dataSource === 'partial') srcEl.textContent = 'spot · partial · ' + ago;
+    else if (d.dataSource === 'stale') srcEl.textContent = 'spot · stale · ' + ago;
+    else srcEl.textContent = 'spot · snapshot';
+  } else {
+    srcEl.textContent = 'spot · ' + (d.dataSource || 'snapshot');
+  }
 }
 
 function signalNarrative(name, s, raw){
@@ -1170,8 +1070,20 @@ document.getElementById('refreshBtn').addEventListener('click', async () => {
   btn.disabled = false;
 });
 
+document.getElementById('dismissHint').addEventListener('click', () => {
+  document.getElementById('setupHint').classList.remove('show');
+  localStorage.setItem('kelly-hint-dismissed', '1');
+});
+
 init();
 window.addEventListener('resize', render);
+
+// Auto-refresh every 5 minutes — data file updates every 30min on
+// GitHub Actions, so 5min polling is plenty fresh without hammering.
+setInterval(async () => {
+  await fetchLiveData();
+  render();
+}, 5 * 60 * 1000);
 
 </script>
 </body>
