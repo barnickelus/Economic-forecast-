@@ -1,47 +1,60 @@
 #!/usr/bin/env node
 /**
- * Kelly Silver — data fetcher
+ * Kelly Live Dashboard — multi-asset data fetcher
  *
- * Runs on GitHub Actions every ~30 minutes (see .github/workflows/fetch-data.yml).
- * Fetches silver, gold, DXY, copper, oil, VIX, S&P, and silver miners ETF
- * from Yahoo Finance, with goldprice.org as a backup for the metals.
+ * Runs on GitHub Actions every ~30 minutes.
+ * Reads tickers from data/tickers.json (or falls back to default: silver).
+ * For each ticker, fetches: the asset itself, its sector reference ETF,
+ * and the cross-asset macro context (VIX, oil, DXY, S&P).
  *
- * Output: data/latest.json — same-origin file the dashboard reads.
- *
- * No CORS issues because this runs server-side, not in a browser.
+ * Output: data/{TICKER}.json — one file per tracked ticker.
+ *         data/index.json     — list of all tracked tickers.
+ *         data/latest.json    — backward-compat for silver dashboard.
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const USER_AGENT = 'Mozilla/5.0 (compatible; Kelly-Silver-Dashboard/3.0; +https://github.com/)';
+const USER_AGENT = 'Mozilla/5.0 (compatible; Kelly-Live-Dashboard/4.0; +https://github.com/)';
 const TIMEOUT_MS = 12000;
 
-// Silver: use SLV ETF which tracks spot silver closely and has reliable
-//   prev-close + intraday + volume data on Yahoo. The futures contract SI=F
-//   often has stale or weekend-skewed prev-close values that distort change %.
-// SLV * ~10.4 ≈ silver spot price; we'll convert at the dashboard level.
-const SYMBOLS = {
-  silver: 'SI=F',     // futures (we'll cross-check with SLV)
-  silverSpot: 'XAG=X',// spot silver in USD — for true price display
-  silverETF: 'SLV',   // iShares Silver Trust — most reliable volume + intraday
-  gold:   'GC=F',
-  goldSpot: 'XAU=X',
-  dxy:    'DX-Y.NYB',
-  copper: 'HG=F',
-  oil:    'CL=F',
-  vix:    '^VIX',
-  spx:    '^GSPC',
-  sil:    'SIL',
+const ASSET_CONFIG = {
+  // Precious metals
+  'SI=F':   { name: 'Silver',    assetClass: 'commodity', sectorETF: 'SIL',  spotSource: 'XAG=X', typicalVolAnnual: 0.32 },
+  'GC=F':   { name: 'Gold',      assetClass: 'commodity', sectorETF: 'GDX',  spotSource: 'XAU=X', typicalVolAnnual: 0.15 },
+  // Major equities
+  'AAPL':   { name: 'Apple',     assetClass: 'equity', sectorETF: 'XLK',  typicalVolAnnual: 0.25 },
+  'MSFT':   { name: 'Microsoft', assetClass: 'equity', sectorETF: 'XLK',  typicalVolAnnual: 0.25 },
+  'NVDA':   { name: 'Nvidia',    assetClass: 'equity', sectorETF: 'SMH',  typicalVolAnnual: 0.50 },
+  'TSLA':   { name: 'Tesla',     assetClass: 'equity', sectorETF: 'XLY',  typicalVolAnnual: 0.55 },
+  'AMZN':   { name: 'Amazon',    assetClass: 'equity', sectorETF: 'XLY',  typicalVolAnnual: 0.30 },
+  'GOOGL':  { name: 'Alphabet',  assetClass: 'equity', sectorETF: 'XLC',  typicalVolAnnual: 0.28 },
+  'META':   { name: 'Meta',      assetClass: 'equity', sectorETF: 'XLC',  typicalVolAnnual: 0.40 },
+  'JPM':    { name: 'JPMorgan',  assetClass: 'equity', sectorETF: 'XLF',  typicalVolAnnual: 0.25 },
+  'XOM':    { name: 'Exxon',     assetClass: 'equity', sectorETF: 'XLE',  typicalVolAnnual: 0.28 },
+  'SPY':    { name: 'S&P 500 ETF', assetClass: 'index', sectorETF: 'QQQ', typicalVolAnnual: 0.15 },
+  'QQQ':    { name: 'Nasdaq 100',  assetClass: 'index', sectorETF: 'SPY', typicalVolAnnual: 0.22 },
+  'HL':     { name: 'Hecla Mining', assetClass: 'equity', sectorETF: 'SIL', typicalVolAnnual: 0.55 },
+  'PAAS':   { name: 'Pan American', assetClass: 'equity', sectorETF: 'SIL', typicalVolAnnual: 0.50 },
+  'BTC-USD': { name: 'Bitcoin',   assetClass: 'crypto', sectorETF: 'ETH-USD', typicalVolAnnual: 0.65 },
 };
 
-async function fetchWithTimeout(url, opts = {}, timeout = TIMEOUT_MS) {
+const MACRO_SYMBOLS = {
+  dxy: 'DX-Y.NYB',
+  oil: 'CL=F',
+  vix: '^VIX',
+  spx: '^GSPC',
+  tnx: '^TNX',
+};
+
+const DEFAULT_TICKERS = ['SI=F'];
+
+async function fetchWithTimeout(url, timeout = TIMEOUT_MS) {
   const ctl = new AbortController();
   const tid = setTimeout(() => ctl.abort(), timeout);
   try {
     const resp = await fetch(url, {
-      ...opts,
-      headers: { 'User-Agent': USER_AGENT, 'Accept': 'application/json,*/*', ...(opts.headers || {}) },
+      headers: { 'User-Agent': USER_AGENT, 'Accept': 'application/json,*/*' },
       signal: ctl.signal,
     });
     clearTimeout(tid);
@@ -62,31 +75,11 @@ async function fetchYahoo(symbol, range = '3mo', interval = '1d') {
   return r;
 }
 
-async function fetchGoldpriceOrg() {
-  const resp = await fetchWithTimeout('https://data-asg.goldprice.org/dbXRates/USD');
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  const data = await resp.json();
-  const item = data?.items?.[0];
-  if (!item?.xagPrice) throw new Error('no items');
-  return item;
-}
-
-async function fetchGoldApi(metal) {
-  const resp = await fetchWithTimeout(`https://api.gold-api.com/price/${metal}`);
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-  return await resp.json();
-}
-
 function quoteFromYahoo(r) {
   const m = r.meta;
   const spot = m.regularMarketPrice;
   const prev = m.chartPreviousClose ?? m.previousClose;
-  return {
-    spot,
-    prev,
-    change: spot - prev,
-    changePct: (spot - prev) / prev * 100,
-  };
+  return { spot, prev, change: spot - prev, changePct: (spot - prev) / prev * 100 };
 }
 
 function seriesFromYahoo(r) {
@@ -108,168 +101,214 @@ function ohlcFromYahoo(r, n = 6) {
   return out;
 }
 
-async function main() {
+async function fetchTicker(tickerSymbol, config, macroData) {
   const data = {
+    ticker: tickerSymbol,
+    config: config,
     fetchedAt: new Date().toISOString(),
     sources: {},
     log: [],
   };
 
-  // Pass 1: Yahoo Finance for everything
-  for (const [key, sym] of Object.entries(SYMBOLS)) {
+  // 1. Primary asset
+  try {
+    const r = await fetchYahoo(tickerSymbol);
+    data.asset = quoteFromYahoo(r);
+    data.series = seriesFromYahoo(r);
+    data.recentOHLC = ohlcFromYahoo(r, 6);
+    data.sources.asset = `yahoo:${tickerSymbol}`;
+    data.log.push(`✓ ${tickerSymbol}: $${data.asset.spot.toFixed(2)} (${data.asset.changePct >= 0 ? '+' : ''}${data.asset.changePct.toFixed(2)}%)`);
+  } catch (e) {
+    data.log.push(`✗ ${tickerSymbol}: ${e.message}`);
+    return data;
+  }
+
+  // 2. Sector/peer reference ETF
+  if (config.sectorETF) {
+    try {
+      const r = await fetchYahoo(config.sectorETF);
+      data.sector = quoteFromYahoo(r);
+      data.sectorName = config.sectorETF;
+      data.sources.sector = `yahoo:${config.sectorETF}`;
+      data.log.push(`✓ sector ${config.sectorETF}: $${data.sector.spot.toFixed(2)} (${data.sector.changePct >= 0 ? '+' : ''}${data.sector.changePct.toFixed(2)}%)`);
+    } catch (e) {
+      data.log.push(`✗ sector ${config.sectorETF}: ${e.message}`);
+    }
+  }
+
+  // 3. Alt spot source (commodities)
+  if (config.spotSource) {
+    try {
+      const r = await fetchYahoo(config.spotSource);
+      data.spotAlt = quoteFromYahoo(r);
+      data.sources.spotAlt = `yahoo:${config.spotSource}`;
+      data.log.push(`✓ spot ${config.spotSource}: $${data.spotAlt.spot.toFixed(2)} (${data.spotAlt.changePct >= 0 ? '+' : ''}${data.spotAlt.changePct.toFixed(2)}%)`);
+    } catch (e) {
+      data.log.push(`✗ spot ${config.spotSource}: ${e.message}`);
+    }
+  }
+
+  data.display = computeDisplayPrice(data, config);
+  data.macro = macroData;
+  data.healthyCount = Object.keys(data.sources).length;
+  data.totalCount = 2 + (config.spotSource ? 1 : 0);
+
+  return data;
+}
+
+function computeDisplayPrice(data, config) {
+  if (!data.asset) return null;
+
+  if (!data.spotAlt) {
+    return {
+      spot: data.asset.spot,
+      prev: data.asset.prev,
+      change: data.asset.change,
+      changePct: data.asset.changePct,
+      source: data.ticker,
+    };
+  }
+
+  const spotChange = Math.abs(data.spotAlt.changePct);
+  const priceGap = Math.abs(data.asset.spot - data.spotAlt.spot) / data.spotAlt.spot;
+
+  const useSpot = spotChange < 18 && priceGap < 0.10;
+  if (useSpot) {
+    data.log.push(`→ display: spot ${config.spotSource}`);
+    return {
+      spot: data.spotAlt.spot,
+      prev: data.spotAlt.prev,
+      change: data.spotAlt.change,
+      changePct: data.spotAlt.changePct,
+      source: config.spotSource + ' (spot)',
+    };
+  }
+
+  if (data.sector && Math.abs(data.sector.changePct) < 15) {
+    const impliedPrev = data.spotAlt.spot / (1 + data.sector.changePct / 100);
+    data.log.push(`! sources suspect; using ${data.sectorName} %Δ`);
+    return {
+      spot: data.spotAlt.spot,
+      prev: impliedPrev,
+      change: data.spotAlt.spot - impliedPrev,
+      changePct: data.sector.changePct,
+      source: data.sectorName + '-derived',
+    };
+  }
+
+  return {
+    spot: data.spotAlt.spot,
+    prev: data.spotAlt.prev,
+    change: data.spotAlt.change,
+    changePct: data.spotAlt.changePct,
+    source: config.spotSource + ' (spot)',
+  };
+}
+
+async function fetchMacroContext() {
+  const macro = { fetchedAt: new Date().toISOString(), log: [] };
+  for (const [key, sym] of Object.entries(MACRO_SYMBOLS)) {
     try {
       const r = await fetchYahoo(sym);
-      data[key] = quoteFromYahoo(r);
-      data.sources[key] = `yahoo:${sym}`;
-      if (key === 'silver') {
-        data.series = seriesFromYahoo(r);
-        data.recentOHLC = ohlcFromYahoo(r, 6);
-      }
-      data.log.push(`✓ ${sym}: $${data[key].spot.toFixed(2)} (${data[key].changePct >= 0 ? '+' : ''}${data[key].changePct.toFixed(2)}%)`);
+      macro[key] = quoteFromYahoo(r);
+      macro.log.push(`✓ ${sym}`);
     } catch (e) {
-      data.log.push(`✗ ${sym}: ${e.message}`);
+      macro.log.push(`✗ ${sym}: ${e.message}`);
     }
   }
+  return macro;
+}
 
-  // --- VALIDATION: pick the best silver display source ---
-  // Strategy: prefer spot (XAG=X) for display price, but cross-check against
-  // SI=F futures and SLV ETF * 10.4. If any source's |changePct| > 18%, treat as
-  // stale prev-close artifact and use median of working sources.
-  if (data.silverSpot && data.silver) {
-    const futuresChange = Math.abs(data.silver.changePct);
-    const spotChange = Math.abs(data.silverSpot.changePct);
-    const futuresSpot = data.silver.spot;
-    const realSpot = data.silverSpot.spot;
-    const priceGap = Math.abs(futuresSpot - realSpot) / realSpot;
-
-    // Use SLV * 10.4 as an additional cross-check (1 SLV ≈ 1 oz silver at $10.40 per share)
-    let slvImpliedSpot = null;
-    if (data.silverETF && data.silverETF.spot > 5) {
-      // SLV trades around 1/10th of silver spot price (with small mgmt fee drag)
-      slvImpliedSpot = data.silverETF.spot * (realSpot / data.silverETF.spot);
-      // Simpler: use SLV's % change as the truth signal
+function loadTickerList() {
+  const tickerFile = path.join(__dirname, '..', 'data', 'tickers.json');
+  try {
+    if (fs.existsSync(tickerFile)) {
+      const list = JSON.parse(fs.readFileSync(tickerFile, 'utf8'));
+      if (Array.isArray(list) && list.length > 0) return list;
     }
-
-    // Decision rules
-    const useSpot = spotChange < 18 && priceGap < 0.10;
-    const useFutures = futuresChange < 18 && (priceGap < 0.10 || !useSpot);
-
-    if (useSpot) {
-      // Spot is clean — use it as primary display
-      data.silverDisplay = {
-        spot: data.silverSpot.spot,
-        prev: data.silverSpot.prev,
-        change: data.silverSpot.change,
-        changePct: data.silverSpot.changePct,
-        source: 'XAG=X (spot)',
-      };
-      data.log.push(`→ display: spot ($${realSpot.toFixed(2)}, ${data.silverSpot.changePct.toFixed(2)}%)`);
-    } else if (useFutures) {
-      data.silverDisplay = {
-        spot: data.silver.spot,
-        prev: data.silver.prev,
-        change: data.silver.change,
-        changePct: data.silver.changePct,
-        source: 'SI=F (futures)',
-      };
-      data.log.push(`→ display: futures (spot rejected, |Δ|=${spotChange.toFixed(1)}%)`);
-    } else {
-      // Both look stale — use SLV-derived change as authoritative
-      if (data.silverETF) {
-        data.silverDisplay = {
-          spot: realSpot,
-          prev: realSpot / (1 + data.silverETF.changePct/100),
-          change: realSpot * data.silverETF.changePct / 100,
-          changePct: data.silverETF.changePct,
-          source: 'SLV-derived',
-        };
-        data.log.push(`! both spot+futures looked stale; using SLV %Δ=${data.silverETF.changePct.toFixed(2)}%`);
-      } else {
-        data.silverDisplay = data.silverSpot;
-        data.log.push(`! all sources suspect; using spot anyway`);
-      }
-    }
-  } else if (data.silver) {
-    // Spot fetch failed; futures only
-    data.silverDisplay = { ...data.silver, source: 'SI=F (futures, no spot)' };
+  } catch (e) {
+    console.log('Could not read tickers.json, using default');
   }
+  return DEFAULT_TICKERS;
+}
 
-  // Pass 2: backups for silver/gold if Yahoo failed
-  if (!data.silver || !data.gold) {
-    data.log.push('-- attempting metal backups --');
-
-    // Try goldprice.org first (gives both metals + change)
-    try {
-      const item = await fetchGoldpriceOrg();
-      if (!data.silver) {
-        data.silver = {
-          spot: item.xagPrice,
-          prev: item.xagClose ?? (item.xagPrice - item.chgXag),
-          change: item.chgXag,
-          changePct: item.pcXag,
-        };
-        data.sources.silver = 'goldprice.org';
-        data.log.push(`✓ silver via goldprice.org: $${item.xagPrice.toFixed(2)}`);
-      }
-      if (!data.gold) {
-        data.gold = {
-          spot: item.xauPrice,
-          prev: item.xauClose ?? (item.xauPrice - item.chgXau),
-          change: item.chgXau,
-          changePct: item.pcXau,
-        };
-        data.sources.gold = 'goldprice.org';
-        data.log.push(`✓ gold via goldprice.org: $${item.xauPrice.toFixed(2)}`);
-      }
-    } catch (e) {
-      data.log.push(`✗ goldprice.org: ${e.message}`);
-    }
-
-    // Try gold-api.com as final fallback
-    if (!data.silver) {
-      try {
-        const ag = await fetchGoldApi('XAG');
-        data.silver = { spot: ag.price, prev: ag.price, change: 0, changePct: 0 };
-        data.sources.silver = 'gold-api.com';
-        data.log.push(`✓ silver via gold-api.com: $${ag.price.toFixed(2)} (no prev close)`);
-      } catch (e) {
-        data.log.push(`✗ gold-api.com silver: ${e.message}`);
-      }
-    }
-    if (!data.gold) {
-      try {
-        const au = await fetchGoldApi('XAU');
-        data.gold = { spot: au.price, prev: au.price, change: 0, changePct: 0 };
-        data.sources.gold = 'gold-api.com';
-        data.log.push(`✓ gold via gold-api.com: $${au.price.toFixed(2)}`);
-      } catch (e) {
-        data.log.push(`✗ gold-api.com gold: ${e.message}`);
-      }
-    }
-  }
-
-  data.healthyCount = Object.keys(data.sources).length;
-  data.totalCount = Object.keys(SYMBOLS).length;
-
-  // Write latest.json
+async function main() {
   const outDir = path.join(__dirname, '..', 'data');
   fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'latest.json'), JSON.stringify(data, null, 2));
 
-  // Optionally archive (kept off by default to avoid repo bloat).
-  // Uncomment to keep a history of snapshots for backtesting:
-  // const archiveDir = path.join(outDir, 'history');
-  // fs.mkdirSync(archiveDir, { recursive: true });
-  // const ts = data.fetchedAt.replace(/[:.]/g, '-');
-  // fs.writeFileSync(path.join(archiveDir, `${ts}.json`), JSON.stringify(data));
+  const tickerList = loadTickerList();
+  console.log(`Tracking ${tickerList.length} ticker(s): ${tickerList.join(', ')}\n`);
 
-  console.log('=== Fetch complete ===');
-  data.log.forEach(l => console.log('  ' + l));
-  console.log(`\n${data.healthyCount}/${data.totalCount} sources healthy`);
-  if (data.healthyCount === 0) {
-    console.error('NO SOURCES SUCCEEDED — writing log only');
-    process.exit(1);
+  console.log('--- Fetching macro context ---');
+  const macroData = await fetchMacroContext();
+  macroData.log.forEach(l => console.log('  ' + l));
+
+  const indexEntry = {
+    generatedAt: new Date().toISOString(),
+    tickers: [],
+  };
+
+  for (const tickerSym of tickerList) {
+    const config = ASSET_CONFIG[tickerSym] || {
+      name: tickerSym,
+      assetClass: 'equity',
+      sectorETF: 'SPY',
+      typicalVolAnnual: 0.30,
+    };
+
+    console.log(`\n--- ${tickerSym} (${config.name}) ---`);
+    const result = await fetchTicker(tickerSym, config, macroData);
+    result.log.forEach(l => console.log('  ' + l));
+
+    if (result.asset) {
+      const safeFilename = tickerSym.replace(/[=^]/g, '_') + '.json';
+      const filePath = path.join(outDir, safeFilename);
+      fs.writeFileSync(filePath, JSON.stringify(result, null, 2));
+
+      indexEntry.tickers.push({
+        ticker: tickerSym,
+        filename: safeFilename,
+        name: config.name,
+        assetClass: config.assetClass,
+        spot: result.display?.spot ?? result.asset.spot,
+        changePct: result.display?.changePct ?? result.asset.changePct,
+        healthyCount: result.healthyCount,
+        totalCount: result.totalCount,
+      });
+      console.log(`  → wrote ${safeFilename}`);
+    }
   }
+
+  fs.writeFileSync(path.join(outDir, 'index.json'), JSON.stringify(indexEntry, null, 2));
+
+  // Backward compat: if silver is tracked, also write legacy latest.json
+  const silverFile = path.join(outDir, 'SI_F.json');
+  if (fs.existsSync(silverFile)) {
+    const sData = JSON.parse(fs.readFileSync(silverFile, 'utf8'));
+    const legacy = {
+      fetchedAt: sData.fetchedAt,
+      ticker: sData.ticker,
+      sources: sData.sources,
+      log: sData.log,
+      silver: sData.asset,
+      silverSpot: sData.spotAlt,
+      silverDisplay: sData.display,
+      gold: null,
+      dxy: macroData.dxy,
+      copper: null,
+      oil: macroData.oil,
+      vix: macroData.vix,
+      spx: macroData.spx,
+      sil: sData.sector,
+      series: sData.series,
+      recentOHLC: sData.recentOHLC,
+      healthyCount: sData.healthyCount,
+      totalCount: sData.totalCount,
+    };
+    fs.writeFileSync(path.join(outDir, 'latest.json'), JSON.stringify(legacy, null, 2));
+  }
+
+  console.log(`\n=== Done. ${indexEntry.tickers.length} ticker(s) updated. ===`);
 }
 
 main().catch(e => {
