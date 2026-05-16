@@ -1,34 +1,59 @@
 {
-  "fetchedAt": "2026-05-16T06:13:24.241Z",
+  "fetchedAt": "2026-05-16T06:49:37.512Z",
+  "ticker": "SI=F",
   "sources": {
-    "silver": "yahoo:SI=F",
-    "silverETF": "yahoo:SLV",
-    "gold": "yahoo:GC=F",
-    "dxy": "yahoo:DX-Y.NYB",
-    "copper": "yahoo:HG=F",
-    "oil": "yahoo:CL=F",
-    "vix": "yahoo:^VIX",
-    "spx": "yahoo:^GSPC",
-    "sil": "yahoo:SIL"
+    "asset": "yahoo:SI=F",
+    "sector": "yahoo:SIL"
   },
   "log": [
     "✓ SI=F: $77.55 (+5.58%)",
-    "✗ XAG=X: HTTP 404",
-    "✓ SLV: $69.04 (-0.98%)",
-    "✓ GC=F: $4561.90 (-6.57%)",
-    "✗ XAU=X: HTTP 404",
-    "✓ DX-Y.NYB: $99.27 (+2.17%)",
-    "✓ HG=F: $6.29 (+11.75%)",
-    "✓ CL=F: $101.02 (+62.07%)",
-    "✓ ^VIX: $18.43 (-10.53%)",
-    "✓ ^GSPC: $7408.50 (+8.37%)",
-    "✓ SIL: $91.60 (-9.88%)"
+    "✓ sector SIL: $91.60 (-9.88%)",
+    "✗ spot XAG=X: HTTP 404"
   ],
   "silver": {
     "spot": 77.547,
     "prev": 73.447,
     "change": 4.099999999999994,
     "changePct": 5.582256593189639
+  },
+  "silverDisplay": {
+    "spot": 77.547,
+    "prev": 73.447,
+    "change": 4.099999999999994,
+    "changePct": 5.582256593189639,
+    "source": "SI=F"
+  },
+  "gold": null,
+  "dxy": {
+    "spot": 99.27,
+    "prev": 97.16,
+    "change": 2.1099999999999994,
+    "changePct": 2.171675586661177
+  },
+  "copper": null,
+  "oil": {
+    "spot": 101.02,
+    "prev": 62.33,
+    "change": 38.69,
+    "changePct": 62.07283811968555
+  },
+  "vix": {
+    "spot": 18.43,
+    "prev": 20.6,
+    "change": -2.1700000000000017,
+    "changePct": -10.53398058252428
+  },
+  "spx": {
+    "spot": 7408.5,
+    "prev": 6836.17,
+    "change": 572.3299999999999,
+    "changePct": 8.372085539124976
+  },
+  "sil": {
+    "spot": 91.6,
+    "prev": 101.64,
+    "change": -10.040000000000006,
+    "changePct": -9.878000787091702
   },
   "series": [
     73.4469985961914,
@@ -145,61 +170,6 @@
       "v": 91
     }
   ],
-  "silverETF": {
-    "spot": 69.04,
-    "prev": 69.72,
-    "change": -0.6799999999999926,
-    "changePct": -0.9753298909925311
-  },
-  "gold": {
-    "spot": 4561.9,
-    "prev": 4882.9,
-    "change": -321,
-    "changePct": -6.573962194597473
-  },
-  "dxy": {
-    "spot": 99.27,
-    "prev": 97.16,
-    "change": 2.1099999999999994,
-    "changePct": 2.171675586661177
-  },
-  "copper": {
-    "spot": 6.295,
-    "prev": 5.633,
-    "change": 0.6619999999999999,
-    "changePct": 11.752174684892596
-  },
-  "oil": {
-    "spot": 101.02,
-    "prev": 62.33,
-    "change": 38.69,
-    "changePct": 62.07283811968555
-  },
-  "vix": {
-    "spot": 18.43,
-    "prev": 20.6,
-    "change": -2.1700000000000017,
-    "changePct": -10.53398058252428
-  },
-  "spx": {
-    "spot": 7408.5,
-    "prev": 6836.17,
-    "change": 572.3299999999999,
-    "changePct": 8.372085539124976
-  },
-  "sil": {
-    "spot": 91.6,
-    "prev": 101.64,
-    "change": -10.040000000000006,
-    "changePct": -9.878000787091702
-  },
-  "silverDisplay": {
-    "spot": 77.547,
-    "prev": 73.447,
-    "change": 4.099999999999994,
-    "changePct": 5.582256593189639,
-    "source": "SI=F (futures, no spot)"
-  },
-  "healthyCount": 9,
-  "totalCount": 11
+  "healthyCount": 2,
+  "totalCount": 3
 }
