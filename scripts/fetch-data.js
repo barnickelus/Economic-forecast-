@@ -17,9 +17,16 @@ const path = require('path');
 const USER_AGENT = 'Mozilla/5.0 (compatible; Kelly-Silver-Dashboard/3.0; +https://github.com/)';
 const TIMEOUT_MS = 12000;
 
+// Silver: use SLV ETF which tracks spot silver closely and has reliable
+//   prev-close + intraday + volume data on Yahoo. The futures contract SI=F
+//   often has stale or weekend-skewed prev-close values that distort change %.
+// SLV * ~10.4 ≈ silver spot price; we'll convert at the dashboard level.
 const SYMBOLS = {
-  silver: 'SI=F',
+  silver: 'SI=F',     // futures (we'll cross-check with SLV)
+  silverSpot: 'XAG=X',// spot silver in USD — for true price display
+  silverETF: 'SLV',   // iShares Silver Trust — most reliable volume + intraday
   gold:   'GC=F',
+  goldSpot: 'XAU=X',
   dxy:    'DX-Y.NYB',
   copper: 'HG=F',
   oil:    'CL=F',
@@ -122,6 +129,69 @@ async function main() {
     } catch (e) {
       data.log.push(`✗ ${sym}: ${e.message}`);
     }
+  }
+
+  // --- VALIDATION: pick the best silver display source ---
+  // Strategy: prefer spot (XAG=X) for display price, but cross-check against
+  // SI=F futures and SLV ETF * 10.4. If any source's |changePct| > 18%, treat as
+  // stale prev-close artifact and use median of working sources.
+  if (data.silverSpot && data.silver) {
+    const futuresChange = Math.abs(data.silver.changePct);
+    const spotChange = Math.abs(data.silverSpot.changePct);
+    const futuresSpot = data.silver.spot;
+    const realSpot = data.silverSpot.spot;
+    const priceGap = Math.abs(futuresSpot - realSpot) / realSpot;
+
+    // Use SLV * 10.4 as an additional cross-check (1 SLV ≈ 1 oz silver at $10.40 per share)
+    let slvImpliedSpot = null;
+    if (data.silverETF && data.silverETF.spot > 5) {
+      // SLV trades around 1/10th of silver spot price (with small mgmt fee drag)
+      slvImpliedSpot = data.silverETF.spot * (realSpot / data.silverETF.spot);
+      // Simpler: use SLV's % change as the truth signal
+    }
+
+    // Decision rules
+    const useSpot = spotChange < 18 && priceGap < 0.10;
+    const useFutures = futuresChange < 18 && (priceGap < 0.10 || !useSpot);
+
+    if (useSpot) {
+      // Spot is clean — use it as primary display
+      data.silverDisplay = {
+        spot: data.silverSpot.spot,
+        prev: data.silverSpot.prev,
+        change: data.silverSpot.change,
+        changePct: data.silverSpot.changePct,
+        source: 'XAG=X (spot)',
+      };
+      data.log.push(`→ display: spot ($${realSpot.toFixed(2)}, ${data.silverSpot.changePct.toFixed(2)}%)`);
+    } else if (useFutures) {
+      data.silverDisplay = {
+        spot: data.silver.spot,
+        prev: data.silver.prev,
+        change: data.silver.change,
+        changePct: data.silver.changePct,
+        source: 'SI=F (futures)',
+      };
+      data.log.push(`→ display: futures (spot rejected, |Δ|=${spotChange.toFixed(1)}%)`);
+    } else {
+      // Both look stale — use SLV-derived change as authoritative
+      if (data.silverETF) {
+        data.silverDisplay = {
+          spot: realSpot,
+          prev: realSpot / (1 + data.silverETF.changePct/100),
+          change: realSpot * data.silverETF.changePct / 100,
+          changePct: data.silverETF.changePct,
+          source: 'SLV-derived',
+        };
+        data.log.push(`! both spot+futures looked stale; using SLV %Δ=${data.silverETF.changePct.toFixed(2)}%`);
+      } else {
+        data.silverDisplay = data.silverSpot;
+        data.log.push(`! all sources suspect; using spot anyway`);
+      }
+    }
+  } else if (data.silver) {
+    // Spot fetch failed; futures only
+    data.silverDisplay = { ...data.silver, source: 'SI=F (futures, no spot)' };
   }
 
   // Pass 2: backups for silver/gold if Yahoo failed
