@@ -232,6 +232,70 @@
   }
   .refresh:hover{background:var(--acc);color:var(--bg)}
 
+  /* probabilistic forecast panel */
+  .forecast-grid{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:8px;
+  }
+  @media(max-width:900px){.forecast-grid{grid-template-columns:1fr}}
+  .pdf-chart{height:200px;width:100%;background:var(--bg3);border:1px solid var(--line);position:relative}
+  .prob-table{width:100%;border-collapse:collapse;font-size:11px}
+  .prob-table th{
+    text-align:left;color:var(--ink3);font-weight:400;font-size:9px;
+    letter-spacing:1.5px;text-transform:uppercase;padding:8px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .prob-table th.num{text-align:right}
+  .prob-table td{padding:9px 4px;border-bottom:1px dotted var(--line2)}
+  .prob-table .desc{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink)}
+  .prob-table .pct{
+    text-align:right;font-family:'JetBrains Mono';
+    font-size:14px;color:var(--ink);font-weight:500;
+  }
+  .prob-table .pct.high{color:var(--bull)}
+  .prob-table .pct.med{color:var(--warn)}
+  .prob-table .pct.low{color:var(--bear)}
+  .prob-table .bar{
+    display:inline-block;height:4px;background:var(--acc);
+    margin-left:8px;vertical-align:middle;
+  }
+  .calibration-note{
+    background:rgba(232,194,91,0.06);border-left:2px solid var(--warn);
+    padding:8px 12px;margin-top:10px;font-size:10px;color:var(--ink2);
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;line-height:1.55;
+  }
+  .calibration-note b{color:var(--warn);font-style:normal;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase}
+
+  .forecast-headline{
+    text-align:center;padding:14px 12px;border:1px solid var(--line);background:var(--paper);
+  }
+  .forecast-headline .lbl{font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin-bottom:6px}
+  .forecast-headline .big{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;color:var(--ink)}
+  .forecast-headline .big.bull{color:var(--bull)}
+  .forecast-headline .big.bear{color:var(--bear)}
+  .forecast-headline .big.neutral{color:var(--neutral)}
+  .forecast-headline .sub-readout{font-size:11px;color:var(--ink2);margin-top:4px;font-family:'JetBrains Mono'}
+
+  /* prediction interval bars */
+  .pi-bar{
+    height:36px;background:var(--bg3);border:1px solid var(--line);
+    position:relative;margin:8px 0;
+  }
+  .pi-bar .pi-range{
+    position:absolute;top:0;bottom:0;
+    background:linear-gradient(90deg, rgba(232,92,92,0.4), rgba(232,194,91,0.4), rgba(127,212,200,0.4), rgba(93,207,126,0.4));
+  }
+  .pi-bar .pi-center{
+    position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--acc);
+    box-shadow:0 0 6px var(--acc);
+  }
+  .pi-bar .pi-label{
+    position:absolute;font-size:9px;font-family:'JetBrains Mono';color:var(--ink2);
+    letter-spacing:1px;
+  }
+  .pi-bar .pi-label.lo{left:4px;top:50%;transform:translateY(-50%)}
+  .pi-bar .pi-label.hi{right:4px;top:50%;transform:translateY(-50%)}
+  .pi-bar .pi-label.ctr{top:-16px;transform:translateX(-50%);color:var(--acc);font-size:10px}
+
   /* data source variants */
   .live-banner.stale{background:rgba(226,194,91,0.08);border-color:var(--warn);color:var(--warn)}
   .live-banner.stale .live-dot{background:var(--warn);box-shadow:0 0 6px var(--warn)}
@@ -278,6 +342,57 @@
     <p style="font-size:11px;color:var(--ink3);margin-top:8px;font-family:'JetBrains Mono'">
       The workflow runs automatically every 30 minutes after the first trigger. Full instructions are in <code>README.md</code>.
     </p>
+  </section>
+
+  <!-- PROBABILISTIC FORECAST -->
+  <section class="panel" style="grid-column:span 12">
+    <h2>Probabilistic forecast <span class="num">module · 0 · next 5 sessions</span></h2>
+    <div class="sub">The same Kelly–Shannon math that drives sizing also gives us a posterior distribution over future returns. Center bar = best estimate; band width = model uncertainty; rows are concrete probabilities of named outcomes. <em>Confidence is honest: when signals disagree, the band widens and probabilities cluster near 50%.</em></div>
+
+    <div class="forecast-grid">
+      <div>
+        <!-- Three named prediction intervals -->
+        <div style="font-size:10px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px">5-session return · prediction interval</div>
+        <div class="pi-bar" id="piBar5d">
+          <div class="pi-range" id="piRange5d"></div>
+          <div class="pi-center" id="piCenter5d"></div>
+          <span class="pi-label lo" id="piLabelLo5d">—</span>
+          <span class="pi-label ctr" id="piLabelCtr5d">—</span>
+          <span class="pi-label hi" id="piLabelHi5d">—</span>
+        </div>
+        <div style="font-size:9px;color:var(--ink3);letter-spacing:1px;margin-top:2px">68% confidence band around central estimate</div>
+
+        <div style="margin-top:14px;font-size:10px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase">20-session (~1 month) interval</div>
+        <div class="pi-bar" id="piBar20d">
+          <div class="pi-range" id="piRange20d"></div>
+          <div class="pi-center" id="piCenter20d"></div>
+          <span class="pi-label lo" id="piLabelLo20d">—</span>
+          <span class="pi-label ctr" id="piLabelCtr20d">—</span>
+          <span class="pi-label hi" id="piLabelHi20d">—</span>
+        </div>
+        <div style="font-size:9px;color:var(--ink3);letter-spacing:1px;margin-top:2px">68% confidence band — wider due to compounding uncertainty</div>
+
+        <div class="calibration-note">
+          <b>honest calibration</b>
+          These are model-implied probabilities derived from the same signals driving Kelly sizing. They are NOT backtested against thousands of historical outcomes. Treat them as <em>structured beliefs</em> with explicit uncertainty, not as oracle predictions. When signal disagreement (spread) is high, probabilities are pulled toward 50% — which is the system being honest about not knowing.
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="forecast-headline">
+          <div class="lbl">Headline forecast · 5 sessions</div>
+          <div class="big" id="forecastHeadline">—</div>
+          <div class="sub-readout" id="forecastSubReadout">computing…</div>
+        </div>
+
+        <table class="prob-table">
+          <thead>
+            <tr><th>Event</th><th class="num">Probability</th></tr>
+          </thead>
+          <tbody id="probTable"></tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
   <!-- VERDICT ROW -->
@@ -477,7 +592,11 @@ async function fetchLiveData(){
 
     // Update LIVE_DATA from the fetched JSON
     if (data.silver) LIVE_DATA.silver = data.silver;
+    if (data.silverSpot) LIVE_DATA.silverSpot = data.silverSpot;
+    if (data.silverETF) LIVE_DATA.silverETF = data.silverETF;
+    if (data.silverDisplay) LIVE_DATA.silverDisplay = data.silverDisplay;
     if (data.gold)   LIVE_DATA.gold   = data.gold;
+    if (data.goldSpot) LIVE_DATA.goldSpot = data.goldSpot;
     if (data.dxy)    LIVE_DATA.dxy    = data.dxy;
     if (data.copper) LIVE_DATA.copper = data.copper;
     if (data.oil)    LIVE_DATA.oil    = data.oil;
@@ -491,7 +610,7 @@ async function fetchLiveData(){
     LIVE_DATA.fetchLog = data.log || [];
     LIVE_DATA.sources = data.sources || {};
     LIVE_DATA.healthyCount = data.healthyCount ?? 0;
-    LIVE_DATA.totalCount = data.totalCount ?? 8;
+    LIVE_DATA.totalCount = data.totalCount ?? 11;  // updated for new silver sources
 
     const ago = timeAgo(data.fetchedAt);
     const ageMin = (Date.now() - new Date(data.fetchedAt).getTime()) / 60000;
@@ -534,7 +653,8 @@ async function fetchLiveData(){
 function computeAll(){
   const d = LIVE_DATA;
   const N = d.series.length;
-  const PRICE = d.silver.spot;
+  // Prefer validated spot price (silverDisplay), fall back to raw silver fetch
+  const PRICE = (d.silverDisplay && d.silverDisplay.spot) ? d.silverDisplay.spot : d.silver.spot;
   const ohlc = d.recentOHLC;
 
   // === Returns ===
@@ -833,6 +953,89 @@ function computeAll(){
   const kelly = 0.25 * muEst / (sigmaEst*sigmaEst);
   const kellyClamped = Math.max(-1, Math.min(1, kelly));
 
+  // ===================================================================
+  // PROBABILISTIC FORECAST
+  // ===================================================================
+  // The same μ̂ and σ̂² that drive Kelly sizing give us a posterior
+  // distribution over future returns. For an H-day horizon:
+  //   mean(H)     = μ̂ * H
+  //   var(H)      = σ̂² * H  (random walk variance accumulation)
+  // We use the model-uncertainty-inflated sigmaEst, then add additional
+  // honest uncertainty: when confidence is LOW the band widens further,
+  // approaching the unconditional return distribution (50/50 outcomes).
+  //
+  // The "uncertainty about uncertainty" adjustment: we mix the conditional
+  // forecast with the unconditional one weighted by signal confidence.
+  //   p_final = w * p_conditional + (1-w) * p_unconditional
+  // where w = max(0, 1 - spread*1.5). Low spread → trust the signal. High
+  // spread → trust the unconditional baseline (essentially 50/50).
+
+  function probUp(mu, sigma){
+    // Probability that a Normal(mu, sigma²) > 0
+    // = 1 - Φ(-mu/sigma) = Φ(mu/sigma)
+    const z = mu / sigma;
+    return normalCDF(z);
+  }
+  function normalCDF(z){
+    // Abramowitz & Stegun approximation
+    const t = 1 / (1 + 0.2316419 * Math.abs(z));
+    const d = 0.3989422804 * Math.exp(-z*z/2);
+    const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    return z >= 0 ? 1 - p : p;
+  }
+  function probBetween(mu, sigma, lo, hi){
+    return normalCDF((hi - mu)/sigma) - normalCDF((lo - mu)/sigma);
+  }
+
+  // Confidence weighting: spread → 0 means trust signal, spread → 1 means use unconditional
+  const trustWeight = Math.max(0.15, Math.min(1, 1 - spread * 1.5));
+
+  // Unconditional: based purely on long-run distribution of silver returns
+  const uncondDailyMu = 0;  // assume martingale baseline
+  const uncondDailySigma = Math.sqrt(var20);  // recent vol regime
+
+  // Conditional: from our signals
+  const condDailyMu = muEst;
+  const condDailySigma = sigmaEst;
+
+  // Mixed forecast
+  function mixedForecast(horizon){
+    const muCond = condDailyMu * horizon;
+    const muUncond = uncondDailyMu * horizon;
+    const sigmaCond = condDailySigma * Math.sqrt(horizon);
+    const sigmaUncond = uncondDailySigma * Math.sqrt(horizon);
+    // Mixture of two Gaussians; for simplicity use weighted mean+variance
+    const mu = trustWeight * muCond + (1 - trustWeight) * muUncond;
+    // Variance of mixture: weighted variance plus between-component variance
+    const sigma2 = trustWeight * sigmaCond * sigmaCond +
+                   (1 - trustWeight) * sigmaUncond * sigmaUncond +
+                   trustWeight * (1 - trustWeight) * (muCond - muUncond) * (muCond - muUncond);
+    const sigma = Math.sqrt(sigma2);
+    return { mu, sigma, horizon };
+  }
+
+  const f5 = mixedForecast(5);
+  const f20 = mixedForecast(20);
+
+  // Compute named probabilities for the 5-day horizon
+  const probabilities = {
+    pUp5d:        probUp(f5.mu, f5.sigma),
+    pDn5d:        1 - probUp(f5.mu, f5.sigma),
+    pUp3pct5d:    1 - normalCDF((0.03 - f5.mu) / f5.sigma),
+    pDn3pct5d:    normalCDF((-0.03 - f5.mu) / f5.sigma),
+    pUp7pct5d:    1 - normalCDF((0.07 - f5.mu) / f5.sigma),
+    pDn7pct5d:    normalCDF((-0.07 - f5.mu) / f5.sigma),
+    pUp20d:       probUp(f20.mu, f20.sigma),
+    pDn10pct20d:  normalCDF((-0.10 - f20.mu) / f20.sigma),
+    pUp10pct20d:  1 - normalCDF((0.10 - f20.mu) / f20.sigma),
+  };
+
+  // Headline forecast for display: probability of moving meaningfully in either direction
+  const dominantDirection = probabilities.pUp5d > 0.55 ? 'up'
+                          : probabilities.pUp5d < 0.45 ? 'down'
+                          : 'neutral';
+  const dominantProbability = Math.max(probabilities.pUp5d, probabilities.pDn5d);
+
   return {
     signals: allSigs,
     classical: signals.classical,
@@ -842,6 +1045,12 @@ function computeAll(){
     portfolio: {
       portKelly, consensus, spread, kelly, kellyClamped,
       confidence: spread > 0.4 ? 'LOW' : spread > 0.25 ? 'MEDIUM' : 'HIGH'
+    },
+    forecast: {
+      f5, f20, probabilities,
+      trustWeight,
+      dominantDirection, dominantProbability,
+      currentPrice: PRICE,
     }
   };
 }
@@ -905,6 +1114,82 @@ function render(){
   document.getElementById('actionLabel').className = 'value ' +
     (k > 0.1 ? 'bull' : k < -0.1 ? 'bear' : 'warn');
   document.getElementById('actionDetail').innerHTML = detail;
+
+  // === Probabilistic forecast ===
+  const fcast = result.forecast;
+  const PRICE = fcast.currentPrice;
+
+  // 5-day prediction interval
+  function renderPI(prefix, forecast){
+    const muPct = forecast.mu * 100;
+    const sigmaPct = forecast.sigma * 100;
+    const loPct = muPct - sigmaPct;
+    const hiPct = muPct + sigmaPct;
+    // Visible range: ±max(|lo|, |hi|, 5%)
+    const visibleRange = Math.max(Math.abs(loPct), Math.abs(hiPct), 5);
+    const visMin = -visibleRange * 1.2;
+    const visMax = visibleRange * 1.2;
+    const totalSpan = visMax - visMin;
+    const piLoPct = ((loPct - visMin) / totalSpan) * 100;
+    const piHiPct = ((hiPct - visMin) / totalSpan) * 100;
+    const piCtrPct = ((muPct - visMin) / totalSpan) * 100;
+
+    document.getElementById('piRange' + prefix).style.left = piLoPct + '%';
+    document.getElementById('piRange' + prefix).style.width = (piHiPct - piLoPct) + '%';
+    document.getElementById('piCenter' + prefix).style.left = piCtrPct + '%';
+
+    const priceLo = PRICE * (1 + loPct/100);
+    const priceHi = PRICE * (1 + hiPct/100);
+    const priceCtr = PRICE * (1 + muPct/100);
+
+    document.getElementById('piLabelLo' + prefix).textContent =
+      `$${priceLo.toFixed(2)} (${loPct >= 0 ? '+' : ''}${loPct.toFixed(1)}%)`;
+    document.getElementById('piLabelHi' + prefix).textContent =
+      `$${priceHi.toFixed(2)} (${hiPct >= 0 ? '+' : ''}${hiPct.toFixed(1)}%)`;
+    document.getElementById('piLabelCtr' + prefix).textContent =
+      `$${priceCtr.toFixed(2)} · ${muPct >= 0 ? '+' : ''}${muPct.toFixed(1)}%`;
+    document.getElementById('piLabelCtr' + prefix).style.left = piCtrPct + '%';
+  }
+  renderPI('5d', fcast.f5);
+  renderPI('20d', fcast.f20);
+
+  // Headline
+  const headEl = document.getElementById('forecastHeadline');
+  const probHigh = fcast.dominantProbability * 100;
+  if (fcast.dominantDirection === 'up'){
+    headEl.textContent = `${probHigh.toFixed(0)}% UP`;
+    headEl.className = 'big bull';
+  } else if (fcast.dominantDirection === 'down'){
+    headEl.textContent = `${probHigh.toFixed(0)}% DOWN`;
+    headEl.className = 'big bear';
+  } else {
+    headEl.textContent = `${probHigh.toFixed(0)}% / ${(100-probHigh).toFixed(0)}%`;
+    headEl.className = 'big neutral';
+  }
+  document.getElementById('forecastSubReadout').innerHTML =
+    `μ=${(fcast.f5.mu*100).toFixed(2)}% · σ=${(fcast.f5.sigma*100).toFixed(2)}% · trust ${(fcast.trustWeight*100).toFixed(0)}%`;
+
+  // Probability table
+  const probRows = [
+    {  desc: 'Up over next 5 sessions',          prob: fcast.probabilities.pUp5d  },
+    {  desc: 'Down over next 5 sessions',        prob: fcast.probabilities.pDn5d  },
+    {  desc: `Rallies > +3% (above $${(PRICE*1.03).toFixed(2)})`,  prob: fcast.probabilities.pUp3pct5d },
+    {  desc: `Drops > 3% (below $${(PRICE*0.97).toFixed(2)})`,     prob: fcast.probabilities.pDn3pct5d },
+    {  desc: `Rallies > +7% (above $${(PRICE*1.07).toFixed(2)})`,  prob: fcast.probabilities.pUp7pct5d },
+    {  desc: `Drops > 7% (below $${(PRICE*0.93).toFixed(2)})`,     prob: fcast.probabilities.pDn7pct5d },
+    {  desc: 'Up over next 20 sessions',         prob: fcast.probabilities.pUp20d  },
+    {  desc: `Drops > 10% in 20 sessions`,        prob: fcast.probabilities.pDn10pct20d },
+    {  desc: `Rallies > +10% in 20 sessions`,    prob: fcast.probabilities.pUp10pct20d },
+  ];
+  document.getElementById('probTable').innerHTML = probRows.map(r => {
+    const pct = (r.prob * 100).toFixed(0);
+    const cls = r.prob > 0.65 ? 'high' : r.prob > 0.35 ? 'med' : 'low';
+    const barWidth = Math.round(r.prob * 80);
+    return `<tr>
+      <td class="desc">${r.desc}</td>
+      <td class="pct ${cls}">${pct}%<span class="bar" style="width:${barWidth}px"></span></td>
+    </tr>`;
+  }).join('');
 
   // === Negative-space signals grid ===
   const negSpaceHtml = Object.entries(result.negSpace).map(([name, s])=>{
@@ -994,20 +1279,23 @@ function render(){
   `).join('');
 
   // === Update header price ===
-  document.getElementById('spotPrice').textContent = '$'+d.silver.spot.toFixed(2);
+  // Use silverDisplay (the validated cross-source price) if available
+  const headerData = d.silverDisplay || d.silver;
+  document.getElementById('spotPrice').textContent = '$'+headerData.spot.toFixed(2);
   document.getElementById('spotChange').textContent =
-    (d.silver.change>=0?'+':'')+'$'+d.silver.change.toFixed(2)+' ('+d.silver.changePct.toFixed(2)+'%)';
-  document.getElementById('spotPrice').className = 'price ' + (d.silver.changePct<0?'bear':'bull');
-  document.getElementById('spotChange').style.color = d.silver.changePct<0 ? C('--bear') : C('--bull');
+    (headerData.change>=0?'+':'')+'$'+headerData.change.toFixed(2)+' ('+headerData.changePct.toFixed(2)+'%)';
+  document.getElementById('spotPrice').className = 'price ' + (headerData.changePct<0?'bear':'bull');
+  document.getElementById('spotChange').style.color = headerData.changePct<0 ? C('--bear') : C('--bull');
 
   // Update source label
   const srcEl = document.getElementById('spotSource');
+  const srcSuffix = headerData.source ? ' · ' + headerData.source : '';
   if (d.fetchedAt) {
     const ago = timeAgo(d.fetchedAt);
-    if (d.dataSource === 'live') srcEl.textContent = 'spot · live · updated ' + ago;
-    else if (d.dataSource === 'partial') srcEl.textContent = 'spot · partial · ' + ago;
-    else if (d.dataSource === 'stale') srcEl.textContent = 'spot · stale · ' + ago;
-    else srcEl.textContent = 'spot · snapshot';
+    if (d.dataSource === 'live') srcEl.textContent = 'live · updated ' + ago + srcSuffix;
+    else if (d.dataSource === 'partial') srcEl.textContent = 'partial · ' + ago + srcSuffix;
+    else if (d.dataSource === 'stale') srcEl.textContent = 'stale · ' + ago + srcSuffix;
+    else srcEl.textContent = 'snapshot' + srcSuffix;
   } else {
     srcEl.textContent = 'spot · ' + (d.dataSource || 'snapshot');
   }
