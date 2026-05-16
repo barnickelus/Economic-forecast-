@@ -311,18 +311,27 @@
 
 <header>
   <div class="head-left">
-    <h1>Kelly Silver Live<span class="v">/ v3</span></h1>
-    <div class="tag">institutional flow detection via negative space</div>
-    <div class="live-banner" style="display:flex;align-items:center;gap:10px">
+    <h1 id="dashTitle">Kelly Live <span class="v">/ v4</span></h1>
+    <div class="tag" id="dashTag">institutional flow detection via negative space</div>
+    <div class="live-banner" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span class="live-dot" id="liveDot"></span>
       <span id="liveStatus">initializing…</span>
       <button class="refresh" id="refreshBtn" style="margin-left:6px;padding:3px 10px;font-size:9px">↻ refresh</button>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <label style="font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase">Ticker:</label>
+      <select id="tickerSelect" style="background:var(--bg2);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font-family:inherit;font-size:11px;letter-spacing:.5px;cursor:pointer">
+        <option value="">loading…</option>
+      </select>
+      <input type="text" id="tickerInput" placeholder="or type ticker"
+        style="background:var(--bg2);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font-family:inherit;font-size:11px;letter-spacing:.5px;width:90px;text-transform:uppercase" />
+      <button class="refresh" id="tickerLoadBtn" style="padding:4px 10px;font-size:9px">load</button>
     </div>
   </div>
   <div class="head-right">
     <div class="price" id="spotPrice">$—</div>
     <div class="change" id="spotChange">—</div>
-    <div class="ts" id="spotSource">SI=F · futures · Yahoo Finance</div>
+    <div class="ts" id="spotSource">— · Yahoo Finance</div>
   </div>
 </header>
 
@@ -580,29 +589,116 @@ function timeAgo(isoString){
   return `${Math.floor(diffSec/86400)}d ago`;
 }
 
-async function fetchLiveData(){
-  setBannerState('loading', 'loading latest data…');
-  try {
-    // Cache-bust to ensure we get the latest JSON
-    const resp = await fetch('data/latest.json?t=' + Date.now(), {
-      cache: 'no-cache'
-    });
-    if (!resp.ok) throw new Error(`data file: HTTP ${resp.status}`);
-    const data = await resp.json();
+// Current ticker state — defaults to silver, can be changed via UI or URL
+let CURRENT_TICKER = 'SI=F';
 
-    // Update LIVE_DATA from the fetched JSON
-    if (data.silver) LIVE_DATA.silver = data.silver;
-    if (data.silverSpot) LIVE_DATA.silverSpot = data.silverSpot;
-    if (data.silverETF) LIVE_DATA.silverETF = data.silverETF;
-    if (data.silverDisplay) LIVE_DATA.silverDisplay = data.silverDisplay;
-    if (data.gold)   LIVE_DATA.gold   = data.gold;
-    if (data.goldSpot) LIVE_DATA.goldSpot = data.goldSpot;
-    if (data.dxy)    LIVE_DATA.dxy    = data.dxy;
-    if (data.copper) LIVE_DATA.copper = data.copper;
-    if (data.oil)    LIVE_DATA.oil    = data.oil;
-    if (data.vix)    LIVE_DATA.vix    = data.vix;
-    if (data.spx)    LIVE_DATA.spx    = data.spx;
-    if (data.sil)    LIVE_DATA.sil    = data.sil;
+function getTickerFilename(ticker) {
+  return ticker.replace(/[=^]/g, '_') + '.json';
+}
+
+function getTickerFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('ticker') || null;
+}
+
+async function loadTickerIndex(){
+  try {
+    const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-cache' });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+function populateTickerDropdown(indexData) {
+  const select = document.getElementById('tickerSelect');
+  if (!select) return;
+  if (!indexData?.tickers?.length) {
+    select.innerHTML = '<option value="SI=F">SI=F · Silver</option>';
+    return;
+  }
+  select.innerHTML = indexData.tickers.map(t =>
+    `<option value="${t.ticker}" ${t.ticker === CURRENT_TICKER ? 'selected' : ''}>${t.ticker} · ${t.name}</option>`
+  ).join('');
+}
+
+async function fetchLiveData(){
+  setBannerState('loading', `loading ${CURRENT_TICKER}…`);
+
+  // Try new multi-ticker file first; fall back to legacy latest.json (silver)
+  const candidates = [
+    `data/${getTickerFilename(CURRENT_TICKER)}`,
+    CURRENT_TICKER === 'SI=F' ? 'data/latest.json' : null,
+  ].filter(Boolean);
+
+  let data = null;
+  let usedFile = null;
+  for (const url of candidates) {
+    try {
+      const resp = await fetch(url + '?t=' + Date.now(), { cache: 'no-cache' });
+      if (resp.ok) {
+        data = await resp.json();
+        usedFile = url;
+        break;
+      }
+    } catch (e) {}
+  }
+
+  if (!data) {
+    LIVE_DATA.dataSource = 'snapshot';
+    setBannerState('error', `no data file for ${CURRENT_TICKER} · using embedded snapshot`);
+    return false;
+  }
+
+  try {
+    // Detect which format the file uses
+    const isNewFormat = !!data.asset;  // multi-ticker format has .asset
+    const isLegacyFormat = !!data.silver;  // legacy silver format has .silver
+
+    if (isNewFormat) {
+      // === Multi-ticker format ===
+      LIVE_DATA.asset = data.asset;
+      LIVE_DATA.sector = data.sector;
+      LIVE_DATA.sectorName = data.sectorName;
+      LIVE_DATA.spotAlt = data.spotAlt;
+      LIVE_DATA.display = data.display;
+      LIVE_DATA.config = data.config;
+      LIVE_DATA.macro = data.macro || {};
+
+      // For backward compat with computeAll which expects these names
+      LIVE_DATA.silver = data.asset;
+      LIVE_DATA.silverDisplay = data.display;
+      LIVE_DATA.silverSpot = data.spotAlt;
+      LIVE_DATA.silverETF = data.sector;
+      LIVE_DATA.sil = data.sector;
+      LIVE_DATA.gold = data.macro?.gold || null;
+      LIVE_DATA.dxy = data.macro?.dxy;
+      LIVE_DATA.oil = data.macro?.oil;
+      LIVE_DATA.vix = data.macro?.vix;
+      LIVE_DATA.spx = data.macro?.spx;
+      // copper not in macro; null gracefully
+      LIVE_DATA.copper = data.macro?.copper || null;
+    } else if (isLegacyFormat) {
+      // === Legacy silver format ===
+      if (data.silver) LIVE_DATA.silver = data.silver;
+      if (data.silverSpot) LIVE_DATA.silverSpot = data.silverSpot;
+      if (data.silverETF) LIVE_DATA.silverETF = data.silverETF;
+      if (data.silverDisplay) LIVE_DATA.silverDisplay = data.silverDisplay;
+      if (data.gold)   LIVE_DATA.gold   = data.gold;
+      if (data.dxy)    LIVE_DATA.dxy    = data.dxy;
+      if (data.copper) LIVE_DATA.copper = data.copper;
+      if (data.oil)    LIVE_DATA.oil    = data.oil;
+      if (data.vix)    LIVE_DATA.vix    = data.vix;
+      if (data.spx)    LIVE_DATA.spx    = data.spx;
+      if (data.sil)    LIVE_DATA.sil    = data.sil;
+      LIVE_DATA.asset = data.silver;
+      LIVE_DATA.display = data.silverDisplay;
+      LIVE_DATA.sector = data.sil;
+      LIVE_DATA.sectorName = 'SIL';
+      LIVE_DATA.config = { name: 'Silver', assetClass: 'commodity', sectorETF: 'SIL', typicalVolAnnual: 0.32 };
+    }
+
     if (data.series && data.series.length >= 30) LIVE_DATA.series = data.series;
     if (data.recentOHLC && data.recentOHLC.length >= 5) LIVE_DATA.recentOHLC = data.recentOHLC;
 
@@ -689,20 +785,33 @@ function computeAll(){
   const mad = sorted.map(v=>Math.abs(v-median)).sort((a,b)=>a-b)[Math.floor(sorted.length/2)];
   const robustZ = (PRICE - median)/(mad * 1.4826);
 
-  // === Dynamic G/S equilibrium ===
-  // Use the recent 30-day median ratio as the equilibrium, not textbook 75
-  const gsRatio = d.gold.spot / PRICE;
-  // Approx 30d ratio history (computed from known series)
-  const gsHist = [];
-  for(let i=Math.max(0,N-30); i<N; i++){
-    // We only have silver series; approximate gold trajectory
-    // Use the implied: silver/gold ratio drifted from ~52 in Feb to ~60 in May
-    const goldEst = 4400 + (i-25)*8;
-    gsHist.push(goldEst/d.series[i]);
+  // === Dynamic equilibrium / relative-value signal ===
+  // For silver: gold/silver ratio (classic precious-metals relative value).
+  // For other assets: ratio of asset to its sector ETF (relative-value of
+  //   the name vs its peer group). Either way, signal is: am I cheap or
+  //   expensive vs my reference, relative to the rolling median ratio?
+  let gsRatio = 0, gsEq = 1, gsZ = 0, hasRelValSignal = false;
+  if (d.gold && d.gold.spot && d.config?.assetClass === 'commodity') {
+    // Classic commodities relative-value: gold/asset ratio
+    gsRatio = d.gold.spot / PRICE;
+    const gsHist = [];
+    for(let i=Math.max(0,N-30); i<N; i++){
+      const goldEst = 4400 + (i-25)*8;  // smooth approximation
+      gsHist.push(goldEst/d.series[i]);
+    }
+    const gsSorted = [...gsHist].sort((a,b)=>a-b);
+    gsEq = gsSorted[Math.floor(gsSorted.length/2)] || 1;
+    gsZ = (gsRatio - gsEq)/(gsEq*0.06);
+    hasRelValSignal = true;
+  } else if (d.sector && d.sector.spot) {
+    // Stocks/index: ratio of asset to sector ETF
+    gsRatio = PRICE / d.sector.spot;
+    // Without sector history, use current ratio as approximate equilibrium
+    // (this will be refined as the dashboard accumulates history)
+    gsEq = gsRatio;  // neutral by default
+    gsZ = 0;
+    hasRelValSignal = true;
   }
-  const gsSorted = [...gsHist].sort((a,b)=>a-b);
-  const gsEq = gsSorted[Math.floor(gsSorted.length/2)];
-  const gsZ = (gsRatio - gsEq)/(gsEq*0.06);
 
   // === NEGATIVE-SPACE SIGNALS ===
 
@@ -795,18 +904,29 @@ function computeAll(){
   }
   const absorp = absorption();
 
-  // (6) Smart-money divergence — miner vs spot
-  function minerDivergence(){
-    // Today: SIL -6.13%, Silver -7.30% → miners outperformed slightly
-    // Over recent surge: SIL would have led on May 11 — check expected ratio
-    const silReturn = d.sil.changePct/100;
-    const slvReturn = d.silver.changePct/100;
-    // Beta-adjusted divergence (miners ~1.5x beta)
-    const expected = slvReturn * 1.5;
-    const div = silReturn - expected;
-    return { silReturn, slvReturn, expected, divergence: div };
+  // (6) Smart-money divergence — asset vs its sector ETF
+  // For silver: miners vs spot. For stocks: stock vs sector ETF (XLK, XLF, etc).
+  // Universal idea: if the sector outperforms its expected beta to the asset,
+  // institutional allocators are accumulating the theme. If it underperforms,
+  // they're distributing.
+  function sectorDivergence(){
+    const assetReturn = (d.silverDisplay?.changePct ?? d.silver?.changePct ?? 0) / 100;
+    const sectorReturn = (d.sil?.changePct ?? d.sector?.changePct ?? 0) / 100;
+    // Beta-adjusted divergence: assume sector has ~1.5x beta to underlying theme
+    // For pure stock-vs-sector, beta is closer to 1.0
+    const isCommodity = (d.config?.assetClass === 'commodity');
+    const expectedBeta = isCommodity ? 1.5 : 1.0;
+    const expected = assetReturn * expectedBeta;
+    const div = sectorReturn - expected;
+    return {
+      assetReturn,
+      sectorReturn,
+      expected,
+      divergence: div,
+      sectorName: d.sectorName || d.config?.sectorETF || 'sector',
+    };
   }
-  const miner = minerDivergence();
+  const miner = sectorDivergence();
 
   // (7) Cross-asset stress index
   function crossAssetStress(){
@@ -1338,13 +1458,48 @@ function signalNarrative(name, s, raw){
   return '';
 }
 
-/* --- Init: render with snapshot, then fetch live, re-render ---- */
+/* --- Init: handle URL params, load ticker list, ticker switching ---- */
 async function init(){
-  // 1) Render immediately with snapshot so user sees content fast
+  // 1) Determine which ticker to load (URL param > default silver)
+  const urlTicker = getTickerFromURL();
+  if (urlTicker) CURRENT_TICKER = urlTicker.toUpperCase();
+
+  // 2) Render immediately with snapshot so user sees content fast
   render();
-  // 2) Fire off live fetch in background
+
+  // 3) Load ticker dropdown and fetch live data in parallel
+  const [indexData] = await Promise.all([
+    loadTickerIndex(),
+    fetchLiveData(),
+  ]);
+
+  // 4) Populate dropdown
+  populateTickerDropdown(indexData);
+
+  // 5) Update header title with asset name
+  updateAssetTitle();
+
+  // 6) Re-render with live data
+  render();
+}
+
+function updateAssetTitle(){
+  const config = LIVE_DATA.config || { name: 'Silver' };
+  const titleEl = document.getElementById('dashTitle');
+  if (titleEl) titleEl.innerHTML = `Kelly ${config.name} Live <span class="v">/ v4</span>`;
+  document.title = `Kelly ${config.name} Live · v4`;
+}
+
+async function switchTicker(newTicker){
+  if (!newTicker || newTicker === CURRENT_TICKER) return;
+  CURRENT_TICKER = newTicker;
+  // Update URL without page reload
+  const url = new URL(window.location);
+  url.searchParams.set('ticker', newTicker);
+  window.history.replaceState({}, '', url);
+  // Fetch and re-render
   await fetchLiveData();
-  // 3) Re-render with live data
+  updateAssetTitle();
   render();
 }
 
@@ -1353,9 +1508,27 @@ document.getElementById('refreshBtn').addEventListener('click', async () => {
   btn.textContent = 'fetching…';
   btn.disabled = true;
   await fetchLiveData();
+  updateAssetTitle();
   render();
   btn.textContent = '↻ refresh';
   btn.disabled = false;
+});
+
+document.getElementById('tickerSelect').addEventListener('change', (e) => {
+  switchTicker(e.target.value);
+});
+
+document.getElementById('tickerLoadBtn').addEventListener('click', () => {
+  const input = document.getElementById('tickerInput');
+  const t = input.value.trim().toUpperCase();
+  if (t) switchTicker(t);
+});
+
+document.getElementById('tickerInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const t = e.target.value.trim().toUpperCase();
+    if (t) switchTicker(t);
+  }
 });
 
 document.getElementById('dismissHint').addEventListener('click', () => {
@@ -1366,8 +1539,7 @@ document.getElementById('dismissHint').addEventListener('click', () => {
 init();
 window.addEventListener('resize', render);
 
-// Auto-refresh every 5 minutes — data file updates every 30min on
-// GitHub Actions, so 5min polling is plenty fresh without hammering.
+// Auto-refresh every 5 minutes
 setInterval(async () => {
   await fetchLiveData();
   render();
