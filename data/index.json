@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-05-16T06:51:28.524Z",
+  "tickers": [
+    {
+      "ticker": "SI=F",
+      "filename": "SI_F.json",
+      "name": "Silver",
+      "assetClass": "commodity",
+      "spot": 77.547,
+      "changePct": 5.582256593189639,
+      "healthyCount": 2,
+      "totalCount": 3
+    },
+    {
+      "ticker": "GC=F",
+      "filename": "GC_F.json",
+      "name": "Gold",
+      "assetClass": "commodity",
+      "spot": 4561.9,
+      "changePct": -6.573962194597473,
+      "healthyCount": 2,
+      "totalCount": 3
+    },
+    {
+      "ticker": "AAPL",
+      "filename": "AAPL.json",
+      "name": "Apple",
+      "assetClass": "equity",
+      "spot": 300.23,
+      "changePct": 17.37821565407773,
+      "healthyCount": 2,
+      "totalCount": 2
+    },
+    {
+      "ticker": "NVDA",
+      "filename": "NVDA.json",
+      "name": "Nvidia",
+      "assetClass": "equity",
+      "spot": 225.32,
+      "changePct": 23.25365133198402,
+      "healthyCount": 2,
+      "totalCount": 2
+    },
+    {
+      "ticker": "TSLA",
+      "filename": "TSLA.json",
+      "name": "Tesla",
+      "assetClass": "equity",
+      "spot": 422.24,
+      "changePct": 1.149865848984288,
+      "healthyCount": 2,
+      "totalCount": 2
+    },
+    {
+      "ticker": "SPY",
+      "filename": "SPY.json",
+      "name": "S&P 500 ETF",
+      "assetClass": "index",
+      "spot": 739.17,
+      "changePct": 8.422442244224417,
+      "healthyCount": 2,
+      "totalCount": 2
+    },
+    {
+      "ticker": "QQQ",
+      "filename": "QQQ.json",
+      "name": "Nasdaq 100",
+      "assetClass": "index",
+      "spot": 708.93,
+      "changePct": 17.77811004784689,
+      "healthyCount": 2,
+      "totalCount": 2
+    },
+    {
+      "ticker": "BTC-USD",
+      "filename": "BTC-USD.json",
+      "name": "Bitcoin",
+      "assetClass": "crypto",
+      "spot": 78586.81,
+      "changePct": 14.153403184862508,
+      "healthyCount": 2,
+      "totalCount": 2
+    }
+  ]
+}

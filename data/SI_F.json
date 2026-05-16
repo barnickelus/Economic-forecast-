@@ -1,6 +1,13 @@
 {
-  "fetchedAt": "2026-05-16T06:51:28.524Z",
   "ticker": "SI=F",
+  "config": {
+    "name": "Silver",
+    "assetClass": "commodity",
+    "sectorETF": "SIL",
+    "spotSource": "XAG=X",
+    "typicalVolAnnual": 0.32
+  },
+  "fetchedAt": "2026-05-16T06:51:28.524Z",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
@@ -10,50 +17,11 @@
     "✓ sector SIL: $91.60 (-9.88%)",
     "✗ spot XAG=X: HTTP 404"
   ],
-  "silver": {
+  "asset": {
     "spot": 77.547,
     "prev": 73.447,
     "change": 4.099999999999994,
     "changePct": 5.582256593189639
-  },
-  "silverDisplay": {
-    "spot": 77.547,
-    "prev": 73.447,
-    "change": 4.099999999999994,
-    "changePct": 5.582256593189639,
-    "source": "SI=F"
-  },
-  "gold": null,
-  "dxy": {
-    "spot": 99.27,
-    "prev": 97.16,
-    "change": 2.1099999999999994,
-    "changePct": 2.171675586661177
-  },
-  "copper": null,
-  "oil": {
-    "spot": 101.02,
-    "prev": 62.33,
-    "change": 38.69,
-    "changePct": 62.07283811968555
-  },
-  "vix": {
-    "spot": 18.43,
-    "prev": 20.6,
-    "change": -2.1700000000000017,
-    "changePct": -10.53398058252428
-  },
-  "spx": {
-    "spot": 7408.5,
-    "prev": 6836.17,
-    "change": 572.3299999999999,
-    "changePct": 8.372085539124976
-  },
-  "sil": {
-    "spot": 91.6,
-    "prev": 101.64,
-    "change": -10.040000000000006,
-    "changePct": -9.878000787091702
   },
   "series": [
     73.4469985961914,
@@ -170,6 +138,60 @@
       "v": 91
     }
   ],
+  "sector": {
+    "spot": 91.6,
+    "prev": 101.64,
+    "change": -10.040000000000006,
+    "changePct": -9.878000787091702
+  },
+  "sectorName": "SIL",
+  "display": {
+    "spot": 77.547,
+    "prev": 73.447,
+    "change": 4.099999999999994,
+    "changePct": 5.582256593189639,
+    "source": "SI=F"
+  },
+  "macro": {
+    "fetchedAt": "2026-05-16T06:51:27.841Z",
+    "log": [
+      "✓ DX-Y.NYB",
+      "✓ CL=F",
+      "✓ ^VIX",
+      "✓ ^GSPC",
+      "✓ ^TNX"
+    ],
+    "dxy": {
+      "spot": 99.27,
+      "prev": 97.16,
+      "change": 2.1099999999999994,
+      "changePct": 2.171675586661177
+    },
+    "oil": {
+      "spot": 101.02,
+      "prev": 62.33,
+      "change": 38.69,
+      "changePct": 62.07283811968555
+    },
+    "vix": {
+      "spot": 18.43,
+      "prev": 20.6,
+      "change": -2.1700000000000017,
+      "changePct": -10.53398058252428
+    },
+    "spx": {
+      "spot": 7408.5,
+      "prev": 6836.17,
+      "change": 572.3299999999999,
+      "changePct": 8.372085539124976
+    },
+    "tnx": {
+      "spot": 4.595,
+      "prev": 4.056,
+      "change": 0.5389999999999997,
+      "changePct": 13.288954635108475
+    }
+  },
   "healthyCount": 2,
   "totalCount": 3
 }
