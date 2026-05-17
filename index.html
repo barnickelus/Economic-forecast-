@@ -353,6 +353,53 @@
   .fractal-interp .narrative .bear{color:var(--bear);font-style:normal}
   .fractal-interp .narrative .warn{color:var(--warn);font-style:normal}
 
+  /* agent voting */
+  .agent-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 12px;border:1px solid var(--line);background:var(--bg3);
+    margin-bottom:6px;font-size:11px;
+  }
+  .agent-row .nm{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink2);flex:1}
+  .agent-row .score{font-family:'JetBrains Mono';font-size:11px;color:var(--ink3);margin-right:10px;min-width:50px;text-align:right}
+  .agent-row .vote{
+    font-family:'JetBrains Mono';font-size:10px;letter-spacing:1.5px;
+    padding:3px 10px;border:1px solid;min-width:60px;text-align:center;
+  }
+  .agent-row .vote.long{color:var(--bull);border-color:var(--bull);background:rgba(93,207,126,0.08)}
+  .agent-row .vote.short{color:var(--bear);border-color:var(--bear);background:rgba(232,92,92,0.08)}
+  .agent-row .vote.neutral{color:var(--neutral);border-color:var(--neutral);background:rgba(108,117,133,0.06)}
+
+  .consensus-readout{
+    display:flex;justify-content:space-between;gap:14px;font-size:11px;
+  }
+  .consensus-readout .item{flex:1;text-align:center;padding:6px 4px;background:var(--bg3);border:1px solid var(--line)}
+  .consensus-readout .item .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:3px}
+  .consensus-readout .item .val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink)}
+  .consensus-readout .item .val.good{color:var(--bull)}
+  .consensus-readout .item .val.bad{color:var(--bear)}
+  .consensus-readout .item .val.warn{color:var(--warn)}
+
+  /* exit grid */
+  .exit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .exit-trigger{
+    border:1px solid var(--line);background:var(--bg3);padding:10px;
+    position:relative;
+  }
+  .exit-trigger .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .exit-trigger .price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ink);font-weight:500;line-height:1}
+  .exit-trigger .pct{font-family:'JetBrains Mono';font-size:10px;color:var(--ink2);margin-top:2px;letter-spacing:0.5px}
+  .exit-trigger.tp{border-left:3px solid var(--bull)}
+  .exit-trigger.sl{border-left:3px solid var(--bear)}
+  .exit-trigger.trail{border-left:3px solid var(--warn)}
+  .exit-trigger.time{border-left:3px solid var(--acc)}
+  .exit-trigger .price.bull{color:var(--bull)}
+  .exit-trigger .price.bear{color:var(--bear)}
+  .exit-inactive{
+    padding:14px;text-align:center;color:var(--ink3);
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;
+    border:1px dashed var(--line);
+  }
+
   /* data source variants */
   .live-banner.stale{background:rgba(226,194,91,0.08);border-color:var(--warn);color:var(--warn)}
   .live-banner.stale .live-dot{background:var(--warn);box-shadow:0 0 6px var(--warn)}
@@ -493,6 +540,21 @@
         <div class="interpretation" id="actionDetail" style="margin-top:8px">—</div>
       </div>
     </div>
+  </section>
+
+  <!-- AGENT CONSENSUS + EXIT DISCIPLINE -->
+  <section class="panel grid-6">
+    <h2>Multi-agent consensus <span class="num">module · 0a · vote filter</span></h2>
+    <div class="sub">Four independent agents vote based on orthogonal signal lenses. Consensus across agents acts as a <em>hard gate</em> on Kelly sizing — stricter than continuous spread weighting and far fewer false positives.</div>
+    <div id="agentGrid" style="margin-top:10px"></div>
+    <div id="consensusReadout" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"></div>
+  </section>
+
+  <section class="panel grid-6">
+    <h2>Exit discipline <span class="num">module · 0b · take-profit / stop / trail</span></h2>
+    <div class="sub">Kelly-optimal exit doesn't wait for the maximum. We compute take-profit at <b>75% of expected move</b>, stop-loss at <b>1σ adverse</b>, trail stop, and time stop based on the 5-day forecast distribution.</div>
+    <div id="exitGrid" style="margin-top:10px"></div>
+    <div id="exitNote" style="margin-top:10px;padding:8px 12px;border-left:2px solid var(--warn);background:rgba(232,194,91,0.05);font-size:11px;color:var(--ink2);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;line-height:1.5"></div>
   </section>
 
   <!-- NEGATIVE-SPACE SIGNALS GRID -->
@@ -1314,19 +1376,151 @@ function computeAll(){
     allSigs[k].type = type;
   });
 
-  // === PORTFOLIO KELLY ===
-  // Equal weight, divided by sqrt(N) for diversification
-  const adjVals = Object.values(allSigs).map(s=>s.adj);
-  const portKelly = adjVals.reduce((a,b)=>a+b,0)/Math.sqrt(adjVals.length);
-  const consensus = adjVals.reduce((a,b)=>a+b,0)/adjVals.length;
-  const variance = adjVals.reduce((a,b)=>a+(b-consensus)**2,0)/adjVals.length;
+  // ===================================================================
+  // PORTFOLIO KELLY — correlation-cluster aware
+  // ===================================================================
+  // Naive approach (replaced): sum signals, divide by sqrt(N) for "diversification".
+  // PROBLEM: that assumes signals are independent. Many of ours aren't.
+  // RSI, distance-from-MA, and robust Bollinger all measure price extension.
+  // Counting them as 3 independent edges triple-counts the same information.
+  //
+  // Correct approach (Markowitz/Kelly): f* = Σ^(-1) μ where Σ is the signal
+  // covariance matrix. We don't have months of signal-error history to estimate
+  // Σ properly, so we use a CORRELATION-CLUSTER PROXY:
+  //   - Group signals into clusters of measuring similar phenomena
+  //   - Within a cluster, average (don't sum) the signals
+  //   - Then aggregate across clusters with sqrt(N_clusters) diversification
+  // This is what quants do with short signal histories: structural priors
+  // about which signals share information.
+
+  const signalClusters = {
+    'price_extension':   ['RSI(14)', 'Distance from MA', 'Robust Bollinger', 'Mean rev (8d)'],
+    'momentum_trend':    ['Momentum (10/40)', 'Velocity'],
+    'flow_microstructure': ['Gamma proxy', 'Dark-pool proxy', 'Absorption'],
+    'positioning':       ['Skew proxy', 'Miner divergence'],
+    'relative_value':    ['Carry (G/S, dynamic)'],
+    'macro_regime':      ['Cross-asset stress'],
+  };
+
+  // Compute cluster-level signals (average within cluster)
+  const clusterSigs = {};
+  for (const [cluster, sigKeys] of Object.entries(signalClusters)) {
+    const vals = sigKeys.map(k => allSigs[k]?.adj).filter(v => isFinite(v));
+    if (vals.length === 0) continue;
+    clusterSigs[cluster] = {
+      value: vals.reduce((a,b) => a+b, 0) / vals.length,
+      count: vals.length,
+      signals: sigKeys,
+    };
+  }
+
+  // Portfolio aggregation across clusters
+  // sqrt(N_clusters) ≈ sqrt(6) = 2.45, vs naive sqrt(13) = 3.6
+  // This means our effective sizing is ~70% of the naive version — more honest
+  const clusterVals = Object.values(clusterSigs).map(c => c.value);
+  const nClusters = clusterVals.length;
+  const portKelly = clusterVals.reduce((a,b)=>a+b, 0) / Math.sqrt(nClusters);
+
+  // Compute consensus and spread across CLUSTERS, not raw signals
+  // This means cluster disagreement is the real spread, not within-cluster noise
+  const consensus = clusterVals.reduce((a,b) => a+b, 0) / nClusters;
+  const variance = clusterVals.reduce((a,b) => a + (b - consensus)**2, 0) / nClusters;
   const spread = Math.sqrt(variance);
 
-  // === FINAL KELLY SIZING (capped) ===
+  // Adjusted signal values for downstream display (kept for compat)
+  const adjVals = Object.values(allSigs).map(s=>s.adj);
+
+  // ===================================================================
+  // MULTI-AGENT CONSENSUS FILTER
+  // ===================================================================
+  // Partition signals into 4 independent "agents" — each is an orthogonal
+  // lens on the asset. Each agent computes a directional vote (long/short/
+  // neutral) from its own signals. Consensus across agents acts as a HARD
+  // GATE on Kelly sizing, separate from the continuous spread-based scaling.
+  //
+  // Why: a continuous spread-weighted average can produce a non-zero Kelly
+  // when signals are noisily disagreeing. A discrete vote requires GENUINE
+  // consensus before sizing up — much stricter, much fewer false positives.
+  //
+  // Agents are designed for orthogonality:
+  //   A1 — Technical reversion (RSI, MA distance, Bollinger, MR)
+  //   A2 — Momentum/trend (Momentum, Gamma, Dark-pool, Cross-asset stress)
+  //   A3 — Structure/positioning (Skew, Velocity, Absorption, Carry)
+  //   A4 — Smart-money/divergence (Miner div, plus fractal regime tilt)
+
+  const agents = {
+    'A1 · technical reversion': ['RSI(14)','Distance from MA','Robust Bollinger','Mean rev (8d)'],
+    'A2 · trend & flow':        ['Momentum (10/40)','Gamma proxy','Dark-pool proxy','Cross-asset stress'],
+    'A3 · structure':           ['Skew proxy','Velocity','Absorption','Carry (G/S, dynamic)'],
+    'A4 · smart money':         ['Miner divergence'],
+  };
+
+  const agentVotes = {};
+  for (const [agentName, sigKeys] of Object.entries(agents)) {
+    const agentSigs = sigKeys.map(k => allSigs[k]?.adj ?? 0).filter(v => isFinite(v));
+    if (agentSigs.length === 0) {
+      agentVotes[agentName] = { vote: 0, score: 0, label: 'no data' };
+      continue;
+    }
+    const agentScore = agentSigs.reduce((a,b)=>a+b,0)/agentSigs.length;
+    // A4 (smart money) gets a fractal-regime tilt added: trending regime
+    // and positive miner divergence reinforce each other
+    let score = agentScore;
+    if (agentName.startsWith('A4')) {
+      score += (fractal.hAvg - 0.5) * 0.3;
+    }
+    // Vote thresholds: ±0.20 to count as directional
+    const vote = score > 0.20 ? 1 : score < -0.20 ? -1 : 0;
+    agentVotes[agentName] = { vote, score, label: vote > 0 ? 'LONG' : vote < 0 ? 'SHORT' : 'NEUTRAL' };
+  }
+
+  // Count agent agreement
+  const longVotes = Object.values(agentVotes).filter(a => a.vote > 0).length;
+  const shortVotes = Object.values(agentVotes).filter(a => a.vote < 0).length;
+  const neutralVotes = Object.values(agentVotes).filter(a => a.vote === 0).length;
+  const dominantVote = longVotes > shortVotes ? 1 : shortVotes > longVotes ? -1 : 0;
+  const dominantCount = Math.max(longVotes, shortVotes);
+
+  // Consensus multiplier on Kelly:
+  //   4/4 dominant → full size (1.0×)
+  //   3/4 dominant → 0.60× (some disagreement, still sized)
+  //   2/4 dominant → 0.25× (mild edge, small size)
+  //   ≤1/4         → 0.00× (no consensus, no trade)
+  let consensusMult;
+  if (dominantCount >= 4)      consensusMult = 1.00;
+  else if (dominantCount === 3) consensusMult = 0.60;
+  else if (dominantCount === 2) consensusMult = 0.25;
+  else                          consensusMult = 0.00;
+
+  // Also flag *opposing* agents — when 1+ agents vote against the consensus
+  // direction, that's not a 4/4 even if others agree
+  const opposingVotes = dominantVote > 0 ? shortVotes : longVotes;
+  if (opposingVotes >= 1 && consensusMult > 0.5) {
+    // Any opposition caps at 0.5
+    consensusMult = Math.min(consensusMult, 0.5);
+  }
+
+  // === FINAL KELLY SIZING (with spread inflation, consensus gate, macro circuit breaker) ===
   // Inflate sigma by spread (model uncertainty)
   const muEst = consensus * 0.003;
   const sigmaEst = Math.sqrt(var20 + spread*spread*0.001);
-  const kelly = 0.25 * muEst / (sigmaEst*sigmaEst);
+  const rawKelly = 0.25 * muEst / (sigmaEst*sigmaEst);
+
+  // Apply consensus gate (multi-agent voting)
+  let kellyAfterConsensus = rawKelly * consensusMult;
+
+  // MACRO CIRCUIT BREAKER (Gemini's suggestion #4)
+  // Cross-asset stress > 70% = forced deleveraging risk regime.
+  // When stress is extreme, cut Kelly by 50%. When stress > 90%, cut to 25%.
+  // This is a HARD multiplier separate from the cross-asset-stress signal,
+  // because in deleveraging cascades correlations go to 1 and all signal
+  // edges decay simultaneously. Capital preservation overrides edge claims.
+  let macroMult = 1.0;
+  if (stress.stress > 0.90)      macroMult = 0.25;
+  else if (stress.stress > 0.70) macroMult = 0.50;
+  else if (stress.stress > 0.50) macroMult = 0.75;
+
+  const kelly = kellyAfterConsensus * macroMult;
   const kellyClamped = Math.max(-1, Math.min(1, kelly));
 
   // ===================================================================
@@ -1412,6 +1606,61 @@ function computeAll(){
                           : 'neutral';
   const dominantProbability = Math.max(probabilities.pUp5d, probabilities.pDn5d);
 
+  // ===================================================================
+  // EXIT DISCIPLINE MODULE
+  // ===================================================================
+  // Kelly-optimal exit theory: don't wait for the maximum. The forecast
+  // distribution implies an expected maximum over horizon H of approximately:
+  //   E[max over H] ≈ μH + σ√(2H ln H)
+  // But the realized payoff at exit time T is just the price level reached.
+  // Optimal capture is ~70-80% of expected max under realistic costs.
+  //
+  // We compute three exit triggers:
+  //   1. Take-profit: 75% of expected 5-day move in direction of trade
+  //   2. Trail stop: σ-based, tightens as price moves favorably
+  //   3. Time stop: exit at end of horizon regardless (limit decay)
+
+  function computeExits(direction){
+    if (direction === 0 || !isFinite(direction)) {
+      return { active: false, reason: 'no position' };
+    }
+    const sign = Math.sign(direction);
+    // Expected max move over 5 days in direction of trade
+    const horizon = 5;
+    // E[max] for a Gaussian with drift over horizon ~ μH + σ√(2H ln H)
+    const expectedMax = f5.mu * sign + f5.sigma * Math.sqrt(2 * horizon * Math.log(horizon));
+    // Take-profit: 75% of expected max move
+    const takeProfitPct = expectedMax * 0.75;
+    // Stop-loss: 1.0σ in the adverse direction (Kelly says: stop when forward
+    // expected return goes negative; for a Gaussian this is ~1σ away from
+    // current price in adverse direction)
+    const stopLossPct = -f5.sigma * 1.0;
+    // Trail stop: starts wider, tightens as the trade moves favorably
+    const initialTrailPct = f5.sigma * 0.75;
+    // Time stop: 5 sessions; exit at end of horizon
+    const timeStop = horizon;
+    // Volume-spike exit: if realized vol jumps 3x baseline, regime change
+    const volSpikeThreshold = 3.0;
+
+    return {
+      active: true,
+      direction: sign,
+      takeProfitPct: takeProfitPct * sign,  // sign-adjusted for display
+      takeProfitPrice: PRICE * (1 + takeProfitPct * sign),
+      stopLossPct: stopLossPct * sign,
+      stopLossPrice: PRICE * (1 + stopLossPct * sign),
+      trailPct: initialTrailPct,
+      timeStopSessions: timeStop,
+      volSpikeMult: volSpikeThreshold,
+      expectedMaxPct: expectedMax * sign,
+      capturedFraction: 0.75,
+    };
+  }
+
+  // Direction comes from the consensus vote, not just the Kelly sign
+  const exitDirection = dominantVote;
+  const exits = computeExits(exitDirection);
+
   return {
     signals: allSigs,
     classical: signals.classical,
@@ -1420,6 +1669,8 @@ function computeAll(){
     raw: signals.raw,
     portfolio: {
       portKelly, consensus, spread, kelly, kellyClamped,
+      rawKelly, consensusMult, macroMult, kellyAfterConsensus,
+      clusterSigs, nClusters,
       confidence: spread > 0.4 ? 'LOW' : spread > 0.25 ? 'MEDIUM' : 'HIGH'
     },
     forecast: {
@@ -1431,7 +1682,17 @@ function computeAll(){
     fractal: {
       ...fractal,
       momWeight, revWeight, hurstTilt
-    }
+    },
+    agentVotes: {
+      votes: agentVotes,
+      longCount: longVotes,
+      shortCount: shortVotes,
+      neutralCount: neutralVotes,
+      dominantVote, dominantCount,
+      consensusMult,
+      opposingVotes,
+    },
+    exits,
   };
 }
 
@@ -1494,6 +1755,73 @@ function render(){
   document.getElementById('actionLabel').className = 'value ' +
     (k > 0.1 ? 'bull' : k < -0.1 ? 'bear' : 'warn');
   document.getElementById('actionDetail').innerHTML = detail;
+
+  // === Agent consensus panel ===
+  const av = result.agentVotes;
+  const agentRows = Object.entries(av.votes).map(([name, v]) => {
+    const cls = v.vote > 0 ? 'long' : v.vote < 0 ? 'short' : 'neutral';
+    return `<div class="agent-row">
+      <span class="nm">${name}</span>
+      <span class="score">${v.score >= 0 ? '+' : ''}${v.score.toFixed(2)}</span>
+      <span class="vote ${cls}">${v.label}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('agentGrid').innerHTML = agentRows;
+
+  const consensusMultPct = (av.consensusMult * 100).toFixed(0);
+  const consensusCls = av.consensusMult >= 1.0 ? 'good' : av.consensusMult >= 0.6 ? 'warn' : av.consensusMult >= 0.25 ? 'warn' : 'bad';
+  document.getElementById('consensusReadout').innerHTML = `
+    <div class="consensus-readout">
+      <div class="item"><div class="lbl">long votes</div><div class="val ${av.longCount > av.shortCount ? 'good' : ''}">${av.longCount}/4</div></div>
+      <div class="item"><div class="lbl">short votes</div><div class="val ${av.shortCount > av.longCount ? 'bad' : ''}">${av.shortCount}/4</div></div>
+      <div class="item"><div class="lbl">neutral</div><div class="val">${av.neutralCount}/4</div></div>
+      <div class="item"><div class="lbl">Kelly mult</div><div class="val ${consensusCls}">${consensusMultPct}%</div></div>
+    </div>
+    <div style="margin-top:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;color:var(--ink2);line-height:1.5">
+      ${av.dominantCount >= 4 ? `<b style="color:var(--bull);font-style:normal">Unanimous consensus.</b> Full Kelly sizing applied.` :
+        av.dominantCount === 3 ? `<b style="color:var(--warn);font-style:normal">3-of-4 agreement.</b> Sized at 60% — ${av.opposingVotes >= 1 ? 'opposing vote caps further.' : 'mild disagreement noted.'}` :
+        av.dominantCount === 2 ? `<b style="color:var(--warn);font-style:normal">Split decision (2-of-4).</b> Sized at 25% — significant uncertainty.` :
+        `<b style="color:var(--bear);font-style:normal">No consensus.</b> Kelly multiplied by 0 — stand aside.`}
+      ${result.portfolio.macroMult < 1 ? ` <b style="color:var(--bear);font-style:normal">Macro circuit breaker active:</b> position cut to ${(result.portfolio.macroMult*100).toFixed(0)}% of consensus-Kelly due to cross-asset stress.` : ''}
+    </div>
+  `;
+
+  // === Exit discipline panel ===
+  const exits = result.exits;
+  const exitGrid = document.getElementById('exitGrid');
+  const exitNote = document.getElementById('exitNote');
+  if (!exits.active) {
+    exitGrid.innerHTML = `<div class="exit-inactive" style="grid-column:span 2">No position implied — consensus says stand aside. Exit triggers will populate once a directional consensus forms.</div>`;
+    exitNote.innerHTML = `When agent consensus turns directional, this panel will compute Kelly-optimal take-profit, stop-loss, trail, and time-stop levels based on the 5-day forecast distribution.`;
+  } else {
+    const dirLabel = exits.direction > 0 ? 'LONG' : 'SHORT';
+    const tpCls = exits.direction > 0 ? 'bull' : 'bear';
+    const slCls = exits.direction > 0 ? 'bear' : 'bull';
+    exitGrid.innerHTML = `
+      <div class="exit-trigger tp">
+        <div class="lbl">take-profit · 75% of expected max</div>
+        <div class="price ${tpCls}">$${exits.takeProfitPrice.toFixed(2)}</div>
+        <div class="pct">${exits.takeProfitPct >= 0 ? '+' : ''}${(exits.takeProfitPct*100).toFixed(2)}%</div>
+      </div>
+      <div class="exit-trigger sl">
+        <div class="lbl">stop-loss · 1σ adverse</div>
+        <div class="price ${slCls}">$${exits.stopLossPrice.toFixed(2)}</div>
+        <div class="pct">${exits.stopLossPct >= 0 ? '+' : ''}${(exits.stopLossPct*100).toFixed(2)}%</div>
+      </div>
+      <div class="exit-trigger trail">
+        <div class="lbl">trail stop · 0.75σ</div>
+        <div class="price">${(exits.trailPct*100).toFixed(2)}%</div>
+        <div class="pct">tightens as favorable; resets on each new high/low</div>
+      </div>
+      <div class="exit-trigger time">
+        <div class="lbl">time stop / vol spike</div>
+        <div class="price">${exits.timeStopSessions}d / ${exits.volSpikeMult}×</div>
+        <div class="pct">exit at horizon end OR realized vol > ${exits.volSpikeMult}× baseline</div>
+      </div>
+    `;
+    const horizonMaxPct = (exits.expectedMaxPct * 100).toFixed(2);
+    exitNote.innerHTML = `For a <b style="color:var(--${tpCls});font-style:normal">${dirLabel}</b> position, the 5-day forecast distribution implies expected max move of ${horizonMaxPct}%. Take-profit captures ${(exits.capturedFraction*100).toFixed(0)}% of that. Stop is set at 1σ adverse — beyond this, the forward expected return inverts and Kelly says exit. Either of the four triggers fires whichever comes first.`;
+  }
 
   // === Probabilistic forecast ===
   const fcast = result.forecast;
