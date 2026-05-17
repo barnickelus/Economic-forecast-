@@ -11,7 +11,7 @@
  *         data/index.json     — list of all tracked tickers.
  *         data/latest.json    — backward-compat for silver dashboard.
  */
-6
+
 const fs = require('fs');
 const path = require('path');
 
@@ -110,7 +110,7 @@ async function fetchTicker(tickerSymbol, config, macroData) {
     log: [],
   };
 
-  // 1. Primary asset
+  // 1. Primary asset (3mo for current dashboard)
   try {
     const r = await fetchYahoo(tickerSymbol);
     data.asset = quoteFromYahoo(r);
@@ -121,6 +121,24 @@ async function fetchTicker(tickerSymbol, config, macroData) {
   } catch (e) {
     data.log.push(`✗ ${tickerSymbol}: ${e.message}`);
     return data;
+  }
+
+  // 1b. Extended history (5 years) for backtesting
+  // This is the longer series that drives the backtest engine.
+  try {
+    const r = await fetchYahoo(tickerSymbol, '5y', '1d');
+    const fullSeries = seriesFromYahoo(r);
+    const fullOHLC = ohlcFromYahoo(r, fullSeries.length);
+    if (fullSeries.length >= 250) {  // at least 1 year of data
+      data.historical = {
+        series: fullSeries,
+        ohlc: fullOHLC,
+        bars: fullSeries.length,
+      };
+      data.log.push(`✓ ${tickerSymbol} history: ${fullSeries.length} bars (${(fullSeries.length/252).toFixed(1)}y)`);
+    }
+  } catch (e) {
+    data.log.push(`✗ ${tickerSymbol} history: ${e.message}`);
   }
 
   // 2. Sector/peer reference ETF
