@@ -6,7 +6,7 @@
     "sectorETF": "XLY",
     "typicalVolAnnual": 0.55
   },
-  "fetchedAt": "2026-05-17T22:02:08.125Z",
+  "fetchedAt": "2026-05-17T23:31:10.132Z",
   "sources": {
     "asset": "yahoo:TSLA",
     "sector": "yahoo:XLY"
@@ -11463,7 +11463,7 @@
     "source": "TSLA"
   },
   "macro": {
-    "fetchedAt": "2026-05-17T22:02:06.068Z",
+    "fetchedAt": "2026-05-17T23:31:08.188Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11472,16 +11472,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 99.27,
+      "spot": 99.288,
       "prev": 97.16,
-      "change": 2.1099999999999994,
-      "changePct": 2.171675586661177
+      "change": 2.128,
+      "changePct": 2.1902017291066285
     },
     "oil": {
-      "spot": 101.02,
+      "spot": 102.45,
       "prev": 62.33,
-      "change": 38.69,
-      "changePct": 62.07283811968555
+      "change": 40.120000000000005,
+      "changePct": 64.36707845339323
     },
     "vix": {
       "spot": 18.43,
