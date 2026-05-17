@@ -1,0 +1,1320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kelly Backtest Engine · v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06070b;
+    --bg2:#0a0c12;
+    --bg3:#0e1119;
+    --ink:#d4dae6;
+    --ink2:#6c7585;
+    --ink3:#454d5d;
+    --acc:#7fd4c8;
+    --acc2:#a8e8de;
+    --bull:#5dcf7e;
+    --bear:#e85c5c;
+    --warn:#e2c25b;
+    --neutral:#6c7585;
+    --line:#1c2029;
+    --line2:#11141a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;line-height:1.5;}
+  body{
+    background:
+      radial-gradient(ellipse at 10% -5%, rgba(127,212,200,0.06), transparent 50%),
+      linear-gradient(180deg, #06070b 0%, #08090e 100%);
+    min-height:100vh;
+    padding:14px 14px 60px;
+  }
+  header{max-width:1400px;margin:0 auto 18px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:32px;letter-spacing:-.3px;margin:0;color:var(--acc2)}
+  h1 .v{color:var(--acc);font-style:italic;font-size:18px;margin-left:6px}
+  .tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:14px;margin-top:4px}
+  .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .nav a.active{color:var(--acc);border-color:var(--acc)}
+  .nav a:hover{color:var(--acc2)}
+
+  main{max-width:1400px;margin:0 auto;display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+
+  .panel{
+    background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    position:relative;
+  }
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:1px solid var(--acc);border-right:1px solid var(--acc)}
+  .panel h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;margin:0 0 4px;letter-spacing:.3px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 6px}
+  .panel .sub{font-size:11px;color:var(--ink2);margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;line-height:1.5}
+
+  .grid-12{grid-column:span 12}
+  .grid-6{grid-column:span 12}
+  .grid-4{grid-column:span 12}
+  @media(min-width:900px){
+    .grid-6{grid-column:span 6}
+    .grid-4{grid-column:span 4}
+  }
+
+  /* Controls */
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .control-group label{display:block;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .control-group select, .control-group input{
+    width:100%;background:var(--bg3);color:var(--ink);border:1px solid var(--line);
+    padding:6px 8px;font-family:inherit;font-size:12px;
+  }
+  .control-group select:focus, .control-group input:focus{outline:1px solid var(--acc);border-color:var(--acc)}
+  .run-btn{
+    background:var(--acc);color:var(--bg);border:none;padding:10px 22px;font-family:inherit;
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700;
+    transition:.2s;
+  }
+  .run-btn:hover{background:var(--acc2)}
+  .run-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+  /* Progress */
+  .progress{width:100%;height:6px;background:var(--bg3);border:1px solid var(--line);position:relative;margin-top:8px}
+  .progress .fill{height:100%;background:var(--acc);transition:width 0.2s}
+  .progress-status{font-size:10px;color:var(--ink2);margin-top:4px;font-family:'JetBrains Mono'}
+
+  /* KPI cards */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .kpi{padding:10px 12px;border:1px solid var(--line);background:var(--bg3)}
+  .kpi .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .kpi .val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--ink);line-height:1}
+  .kpi .val.bull{color:var(--bull)}
+  .kpi .val.bear{color:var(--bear)}
+  .kpi .val.warn{color:var(--warn)}
+  .kpi .sub-val{font-size:10px;color:var(--ink2);margin-top:4px;font-family:'JetBrains Mono'}
+
+  /* Equity chart */
+  #equityChart{width:100%;height:320px;background:var(--bg3);border:1px solid var(--line);position:relative;display:block}
+  #ddChart{width:100%;height:140px;background:var(--bg3);border:1px solid var(--line);position:relative;display:block;margin-top:8px}
+
+  /* Diagnostics table */
+  .diag-table{width:100%;border-collapse:collapse;font-size:11px}
+  .diag-table th{
+    text-align:left;color:var(--ink3);font-weight:400;font-size:9px;
+    letter-spacing:1.5px;text-transform:uppercase;padding:8px 6px;
+    border-bottom:1px solid var(--line);
+  }
+  .diag-table th.num{text-align:right}
+  .diag-table td{padding:7px 6px;border-bottom:1px dotted var(--line2);}
+  .diag-table .name{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink)}
+  .diag-table td.num{text-align:right;font-family:'JetBrains Mono'}
+  .diag-table .pct.bull{color:var(--bull)}
+  .diag-table .pct.bear{color:var(--bear)}
+  .diag-table .pct.warn{color:var(--warn)}
+
+  /* Trade log */
+  .trade-log{max-height:400px;overflow-y:auto;border:1px solid var(--line);background:var(--bg3);font-size:10px}
+  .trade-log table{width:100%;border-collapse:collapse}
+  .trade-log th{position:sticky;top:0;background:var(--bg2);padding:6px 8px;font-size:8px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+  .trade-log td{padding:4px 8px;border-bottom:1px dotted var(--line2);font-family:'JetBrains Mono';font-size:10px}
+  .trade-log td.bull{color:var(--bull)}
+  .trade-log td.bear{color:var(--bear)}
+
+  .calibration-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px}
+
+  details{margin-top:10px;border:1px solid var(--line);padding:8px 12px;background:rgba(0,0,0,0.15)}
+  details summary{cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--acc2);font-style:italic}
+  details p{font-size:11px;color:var(--ink2);margin:6px 0;line-height:1.55}
+
+  .live-banner{
+    display:inline-flex;align-items:center;gap:6px;padding:3px 10px;
+    background:rgba(127,212,200,0.08);border:1px solid var(--acc);
+    font-size:10px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Kelly Backtest Engine<span class="v">/ v1</span></h1>
+    <div class="tag">walk-forward simulation of the live dashboard's signal stack on historical data</div>
+    <nav class="nav" style="margin-top:8px">
+      <a href="index.html">live dashboard</a>
+      <a href="backtest.html" class="active">backtest</a>
+    </nav>
+  </div>
+  <div>
+    <div class="live-banner" id="dataBanner">data: not loaded</div>
+  </div>
+</header>
+
+<main>
+  <!-- CONTROLS -->
+  <section class="panel grid-12">
+    <h2>Run configuration <span class="num">setup</span></h2>
+    <div class="sub">Select ticker and parameters. The backtest replays the <em>exact same</em> signal computation as the live dashboard, day-by-day, using only data available up to each historical point (no look-ahead).</div>
+    <div class="controls">
+      <div class="control-group">
+        <label>Ticker</label>
+        <select id="tickerSelect"><option value="">loading…</option></select>
+      </div>
+      <div class="control-group">
+        <label>Start (days back)</label>
+        <select id="startSelect">
+          <option value="252">1 year</option>
+          <option value="504" selected>2 years</option>
+          <option value="756">3 years</option>
+          <option value="1260">5 years (max)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Position sizing mode</label>
+        <select id="sizingMode">
+          <option value="kelly">Full Kelly (with consensus gate)</option>
+          <option value="fractional" selected>0.25× Kelly (default)</option>
+          <option value="binary">Binary (entry only on consensus)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>Tx cost (bps round-trip)</label>
+        <input type="number" id="txCost" value="10" min="0" max="100" step="1" />
+      </div>
+      <div class="control-group">
+        <label>&nbsp;</label>
+        <button class="run-btn" id="runBtn">▶ Run backtest</button>
+      </div>
+    </div>
+    <div class="progress" id="progress" style="display:none">
+      <div class="fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-status" id="progressStatus"></div>
+  </section>
+
+  <!-- HEADLINE KPIs -->
+  <section class="panel grid-12" id="resultsPanel" style="display:none">
+    <h2>Performance summary <span class="num">aggregate</span></h2>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </section>
+
+  <!-- EQUITY CURVE -->
+  <section class="panel grid-12" id="equityPanel" style="display:none">
+    <h2>Equity curve & drawdown <span class="num">path</span></h2>
+    <div class="sub">Hypothetical $100 starting capital. Equity reinvests gains; drawdown shows distance from running peak.</div>
+    <canvas id="equityChart"></canvas>
+    <canvas id="ddChart"></canvas>
+  </section>
+
+  <!-- CONSENSUS DIAGNOSTICS -->
+  <section class="panel grid-6" id="consensusPanel" style="display:none">
+    <h2>Consensus filter performance <span class="num">vote tier</span></h2>
+    <div class="sub">Did the multi-agent consensus actually improve signal quality? Hit rate by number of agreeing agents.</div>
+    <table class="diag-table">
+      <thead><tr><th>Consensus tier</th><th class="num">Trades</th><th class="num">Win rate</th><th class="num">Avg return</th></tr></thead>
+      <tbody id="consensusTable"></tbody>
+    </table>
+  </section>
+
+  <!-- REGIME DIAGNOSTICS -->
+  <section class="panel grid-6" id="regimePanel" style="display:none">
+    <h2>Regime-conditional performance <span class="num">fractal</span></h2>
+    <div class="sub">Did the Hurst-based regime weighting help? Stratify trades by H regime at entry time.</div>
+    <table class="diag-table">
+      <thead><tr><th>Regime</th><th class="num">Trades</th><th class="num">Win rate</th><th class="num">Avg return</th></tr></thead>
+      <tbody id="regimeTable"></tbody>
+    </table>
+  </section>
+
+  <!-- CALIBRATION -->
+  <section class="panel grid-6" id="calibrationPanel" style="display:none">
+    <h2>Probability calibration <span class="num">honest scoring</span></h2>
+    <div class="sub">When the model said "P(up) = X%", did it happen X% of the time? Perfect calibration: diagonal line.</div>
+    <canvas id="calibChart" style="width:100%;height:280px;background:var(--bg3);border:1px solid var(--line)"></canvas>
+    <div id="brierScore" style="margin-top:8px;font-size:11px;color:var(--ink2)"></div>
+  </section>
+
+  <!-- MACRO STRESS -->
+  <section class="panel grid-6" id="stressPanel" style="display:none">
+    <h2>Macro circuit-breaker performance <span class="num">stress regime</span></h2>
+    <div class="sub">Did cutting size during high cross-asset stress help? Compare with vs without the circuit breaker.</div>
+    <table class="diag-table">
+      <thead><tr><th>Stress level</th><th class="num">Trades</th><th class="num">Win rate</th><th class="num">Avg return</th></tr></thead>
+      <tbody id="stressTable"></tbody>
+    </table>
+  </section>
+
+  <!-- TRADE LOG -->
+  <section class="panel grid-12" id="logPanel" style="display:none">
+    <h2>Trade log <span class="num">individual entries</span></h2>
+    <div class="sub">Every hypothetical trade the model would have taken. Showing latest 200.</div>
+    <div class="trade-log" id="tradeLog">
+      <table>
+        <thead><tr><th>Entry</th><th>Dir</th><th>Size</th><th>Entry $</th><th>Exit $</th><th>Days</th><th>Return</th><th>Exit reason</th><th>Consensus</th></tr></thead>
+        <tbody id="tradeRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="panel grid-12">
+    <h2>Methodology &amp; honest caveats <span class="num">disclosure</span></h2>
+    <details>
+      <summary>Walk-forward: no look-ahead bias</summary>
+      <p>On each historical day t, the engine computes signals using only data through day t-1, then "executes" the trade at day t's open price. Exits use day-t close prices. The same signal functions that drive the live dashboard run unchanged in the backtest.</p>
+    </details>
+    <details>
+      <summary>Position sizing modes</summary>
+      <p><b>Full Kelly:</b> kelly f* (capped at ±1×) applied each day. Capital reinvests.<br>
+      <b>0.25× fractional Kelly:</b> the conservative variant that matches our live dashboard. Most realistic.<br>
+      <b>Binary:</b> 1× notional on consensus (≥3/4 agents), zero otherwise. Tests the consensus filter directly.</p>
+    </details>
+    <details>
+      <summary>Transaction cost modeling</summary>
+      <p>Default 10 bps round-trip = 5 bps in, 5 bps out. Realistic for silver futures at retail. For thinly-traded names, increase to 20-30 bps.</p>
+    </details>
+    <details>
+      <summary>What this backtest can and can't tell you</summary>
+      <p><b>Can:</b> whether the signal stack would have made or lost money over the chosen window. Whether the consensus filter actually screens out losers. Whether Hurst regime weighting helps. Whether the probability forecasts are calibrated.</p>
+      <p><b>Can't:</b> guarantee future performance. The window we're backtesting is limited; market regimes shift. Future returns may differ materially. This is a tool for evaluating model logic, not a profit projection.</p>
+    </details>
+    <details>
+      <summary>Survivorship and selection bias</summary>
+      <p>Yahoo data for currently-listed tickers only. For delisted stocks this matters; for futures (SI=F, GC=F) and ETFs (SPY, QQQ), survivorship is minimal. The default ticker (silver) is essentially unbiased on this dimension.</p>
+    </details>
+  </section>
+</main>
+
+<script>
+/* ============================================================
+   KELLY BACKTEST ENGINE
+   ============================================================
+   This file deliberately RE-IMPLEMENTS the same signal logic
+   used by the live dashboard so that we test what we ship.
+   The compute*() functions below match index.html exactly.
+*/
+
+// ============================================================
+// SIGNAL COMPUTATION (matches index.html computeAll())
+// ============================================================
+
+// Hurst R/S analysis with Anis-Lloyd-Peters correction
+function expectedRS(n) {
+  let sum = 0;
+  for (let k = 1; k <= n - 1; k++) sum += Math.sqrt((n - k) / k);
+  return ((n - 0.5) / n) * sum / Math.sqrt(n * Math.PI / 2);
+}
+
+function hurstRS(series, ns) {
+  if (series.length < Math.max(...ns) * 2) return null;
+  const logRS = []; const logN = [];
+  for (const n of ns) {
+    const chunks = Math.floor(series.length / n);
+    if (chunks < 2) continue;
+    let totalRS = 0, validChunks = 0;
+    for (let c = 0; c < chunks; c++) {
+      const chunk = series.slice(c * n, (c + 1) * n);
+      const rets = [];
+      for (let i = 1; i < chunk.length; i++) rets.push(Math.log(chunk[i] / chunk[i - 1]));
+      if (rets.length < 4) continue;
+      const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
+      let cumDev = 0, maxCD = -Infinity, minCD = Infinity;
+      for (const r of rets) { cumDev += (r - mean); if (cumDev > maxCD) maxCD = cumDev; if (cumDev < minCD) minCD = cumDev; }
+      const range = maxCD - minCD;
+      const variance = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length;
+      const stdev = Math.sqrt(variance);
+      if (stdev > 1e-10 && range > 0) { totalRS += range / stdev; validChunks++; }
+    }
+    if (validChunks > 0) {
+      const normalized = (totalRS / validChunks) / expectedRS(n);
+      if (normalized > 0) { logRS.push(Math.log(normalized)); logN.push(Math.log(n)); }
+    }
+  }
+  if (logN.length < 2) return null;
+  const lnMean = logN.reduce((a, b) => a + b, 0) / logN.length;
+  const lrMean = logRS.reduce((a, b) => a + b, 0) / logRS.length;
+  let num = 0, den = 0;
+  for (let i = 0; i < logN.length; i++) { num += (logN[i] - lnMean) * (logRS[i] - lrMean); den += (logN[i] - lnMean) ** 2; }
+  const rawH = den > 0 ? num / den + 0.5 : null;
+  return rawH !== null ? rawH + 0.06 : null;
+}
+
+function normalCDF(z) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989422804 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z >= 0 ? 1 - p : p;
+}
+
+/**
+ * computeSignalsAt: given a price series ending at day i (inclusive),
+ * compute the signal stack as it would have appeared on that day,
+ * using only data through day i. No look-ahead.
+ *
+ * Returns: { kelly, consensusMult, agentVotes, fractal, pUp5d, signals... }
+ */
+function computeSignalsAt(seriesFull, ohlcFull, i, macroFull) {
+  // Slice all data to only what was available through day i
+  const series = seriesFull.slice(0, i + 1);
+  if (series.length < 60) return null;  // need minimum history
+  const ohlc = ohlcFull.slice(Math.max(0, i + 1 - 6), i + 1);  // last 6 OHLC bars
+  const macro = macroFull ? macroFull.slice(0, i + 1) : null;
+  const N = series.length;
+  const PRICE = series[N - 1];
+
+  // Returns
+  const rets = [];
+  for (let j = 1; j < N; j++) rets.push(Math.log(series[j] / series[j - 1]));
+  const recent20 = rets.slice(-20);
+  const m20 = recent20.reduce((a, b) => a + b, 0) / recent20.length;
+  const var20 = recent20.reduce((a, b) => a + (b - m20) ** 2, 0) / recent20.length;
+  const vol20Ann = Math.sqrt(var20 * 252);
+
+  // RSI(14)
+  function rsi(period) {
+    let g = 0, l = 0;
+    for (let j = 1; j <= period; j++) {
+      const c = series[N - j] - series[N - j - 1];
+      if (c > 0) g += c; else l -= c;
+    }
+    if (l === 0) return 100;
+    return 100 - 100 / (1 + (g / period) / (l / period));
+  }
+  const rsi14 = rsi(14);
+
+  // Distance from 50-bar MA
+  let s = 0;
+  for (let k = 0; k < Math.min(50, N - 1); k++) s += series[N - 1 - k];
+  const ma50 = s / Math.min(50, N - 1);
+  const distMA = (PRICE - ma50) / ma50;
+
+  // Robust Bollinger (median + MAD)
+  const bollSlice = series.slice(N - Math.min(40, N - 1) - 1, N - 1);
+  const sorted = [...bollSlice].sort((a, b) => a - b);
+  const median = sorted[Math.floor(sorted.length / 2)];
+  const mad = sorted.map(v => Math.abs(v - median)).sort((a, b) => a - b)[Math.floor(sorted.length / 2)];
+  const robustZ = (PRICE - median) / (mad * 1.4826 || 1e-6);
+
+  // Mean reversion (8d z-score)
+  let mr_s = 0;
+  for (let k = 0; k < 8; k++) mr_s += Math.log(series[N - 1 - k]);
+  const mr_m = mr_s / 8;
+  let mr_v = 0;
+  for (let k = 0; k < 8; k++) { const d_ = Math.log(series[N - 1 - k]) - mr_m; mr_v += d_ * d_; }
+  const mrZ = (Math.log(PRICE) - mr_m) / (Math.sqrt(mr_v / 8) || 1e-6);
+
+  // Momentum 10/40
+  let f = 0, sl = 0;
+  for (let k = 0; k < 10; k++) f += series[N - 1 - k];
+  for (let k = 0; k < 40 && k < N; k++) sl += series[N - 1 - k];
+  const momRaw = (f / 10 - sl / 40) / (sl / 40) * 40;
+
+  // === Negative-space signals (require OHLC) ===
+  function gammaProxy() {
+    if (ohlc.length < 2) return { ratio: 2.0 };
+    let intradayRanges = 0, ccMoves = 0;
+    for (let j = 1; j < ohlc.length; j++) {
+      intradayRanges += (ohlc[j].h - ohlc[j].l) / ohlc[j - 1].c;
+      ccMoves += Math.abs(ohlc[j].c - ohlc[j - 1].c) / ohlc[j - 1].c;
+    }
+    return { ratio: intradayRanges / (ccMoves || 1e-6) };
+  }
+  const gamma = gammaProxy();
+
+  function skewProxy() {
+    let downSq = 0, upSq = 0, dCnt = 0, uCnt = 0;
+    for (let j = Math.max(0, rets.length - 20); j < rets.length; j++) {
+      if (rets[j] < 0) { downSq += rets[j] * rets[j]; dCnt++; }
+      else if (rets[j] > 0) { upSq += rets[j] * rets[j]; uCnt++; }
+    }
+    const downVol = dCnt > 0 ? Math.sqrt(downSq / dCnt) : 0;
+    const upVol = uCnt > 0 ? Math.sqrt(upSq / uCnt) : 0;
+    return { asymmetry: downVol - upVol };
+  }
+  const skew = skewProxy();
+
+  function darkPoolProxy() {
+    if (ohlc.length < 2) return { anomaly: 1.0 };
+    const impacts = [];
+    for (let j = 1; j < ohlc.length; j++) {
+      const r = Math.abs(Math.log(ohlc[j].c / ohlc[j - 1].c));
+      const v = ohlc[j].v || 1;
+      impacts.push(r / v * 1e6);
+    }
+    const avg = impacts.reduce((a, b) => a + b, 0) / impacts.length;
+    const today = impacts[impacts.length - 1];
+    return { anomaly: today / (avg || 1) };
+  }
+  const darkPool = darkPoolProxy();
+
+  function velocity() {
+    function rsiAt(idxOffset, period = 14) {
+      let g = 0, l = 0;
+      for (let j = 1; j <= period; j++) {
+        if (N - j - idxOffset - 1 < 0) return 50;
+        const c = series[N - j - idxOffset] - series[N - j - 1 - idxOffset];
+        if (c > 0) g += c; else l -= c;
+      }
+      if (l === 0) return 100;
+      return 100 - 100 / (1 + (g / period) / (l / period));
+    }
+    const rsiNow = rsi14;
+    const rsi5ago = rsiAt(5);
+    const rsi10ago = rsiAt(10);
+    return { rsiVel: rsiNow - rsi5ago, rsiAccel: rsiNow - 2 * rsi5ago + rsi10ago };
+  }
+  const vel = velocity();
+
+  function absorption() {
+    if (ohlc.length < 2) return { ratio: 1.0, closeInRange: 0.5 };
+    const today = ohlc[ohlc.length - 1];
+    const prev = ohlc[ohlc.length - 2];
+    const hl = today.h - today.l;
+    const cc = Math.abs(today.c - prev.c) || 1e-6;
+    const closeInRange = hl > 0 ? (today.c - today.l) / hl : 0.5;
+    return { ratio: hl / cc, closeInRange };
+  }
+  const absorp = absorption();
+
+  // Cross-asset stress
+  const macroI = macro ? macro[macro.length - 1] : null;
+  function crossAssetStress() {
+    if (!macroI) return { stress: 0.3 };
+    const vixStress = Math.max(0, (macroI.vix - 18) / 10);
+    const spxStress = Math.max(0, -macroI.spxChange / 0.02);
+    const stress = Math.min(1, vixStress * 0.5 + spxStress * 0.5);
+    return { stress };
+  }
+  const stress = crossAssetStress();
+
+  // === Fractal analysis ===
+  const longSeries = series.slice(-Math.min(60, series.length));
+  const medSeries = series.slice(-Math.min(30, series.length));
+  const shortSeries = series.slice(-Math.min(15, series.length));
+  const hLong = hurstRS(longSeries, [4, 6, 8, 10, 12]) || 0.5;
+  const hMed = hurstRS(medSeries, [4, 6, 8, 10]) || 0.5;
+  const hShort = hurstRS(shortSeries, [3, 4, 5, 6]) || 0.5;
+  const hAvg = (hShort + hMed + hLong) / 3;
+  const fractal = { hShort, hMed, hLong, hAvg };
+
+  // === Crowdedness ===
+  const rsiContrib = Math.max(0, (rsi14 - 65) / 30);
+  const distContrib = Math.max(0, (distMA - 0.05) / 0.25);
+  const fiveDay = N > 6 ? Math.log(PRICE / series[N - 6]) : 0;
+  const rocContrib = Math.max(0, (fiveDay + 0.10) / 0.20);
+  const stressContrib = stress.stress;
+  const velContrib = Math.max(0, vel.rsiVel / 30);
+  const crowd = Math.min(1,
+    rsiContrib * 0.25 + distContrib * 0.20 + rocContrib * 0.15 +
+    0.7 * 0.15 + velContrib * 0.15 + stressContrib * 0.10);
+
+  // === Signal-to-Kelly mapping ===
+  const rsiSig = rsi14 >= 90 ? -1.0 : rsi14 >= 80 ? -(0.5 + (rsi14 - 80) * 0.05) :
+                 rsi14 >= 70 ? -(0.2 + (rsi14 - 70) * 0.03) :
+                 rsi14 <= 30 ? (0.2 + (30 - rsi14) * 0.03) :
+                 rsi14 <= 20 ? (0.5 + (20 - rsi14) * 0.05) : -(rsi14 - 50) / 100;
+  const distSig = -Math.tanh(distMA * 4);
+  const bollSig = -Math.tanh(robustZ * 0.6);
+  const mrSig = -Math.tanh(mrZ * 0.8);
+  const momSig = Math.tanh(momRaw);
+  const gammaSig = gamma.ratio > 3 ? -0.3 : gamma.ratio < 1.5 ? 0.3 : 0;
+  const skewSig = -Math.tanh(skew.asymmetry * 100);
+  const darkPoolSig = darkPool.anomaly > 1.5 ? (rets[rets.length - 1] < 0 ? -0.5 : 0.5) : 0;
+  const velSig = -Math.tanh(vel.rsiAccel / 20);
+  const absorpSig = absorp.ratio > 3 ? (absorp.closeInRange < 0.25 ? 0.4 : -0.4) : 0;
+  const stressSig = -stress.stress * 0.6;
+
+  // Build signal map
+  const allSigs = {
+    'RSI(14)': rsiSig,
+    'Distance from MA': distSig,
+    'Robust Bollinger': bollSig,
+    'Mean rev (8d)': mrSig,
+    'Momentum (10/40)': momSig,
+    'Gamma proxy': gammaSig,
+    'Skew proxy': skewSig,
+    'Dark-pool proxy': darkPoolSig,
+    'Velocity': velSig,
+    'Absorption': absorpSig,
+    'Cross-asset stress': stressSig,
+  };
+
+  // Reflexivity dampening + Hurst regime weighting
+  const signalType = {
+    'RSI(14)': 'reversion', 'Distance from MA': 'reversion', 'Robust Bollinger': 'reversion',
+    'Mean rev (8d)': 'reversion', 'Momentum (10/40)': 'momentum',
+    'Gamma proxy': 'momentum', 'Skew proxy': 'reversion',
+    'Dark-pool proxy': 'momentum', 'Velocity': 'reversion',
+    'Absorption': 'reversion', 'Cross-asset stress': 'momentum',
+  };
+  const hurstTilt = (hAvg - 0.5) * 2;
+  const momWeight = 1 + Math.max(-0.4, Math.min(0.4, hurstTilt));
+  const revWeight = 1 - Math.max(-0.4, Math.min(0.4, hurstTilt));
+
+  const adjusted = {};
+  for (const k of Object.keys(allSigs)) {
+    const r = allSigs[k];
+    let adj = r > 0 ? r * (1 - crowd) : r * (1 + crowd * 0.3);
+    if (signalType[k] === 'momentum') adj *= momWeight;
+    else if (signalType[k] === 'reversion') adj *= revWeight;
+    adjusted[k] = adj;
+  }
+
+  // === Multi-agent voting ===
+  const agents = {
+    'A1': ['RSI(14)', 'Distance from MA', 'Robust Bollinger', 'Mean rev (8d)'],
+    'A2': ['Momentum (10/40)', 'Gamma proxy', 'Dark-pool proxy', 'Cross-asset stress'],
+    'A3': ['Skew proxy', 'Velocity', 'Absorption'],
+    'A4': ['Cross-asset stress'],
+  };
+  const votes = {};
+  for (const [name, keys] of Object.entries(agents)) {
+    const vals = keys.map(k => adjusted[k]).filter(v => isFinite(v));
+    if (!vals.length) { votes[name] = 0; continue; }
+    const score = vals.reduce((a, b) => a + b, 0) / vals.length;
+    votes[name] = score > 0.20 ? 1 : score < -0.20 ? -1 : 0;
+  }
+  const longVotes = Object.values(votes).filter(v => v > 0).length;
+  const shortVotes = Object.values(votes).filter(v => v < 0).length;
+  const dominantVote = longVotes > shortVotes ? 1 : shortVotes > longVotes ? -1 : 0;
+  const dominantCount = Math.max(longVotes, shortVotes);
+  const opposingVotes = dominantVote > 0 ? shortVotes : longVotes;
+
+  let consensusMult = dominantCount >= 4 ? 1.0 :
+                      dominantCount === 3 ? 0.60 :
+                      dominantCount === 2 ? 0.25 : 0.00;
+  if (opposingVotes >= 1 && consensusMult > 0.5) consensusMult = Math.min(consensusMult, 0.5);
+
+  // === Cluster-based portfolio Kelly ===
+  const clusters = {
+    'price_ext': ['RSI(14)', 'Distance from MA', 'Robust Bollinger', 'Mean rev (8d)'],
+    'momentum': ['Momentum (10/40)', 'Velocity'],
+    'flow': ['Gamma proxy', 'Dark-pool proxy', 'Absorption'],
+    'positioning': ['Skew proxy'],
+    'macro': ['Cross-asset stress'],
+  };
+  const clusterVals = [];
+  for (const [cluster, keys] of Object.entries(clusters)) {
+    const vals = keys.map(k => adjusted[k]).filter(v => isFinite(v));
+    if (!vals.length) continue;
+    clusterVals.push(vals.reduce((a, b) => a + b, 0) / vals.length);
+  }
+  const portKelly = clusterVals.reduce((a, b) => a + b, 0) / Math.sqrt(clusterVals.length);
+  const consensus = clusterVals.reduce((a, b) => a + b, 0) / clusterVals.length;
+  const variance = clusterVals.reduce((a, b) => a + (b - consensus) ** 2, 0) / clusterVals.length;
+  const spread = Math.sqrt(variance);
+
+  // Final Kelly with macro circuit breaker
+  const muEst = consensus * 0.003;
+  const sigmaEst = Math.sqrt(var20 + spread * spread * 0.001);
+  const rawKelly = 0.25 * muEst / (sigmaEst * sigmaEst);
+  let kelly = rawKelly * consensusMult;
+  let macroMult = 1.0;
+  if (stress.stress > 0.90) macroMult = 0.25;
+  else if (stress.stress > 0.70) macroMult = 0.50;
+  else if (stress.stress > 0.50) macroMult = 0.75;
+  kelly *= macroMult;
+
+  // Probability forecast (5-day)
+  const trustWeight = Math.max(0.15, Math.min(1, 1 - spread * 1.5));
+  const muCond = muEst * 5;
+  const sigmaCond = sigmaEst * Math.sqrt(5);
+  const sigmaUncond = Math.sqrt(var20) * Math.sqrt(5);
+  const mu5 = trustWeight * muCond;
+  const sigma5 = Math.sqrt(trustWeight * sigmaCond * sigmaCond + (1 - trustWeight) * sigmaUncond * sigmaUncond);
+  const pUp5d = 1 - normalCDF(-mu5 / sigma5);
+
+  return {
+    price: PRICE,
+    kelly: Math.max(-1, Math.min(1, kelly)),
+    rawKelly,
+    consensusMult,
+    macroMult,
+    dominantVote,
+    dominantCount,
+    consensus,
+    spread,
+    hurst: hAvg,
+    stress: stress.stress,
+    crowd,
+    mu5,
+    sigma5,
+    pUp5d,
+  };
+}
+
+// ============================================================
+// BACKTEST ENGINE
+// ============================================================
+
+async function runBacktest(config) {
+  const { series, ohlc, macro, tickerName, lookback, sizingMode, txCostBps } = config;
+  const txCost = txCostBps / 10000;
+
+  const results = {
+    trades: [],
+    equityCurve: [],
+    dailyReturns: [],
+    diagnostics: { byConsensus: {}, byRegime: {}, byStress: {}, calibrationBins: {} },
+  };
+
+  // Track open position
+  let position = { dir: 0, size: 0, entryPrice: 0, entryDate: '', entryDay: -1, entrySignals: null };
+  let equity = 100;  // start with $100 capital
+  let peak = 100;
+
+  const startIdx = Math.max(60, series.length - lookback);
+  const endIdx = series.length - 1;
+
+  for (let i = startIdx; i < endIdx; i++) {
+    // Compute signals as of day i-1 (using data through close of i-1)
+    // Trade is then "executed" at day i's open or simulated as day i's close
+    const sig = computeSignalsAt(series, ohlc, i - 1, macro);
+    if (!sig) continue;
+
+    // Today's actual return (price on day i vs i-1)
+    const dailyRet = Math.log(series[i] / series[i - 1]);
+    let pnl = 0;
+
+    // If we have an open position, apply its P&L for today and check exits
+    if (position.size !== 0) {
+      pnl = position.size * dailyRet;
+      const daysHeld = i - position.entryDay;
+      const cumRet = position.dir * Math.log(series[i] / position.entryPrice);
+
+      // Exit conditions
+      let exitReason = null;
+      const expectedMax = Math.abs(position.entrySignals.mu5) +
+                          position.entrySignals.sigma5 * Math.sqrt(2 * 5 * Math.log(5));
+      const takeProfit = 0.75 * expectedMax;
+      const stopLoss = -1.0 * position.entrySignals.sigma5;
+
+      if (cumRet >= takeProfit) exitReason = 'TP';
+      else if (cumRet <= stopLoss) exitReason = 'SL';
+      else if (daysHeld >= 5) exitReason = 'TIME';
+      else if (sig.dominantVote !== position.dir && sig.dominantCount >= 3) exitReason = 'FLIP';
+
+      if (exitReason) {
+        // Close position; charge tx cost on the way out
+        pnl -= Math.abs(position.size) * txCost;
+        const tradeReturn = position.dir * Math.log(series[i] / position.entryPrice) - txCost * 2 / Math.abs(position.size || 1);
+        results.trades.push({
+          entryDay: position.entryDay,
+          entryDate: ohlc[position.entryDay]?.date || '',
+          exitDay: i,
+          exitDate: ohlc[i]?.date || '',
+          dir: position.dir,
+          size: position.size,
+          entryPrice: position.entryPrice,
+          exitPrice: series[i],
+          daysHeld,
+          tradeReturn,
+          exitReason,
+          consensus: position.entrySignals.dominantCount,
+          hurst: position.entrySignals.hurst,
+          stress: position.entrySignals.stress,
+          pUp5d: position.entrySignals.pUp5d,
+        });
+        position = { dir: 0, size: 0, entryPrice: 0, entryDate: '', entryDay: -1, entrySignals: null };
+      }
+    }
+
+    // If flat and signals indicate a new position, open one
+    if (position.size === 0 && sig.consensusMult > 0 && Math.abs(sig.kelly) > 0.05) {
+      let entrySize;
+      if (sizingMode === 'kelly') entrySize = sig.kelly;
+      else if (sizingMode === 'fractional') entrySize = sig.kelly;  // already 0.25× internally
+      else if (sizingMode === 'binary') entrySize = sig.dominantCount >= 3 ? sig.dominantVote * 0.5 : 0;
+      else entrySize = sig.kelly;
+
+      if (Math.abs(entrySize) > 0.05) {
+        // Charge tx cost on entry
+        pnl -= Math.abs(entrySize) * txCost;
+        position = {
+          dir: Math.sign(entrySize),
+          size: entrySize,
+          entryPrice: series[i],
+          entryDate: ohlc[i]?.date || '',
+          entryDay: i,
+          entrySignals: sig,
+        };
+      }
+    }
+
+    // Update equity
+    equity *= Math.exp(pnl);
+    peak = Math.max(peak, equity);
+    const drawdown = (equity - peak) / peak;
+    results.equityCurve.push({ day: i, equity, drawdown, price: series[i], date: ohlc[i]?.date || '' });
+    results.dailyReturns.push(pnl);
+
+    // Progress callback every ~10%
+    if (config.onProgress && i % Math.floor((endIdx - startIdx) / 20) === 0) {
+      config.onProgress((i - startIdx) / (endIdx - startIdx));
+      // yield to UI
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  // Close any remaining open position at end
+  if (position.size !== 0) {
+    const lastI = endIdx;
+    const tradeReturn = position.dir * Math.log(series[lastI] / position.entryPrice) - txCost * 2 / Math.abs(position.size);
+    results.trades.push({
+      entryDay: position.entryDay,
+      entryDate: ohlc[position.entryDay]?.date || '',
+      exitDay: lastI,
+      exitDate: ohlc[lastI]?.date || '',
+      dir: position.dir,
+      size: position.size,
+      entryPrice: position.entryPrice,
+      exitPrice: series[lastI],
+      daysHeld: lastI - position.entryDay,
+      tradeReturn,
+      exitReason: 'END',
+      consensus: position.entrySignals.dominantCount,
+      hurst: position.entrySignals.hurst,
+      stress: position.entrySignals.stress,
+      pUp5d: position.entrySignals.pUp5d,
+    });
+  }
+
+  return computeStats(results, tickerName);
+}
+
+function computeStats(results, tickerName) {
+  const trades = results.trades;
+  if (trades.length === 0) {
+    return { ...results, stats: { totalTrades: 0, error: 'No trades generated' } };
+  }
+
+  const finalEquity = results.equityCurve[results.equityCurve.length - 1]?.equity || 100;
+  const totalReturn = (finalEquity - 100) / 100;
+  const days = results.dailyReturns.length;
+  const years = days / 252;
+  const cagr = years > 0 ? Math.pow(finalEquity / 100, 1 / years) - 1 : 0;
+
+  // Daily returns stats
+  const meanDaily = results.dailyReturns.reduce((a, b) => a + b, 0) / Math.max(days, 1);
+  const varDaily = results.dailyReturns.reduce((a, b) => a + (b - meanDaily) ** 2, 0) / Math.max(days, 1);
+  const stdDaily = Math.sqrt(varDaily);
+  const sharpe = stdDaily > 0 ? (meanDaily * 252) / (stdDaily * Math.sqrt(252)) : 0;
+
+  // Downside-only stdev for Sortino
+  const negRets = results.dailyReturns.filter(r => r < 0);
+  const downsideVar = negRets.length > 0 ? negRets.reduce((a, b) => a + b * b, 0) / negRets.length : 0;
+  const sortino = downsideVar > 0 ? (meanDaily * 252) / (Math.sqrt(downsideVar) * Math.sqrt(252)) : 0;
+
+  // Max drawdown
+  const maxDD = Math.min(...results.equityCurve.map(p => p.drawdown));
+  const calmar = maxDD < 0 ? cagr / Math.abs(maxDD) : 0;
+
+  // Trade-level stats
+  const winners = trades.filter(t => t.tradeReturn > 0);
+  const losers = trades.filter(t => t.tradeReturn <= 0);
+  const winRate = winners.length / trades.length;
+  const avgWin = winners.length > 0 ? winners.reduce((a, b) => a + b.tradeReturn, 0) / winners.length : 0;
+  const avgLoss = losers.length > 0 ? losers.reduce((a, b) => a + b.tradeReturn, 0) / losers.length : 0;
+  const profitFactor = losers.length > 0 && avgLoss < 0 ?
+    Math.abs((winners.reduce((a, b) => a + b.tradeReturn, 0)) / (losers.reduce((a, b) => a + b.tradeReturn, 0))) : 0;
+  const avgHoldTime = trades.reduce((a, b) => a + b.daysHeld, 0) / trades.length;
+
+  // Buy-and-hold comparison
+  const firstPrice = results.equityCurve[0]?.price || 0;
+  const lastPrice = results.equityCurve[results.equityCurve.length - 1]?.price || 0;
+  const bhReturn = firstPrice > 0 ? (lastPrice / firstPrice - 1) : 0;
+
+  // Diagnostics by consensus tier
+  const byConsensus = {};
+  for (const t of trades) {
+    const tier = t.consensus;
+    if (!byConsensus[tier]) byConsensus[tier] = { trades: 0, wins: 0, totalReturn: 0 };
+    byConsensus[tier].trades++;
+    if (t.tradeReturn > 0) byConsensus[tier].wins++;
+    byConsensus[tier].totalReturn += t.tradeReturn;
+  }
+
+  // By Hurst regime
+  const byRegime = {};
+  for (const t of trades) {
+    const regime = t.hurst > 0.55 ? 'trending' : t.hurst < 0.45 ? 'mean-reverting' : 'random walk';
+    if (!byRegime[regime]) byRegime[regime] = { trades: 0, wins: 0, totalReturn: 0 };
+    byRegime[regime].trades++;
+    if (t.tradeReturn > 0) byRegime[regime].wins++;
+    byRegime[regime].totalReturn += t.tradeReturn;
+  }
+
+  // By stress level
+  const byStress = {};
+  for (const t of trades) {
+    const tier = t.stress > 0.7 ? 'high' : t.stress > 0.4 ? 'moderate' : 'calm';
+    if (!byStress[tier]) byStress[tier] = { trades: 0, wins: 0, totalReturn: 0 };
+    byStress[tier].trades++;
+    if (t.tradeReturn > 0) byStress[tier].wins++;
+    byStress[tier].totalReturn += t.tradeReturn;
+  }
+
+  // Calibration: bin by pUp5d, see if hit rate matches predicted probability
+  const calibBins = [];
+  const binEdges = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+  for (let i = 0; i < binEdges.length - 1; i++) {
+    const lo = binEdges[i], hi = binEdges[i + 1];
+    const binTrades = trades.filter(t => t.pUp5d >= lo && t.pUp5d < hi);
+    if (binTrades.length === 0) continue;
+    const observed = binTrades.filter(t => t.tradeReturn > 0).length / binTrades.length;
+    const predicted = (lo + hi) / 2;
+    calibBins.push({ predicted, observed, n: binTrades.length });
+  }
+
+  // Brier score (mean squared error of probability forecasts)
+  const brier = trades.reduce((a, t) => {
+    const outcome = t.tradeReturn > 0 ? 1 : 0;
+    return a + (t.pUp5d - outcome) ** 2;
+  }, 0) / trades.length;
+
+  return {
+    ...results,
+    stats: {
+      ticker: tickerName,
+      totalTrades: trades.length,
+      totalReturn, cagr, sharpe, sortino, maxDD, calmar,
+      winRate, avgWin, avgLoss, profitFactor, avgHoldTime,
+      bhReturn, days, years,
+      finalEquity,
+    },
+    diagnostics: { byConsensus, byRegime, byStress, calibBins, brier },
+  };
+}
+
+// ============================================================
+// UI / RENDERING
+// ============================================================
+
+let allData = {};
+
+async function loadIndex() {
+  try {
+    const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-cache' });
+    if (!resp.ok) throw new Error('no index');
+    const idx = await resp.json();
+    const select = document.getElementById('tickerSelect');
+    select.innerHTML = idx.tickers.map(t =>
+      `<option value="${t.ticker}">${t.ticker} · ${t.name}</option>`).join('');
+    document.getElementById('dataBanner').textContent = `${idx.tickers.length} tickers available · ` + new Date(idx.generatedAt).toLocaleString();
+    return idx;
+  } catch (e) {
+    document.getElementById('dataBanner').textContent = 'no data available — run the GitHub Action first';
+    document.getElementById('dataBanner').style.borderColor = 'var(--bear)';
+    document.getElementById('dataBanner').style.color = 'var(--bear)';
+    return null;
+  }
+}
+
+async function loadTickerData(ticker) {
+  const safeFilename = ticker.replace(/[=^]/g, '_') + '.json';
+  const resp = await fetch(`data/${safeFilename}?t=${Date.now()}`, { cache: 'no-cache' });
+  if (!resp.ok) throw new Error(`No data file for ${ticker}`);
+  return await resp.json();
+}
+
+document.getElementById('runBtn').addEventListener('click', async () => {
+  const ticker = document.getElementById('tickerSelect').value;
+  if (!ticker) {
+    alert('Select a ticker first');
+    return;
+  }
+  const lookback = parseInt(document.getElementById('startSelect').value);
+  const sizingMode = document.getElementById('sizingMode').value;
+  const txCostBps = parseInt(document.getElementById('txCost').value);
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = 'loading data…';
+
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('progressStatus').textContent = 'fetching historical data…';
+
+  try {
+    const tickerData = await loadTickerData(ticker);
+
+    // We need historical data; check if it exists
+    if (!tickerData.historical || !tickerData.historical.series || tickerData.historical.series.length < 100) {
+      document.getElementById('progressStatus').textContent =
+        `⚠ This ticker only has ${tickerData.series?.length || 0} bars of recent data. ` +
+        `For backtesting, you need the extended history. Re-run the GitHub Action — the v6 fetch script pulls 5y of bars.`;
+      btn.disabled = false;
+      btn.textContent = '▶ Run backtest';
+      return;
+    }
+
+    const series = tickerData.historical.series;
+    const ohlc = tickerData.historical.ohlc;
+    document.getElementById('progressStatus').textContent =
+      `loaded ${series.length} bars (${(series.length / 252).toFixed(1)} years) · starting backtest…`;
+
+    btn.textContent = 'running…';
+    const config = {
+      series,
+      ohlc,
+      macro: null,  // simplified — macro context not historical yet
+      tickerName: ticker,
+      lookback: Math.min(lookback, series.length - 60),
+      sizingMode,
+      txCostBps,
+      onProgress: (frac) => {
+        document.getElementById('progressFill').style.width = (frac * 100) + '%';
+        document.getElementById('progressStatus').textContent =
+          `running… ${(frac * 100).toFixed(0)}% complete`;
+      },
+    };
+
+    const result = await runBacktest(config);
+
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressStatus').textContent =
+      `complete · ${result.stats.totalTrades} trades over ${result.stats.years.toFixed(1)}y`;
+
+    renderResults(result);
+    btn.textContent = '▶ Run backtest';
+    btn.disabled = false;
+  } catch (e) {
+    document.getElementById('progressStatus').textContent = 'error: ' + e.message;
+    console.error(e);
+    btn.textContent = '▶ Run backtest';
+    btn.disabled = false;
+  }
+});
+
+function renderResults(result) {
+  document.getElementById('resultsPanel').style.display = 'block';
+  document.getElementById('equityPanel').style.display = 'block';
+  document.getElementById('consensusPanel').style.display = 'block';
+  document.getElementById('regimePanel').style.display = 'block';
+  document.getElementById('calibrationPanel').style.display = 'block';
+  document.getElementById('stressPanel').style.display = 'block';
+  document.getElementById('logPanel').style.display = 'block';
+
+  const s = result.stats;
+
+  // KPIs
+  function kpi(label, value, sub, cls = '') {
+    return `<div class="kpi"><div class="lbl">${label}</div>
+      <div class="val ${cls}">${value}</div>
+      ${sub ? `<div class="sub-val">${sub}</div>` : ''}</div>`;
+  }
+  const totalCls = s.totalReturn > 0 ? 'bull' : 'bear';
+  const sharpeCls = s.sharpe > 1 ? 'bull' : s.sharpe > 0 ? 'warn' : 'bear';
+  document.getElementById('kpiGrid').innerHTML =
+    kpi('Total return', (s.totalReturn * 100).toFixed(1) + '%',
+        `vs B&H ${(s.bhReturn * 100).toFixed(1)}%`, totalCls) +
+    kpi('CAGR', (s.cagr * 100).toFixed(1) + '%',
+        `${s.years.toFixed(1)} years`, s.cagr > 0 ? 'bull' : 'bear') +
+    kpi('Sharpe', s.sharpe.toFixed(2),
+        'risk-adjusted return', sharpeCls) +
+    kpi('Sortino', s.sortino.toFixed(2),
+        'downside-only', s.sortino > 1 ? 'bull' : s.sortino > 0 ? 'warn' : 'bear') +
+    kpi('Max drawdown', (s.maxDD * 100).toFixed(1) + '%',
+        `Calmar ${s.calmar.toFixed(2)}`, s.maxDD > -0.10 ? 'bull' : s.maxDD > -0.25 ? 'warn' : 'bear') +
+    kpi('Win rate', (s.winRate * 100).toFixed(1) + '%',
+        `${s.totalTrades} trades`, s.winRate > 0.55 ? 'bull' : s.winRate > 0.45 ? 'warn' : 'bear') +
+    kpi('Profit factor', s.profitFactor.toFixed(2),
+        `avg win ${(s.avgWin*100).toFixed(2)}% · loss ${(s.avgLoss*100).toFixed(2)}%`,
+        s.profitFactor > 1.5 ? 'bull' : s.profitFactor > 1 ? 'warn' : 'bear') +
+    kpi('Avg hold', s.avgHoldTime.toFixed(1) + 'd',
+        '', '');
+
+  // Equity curve
+  drawEquityCurve(result.equityCurve);
+  drawDrawdownChart(result.equityCurve);
+
+  // Consensus diagnostics
+  const consTable = document.getElementById('consensusTable');
+  consTable.innerHTML = [4, 3, 2, 1].map(tier => {
+    const d = result.diagnostics.byConsensus[tier];
+    if (!d) return `<tr><td class="name">${tier}/4 agents</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+    const wr = d.wins / d.trades;
+    const avg = d.totalReturn / d.trades;
+    const wrCls = wr > 0.55 ? 'bull' : wr > 0.45 ? 'warn' : 'bear';
+    const avgCls = avg > 0 ? 'bull' : 'bear';
+    return `<tr>
+      <td class="name">${tier}/4 agents agree</td>
+      <td class="num">${d.trades}</td>
+      <td class="num pct ${wrCls}">${(wr * 100).toFixed(1)}%</td>
+      <td class="num pct ${avgCls}">${(avg * 100).toFixed(2)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Regime diagnostics
+  const regTable = document.getElementById('regimeTable');
+  regTable.innerHTML = ['trending', 'random walk', 'mean-reverting'].map(regime => {
+    const d = result.diagnostics.byRegime[regime];
+    if (!d) return `<tr><td class="name">${regime}</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+    const wr = d.wins / d.trades;
+    const avg = d.totalReturn / d.trades;
+    const wrCls = wr > 0.55 ? 'bull' : wr > 0.45 ? 'warn' : 'bear';
+    const avgCls = avg > 0 ? 'bull' : 'bear';
+    return `<tr>
+      <td class="name">${regime}</td>
+      <td class="num">${d.trades}</td>
+      <td class="num pct ${wrCls}">${(wr * 100).toFixed(1)}%</td>
+      <td class="num pct ${avgCls}">${(avg * 100).toFixed(2)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Stress diagnostics
+  const stressTable = document.getElementById('stressTable');
+  stressTable.innerHTML = ['high', 'moderate', 'calm'].map(tier => {
+    const d = result.diagnostics.byStress[tier];
+    if (!d) return `<tr><td class="name">${tier}</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>`;
+    const wr = d.wins / d.trades;
+    const avg = d.totalReturn / d.trades;
+    const wrCls = wr > 0.55 ? 'bull' : wr > 0.45 ? 'warn' : 'bear';
+    const avgCls = avg > 0 ? 'bull' : 'bear';
+    return `<tr>
+      <td class="name">${tier} stress</td>
+      <td class="num">${d.trades}</td>
+      <td class="num pct ${wrCls}">${(wr * 100).toFixed(1)}%</td>
+      <td class="num pct ${avgCls}">${(avg * 100).toFixed(2)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Calibration chart
+  drawCalibrationChart(result.diagnostics.calibBins);
+  document.getElementById('brierScore').innerHTML =
+    `<b style="color:var(--acc2)">Brier score: ${result.diagnostics.brier.toFixed(4)}</b> ` +
+    `(0 = perfect, 0.25 = no skill / random). Lower is better.`;
+
+  // Trade log (latest 200)
+  const logRows = result.trades.slice(-200).reverse().map(t => {
+    const retCls = t.tradeReturn > 0 ? 'bull' : 'bear';
+    const dirLabel = t.dir > 0 ? 'L' : 'S';
+    const dirCls = t.dir > 0 ? 'bull' : 'bear';
+    return `<tr>
+      <td>${t.entryDate || ('d' + t.entryDay)}</td>
+      <td class="${dirCls}">${dirLabel}</td>
+      <td>${(t.size * 100).toFixed(0)}%</td>
+      <td>$${t.entryPrice.toFixed(2)}</td>
+      <td>$${t.exitPrice.toFixed(2)}</td>
+      <td>${t.daysHeld}</td>
+      <td class="${retCls}">${(t.tradeReturn * 100).toFixed(2)}%</td>
+      <td>${t.exitReason}</td>
+      <td>${t.consensus}/4</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tradeRows').innerHTML = logRows;
+}
+
+// ============================================================
+// CHARTS
+// ============================================================
+
+function drawEquityCurve(curve) {
+  const canvas = document.getElementById('equityChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth;
+  const h = 320;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#0e1119';
+  ctx.fillRect(0, 0, w, h);
+
+  if (curve.length === 0) return;
+
+  const pad = { l: 50, r: 10, t: 14, b: 24 };
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+
+  const equities = curve.map(p => p.equity);
+  const prices = curve.map(p => p.price);
+  const minEq = Math.min(...equities, 90);
+  const maxEq = Math.max(...equities, 110);
+
+  // Normalize price to start at 100 for buy-and-hold comparison
+  const startPrice = prices[0];
+  const bhCurve = prices.map(p => p / startPrice * 100);
+
+  // Grid lines
+  ctx.strokeStyle = '#1c2029';
+  ctx.lineWidth = 1;
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillStyle = '#454d5d';
+  for (let i = 0; i <= 5; i++) {
+    const yVal = minEq + (maxEq - minEq) * (1 - i / 5);
+    const y = pad.t + (plotH * i / 5);
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(w - pad.r, y);
+    ctx.stroke();
+    ctx.fillText('$' + yVal.toFixed(0), 4, y + 3);
+  }
+
+  // Buy-and-hold line
+  ctx.strokeStyle = '#454d5d';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2, 3]);
+  ctx.beginPath();
+  bhCurve.forEach((eq, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (1 - (eq - minEq) / (maxEq - minEq)) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Strategy equity curve
+  ctx.strokeStyle = '#7fd4c8';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  equities.forEach((eq, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (1 - (eq - minEq) / (maxEq - minEq)) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Legend
+  ctx.fillStyle = '#7fd4c8';
+  ctx.fillText('— strategy', w - 200, pad.t + 8);
+  ctx.fillStyle = '#454d5d';
+  ctx.fillText('-- buy & hold', w - 100, pad.t + 8);
+}
+
+function drawDrawdownChart(curve) {
+  const canvas = document.getElementById('ddChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth;
+  const h = 140;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#0e1119';
+  ctx.fillRect(0, 0, w, h);
+
+  if (curve.length === 0) return;
+  const pad = { l: 50, r: 10, t: 14, b: 18 };
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+
+  const dds = curve.map(p => p.drawdown);
+  const minDD = Math.min(...dds, -0.05);
+  const maxDD = 0;
+
+  // Grid lines and labels
+  ctx.strokeStyle = '#1c2029';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillStyle = '#454d5d';
+  for (let i = 0; i <= 3; i++) {
+    const ddVal = minDD * i / 3;
+    const y = pad.t + (i / 3) * plotH;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, y);
+    ctx.lineTo(w - pad.r, y);
+    ctx.stroke();
+    ctx.fillText((ddVal * 100).toFixed(1) + '%', 4, y + 3);
+  }
+
+  // Fill area
+  ctx.fillStyle = 'rgba(232,92,92,0.25)';
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t);
+  dds.forEach((dd, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (dd / minDD) * plotH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.l + plotW, pad.t);
+  ctx.closePath();
+  ctx.fill();
+
+  // Line
+  ctx.strokeStyle = '#e85c5c';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  dds.forEach((dd, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (dd / minDD) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle = '#e85c5c';
+  ctx.fillText('drawdown', w - 70, pad.t + 8);
+}
+
+function drawCalibrationChart(bins) {
+  const canvas = document.getElementById('calibChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth;
+  const h = 280;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  ctx.fillStyle = '#0e1119';
+  ctx.fillRect(0, 0, w, h);
+  const pad = { l: 40, r: 14, t: 14, b: 30 };
+  const plotW = w - pad.l - pad.r;
+  const plotH = h - pad.t - pad.b;
+
+  // Grid
+  ctx.strokeStyle = '#1c2029';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillStyle = '#454d5d';
+  for (let i = 0; i <= 4; i++) {
+    const v = i / 4;
+    const x = pad.l + v * plotW;
+    const y = pad.t + (1 - v) * plotH;
+    ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, pad.t + plotH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + plotW, y); ctx.stroke();
+    ctx.fillText((v * 100).toFixed(0) + '%', x - 8, pad.t + plotH + 14);
+    ctx.fillText((v * 100).toFixed(0) + '%', 4, y + 3);
+  }
+
+  // Perfect calibration line (diagonal)
+  ctx.strokeStyle = '#7fd4c8';
+  ctx.setLineDash([3, 4]);
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t + plotH);
+  ctx.lineTo(pad.l + plotW, pad.t);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Data points
+  ctx.fillStyle = '#e2c25b';
+  bins.forEach(b => {
+    const x = pad.l + b.predicted * plotW;
+    const y = pad.t + (1 - b.observed) * plotH;
+    const r = Math.min(10, 3 + Math.sqrt(b.n));
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Axis labels
+  ctx.fillStyle = '#6c7585';
+  ctx.fillText('predicted probability →', pad.l + plotW / 2 - 50, h - 4);
+  ctx.save();
+  ctx.translate(12, pad.t + plotH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('observed frequency →', -50, 0);
+  ctx.restore();
+}
+
+// Boot
+loadIndex();
+</script>
+</body>
+</html>
