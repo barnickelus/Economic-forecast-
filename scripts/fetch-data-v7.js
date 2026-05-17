@@ -11,7 +11,7 @@
  *         data/index.json     — list of all tracked tickers.
  *         data/latest.json    — backward-compat for silver dashboard.
  */
-
+6
 const fs = require('fs');
 const path = require('path');
 
