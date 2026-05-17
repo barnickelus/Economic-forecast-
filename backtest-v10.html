@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>v10 · Real-Data Signal Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06070b; --bg2:#0a0c12; --bg3:#0e1119;
+    --ink:#d4dae6; --ink2:#6c7585; --ink3:#454d5d;
+    --acc:#7fd4c8; --acc2:#a8e8de;
+    --bull:#5dcf7e; --bear:#e85c5c; --warn:#e2c25b; --neutral:#6c7585;
+    --line:#1c2029;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5}
+  body{padding:14px 14px 60px;min-height:100vh;
+    background:radial-gradient(ellipse at 10% -5%, rgba(127,212,200,0.06), transparent 50%), linear-gradient(180deg, #06070b 0%, #08090e 100%);}
+  header{max-width:1400px;margin:0 auto 18px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;letter-spacing:-.3px;margin:0;color:var(--acc2)}
+  h1 .v{color:var(--acc);font-style:italic;font-size:16px;margin-left:6px}
+  .tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:14px;margin-top:4px}
+  .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:8px;flex-wrap:wrap}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .nav a.active{color:var(--acc);border-color:var(--acc)}
+  main{max-width:1400px;margin:0 auto;display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .panel{background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);border:1px solid var(--line);padding:14px 16px;position:relative}
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:1px solid var(--acc);border-right:1px solid var(--acc)}
+  .panel h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;margin:0 0 4px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 6px}
+  .panel .sub{font-size:11px;color:var(--ink2);margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;line-height:1.5}
+  .grid-12{grid-column:span 12}.grid-6{grid-column:span 12}.grid-4{grid-column:span 12}
+  @media(min-width:900px){.grid-6{grid-column:span 6}.grid-4{grid-column:span 4}}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+  .ctl label{display:block;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .ctl select,.ctl input{width:100%;background:var(--bg3);color:var(--ink);border:1px solid var(--line);padding:6px 8px;font-family:inherit;font-size:12px}
+  .run-btn{background:var(--acc);color:var(--bg);border:none;padding:10px 22px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
+  .run-btn:hover{background:var(--acc2)}
+  .run-btn:disabled{opacity:.4;cursor:not-allowed}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .kpi{padding:10px 12px;border:1px solid var(--line);background:var(--bg3)}
+  .kpi .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .kpi .val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;color:var(--ink);line-height:1}
+  .kpi .val.bull{color:var(--bull)}.kpi .val.bear{color:var(--bear)}.kpi .val.warn{color:var(--warn)}
+  .kpi .sub-val{font-size:10px;color:var(--ink2);margin-top:4px}
+  .arch-card{padding:12px 14px;border:1px solid var(--acc);background:rgba(127,212,200,0.04);margin-top:8px}
+  .arch-card .ttl{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--acc2)}
+  .arch-card .desc{font-size:11px;color:var(--ink2);margin-top:4px;line-height:1.5;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px}
+  #equityChart{width:100%;height:340px;background:var(--bg3);border:1px solid var(--line);display:block}
+  #ddChart{width:100%;height:140px;background:var(--bg3);border:1px solid var(--line);display:block;margin-top:8px}
+  .live-banner{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:rgba(127,212,200,0.08);border:1px solid var(--acc);font-size:10px;letter-spacing:2px;color:var(--acc);text-transform:uppercase}
+  .progress{width:100%;height:6px;background:var(--bg3);border:1px solid var(--line);position:relative;margin-top:8px}
+  .progress .fill{height:100%;background:var(--acc);transition:width 0.2s}
+  .status{font-size:10px;color:var(--ink2);margin-top:4px}
+  .trade-log{max-height:380px;overflow-y:auto;border:1px solid var(--line);background:var(--bg3);font-size:10px}
+  .trade-log table{width:100%;border-collapse:collapse}
+  .trade-log th{position:sticky;top:0;background:var(--bg2);padding:6px 8px;font-size:8px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;border-bottom:1px solid var(--line);text-align:left}
+  .trade-log td{padding:4px 8px;border-bottom:1px dotted var(--line)}
+  .trade-log td.bull{color:var(--bull)}.trade-log td.bear{color:var(--bear)}
+  details{margin-top:10px;border:1px solid var(--line);padding:8px 12px;background:rgba(0,0,0,0.15)}
+  details summary{cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--acc2);font-style:italic}
+  details p{font-size:11px;color:var(--ink2);margin:6px 0;line-height:1.55}
+  .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 6px var(--acc);animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>v10<span class="v">/ real-data signal strategy</span></h1>
+    <div class="tag">built from IC analysis on real historical prices · five real Grade-A signals</div>
+    <nav class="nav">
+      <a href="index.html">live</a>
+      <a href="backtest.html">backtest v7</a>
+      <a href="backtest-v8.html">v8</a>
+      <a href="signal-lab.html">lab</a>
+      <a href="backtest-v10.html" class="active">v10</a>
+    </nav>
+  </div>
+  <div><div class="live-banner" id="dataBanner">loading…</div></div>
+</header>
+
+<main>
+  <!-- ARCHITECTURE -->
+  <section class="panel grid-12">
+    <h2>v10 architecture <span class="num">data-derived</span></h2>
+    <div class="sub">Built from IC findings on real silver data at multiple horizons. The five signals below all survived Bonferroni correction on out-of-sample data. v10 forecasts at the <b>5-day horizon</b> where the most signals reach Grade A simultaneously, and uses regime conditioning (joint-signal radar) to flip sign of certain signals based on volatility state.</div>
+    <div class="arch-card">
+      <div class="ttl">Directional core: volume_thrust (test IC 0.279, t=5.10)</div>
+      <div class="desc">Signed by today's close-vs-yesterday, scaled by 20-day volume ratio. Strongest single directional signal on real silver. Positive IC = high signal predicts up.</div>
+    </div>
+    <div class="arch-card">
+      <div class="ttl">Confirmation: hl_close_position (test IC 0.232, t=4.19)</div>
+      <div class="desc">Where today's close sits in today's high-low range. Close near high = bullish day = bullish forward signal. Survived Bonferroni at every horizon 3d-10d.</div>
+    </div>
+    <div class="arch-card">
+      <div class="ttl">Regime detector: atr_compression (test IC 0.288, t=5.27 magnitude · 0.177, t=3.16 directional at 5d)</div>
+      <div class="desc">14-day ATR / 60-day-avg ATR. Predicts expansion magnitude AND adds directional info at 5d horizon. Used both as size multiplier and as input to joint signal.</div>
+    </div>
+    <div class="arch-card">
+      <div class="ttl">Regime conditioner: bb_squeeze top quartile triggers SIGN FLIP</div>
+      <div class="desc">When 20-day BB width is in top quartile (vol elevated), the joint-signal radar showed atr_compression's directional IC flips from +0.207 to −0.293 (lift −0.500). v10 applies this sign flip directly.</div>
+    </div>
+    <div class="arch-card">
+      <div class="ttl">Combined signal formula</div>
+      <div class="desc" style="font-family:'JetBrains Mono';font-style:normal">combined = 0.40·z(volume_thrust) + 0.33·z(hl_close_position) + flip·0.27·z(atr_compression)<br>where flip = −1 if bb_squeeze in top quartile, else +1<br>weights proportional to test IC magnitudes</div>
+    </div>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="panel grid-12">
+    <h2>Run configuration <span class="num">backtest</span></h2>
+    <div class="controls">
+      <div class="ctl">
+        <label>Ticker</label>
+        <select id="tickerSelect"><option>loading…</option></select>
+      </div>
+      <div class="ctl">
+        <label>Lookback</label>
+        <select id="lookbackSelect">
+          <option value="252">1 year</option>
+          <option value="504" selected>2 years</option>
+          <option value="756">3 years</option>
+          <option value="1260">5 years</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>Signal threshold</label>
+        <select id="thresholdSelect">
+          <option value="0.3">0.30 (loose)</option>
+          <option value="0.5" selected>0.50 (recommended)</option>
+          <option value="0.7">0.70 (strict)</option>
+          <option value="1.0">1.00 (rare entries)</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>Position sizing</label>
+        <select id="sizingMode">
+          <option value="fixed">Fixed (1× notional)</option>
+          <option value="kelly" selected>Vol-scaled (Kelly-like)</option>
+          <option value="compression">Compression-scaled</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>Tx cost (bps)</label>
+        <input type="number" id="txCost" value="10" min="0" max="100" step="1" />
+      </div>
+      <div class="ctl">
+        <label>&nbsp;</label>
+        <button class="run-btn" id="runBtn">▶ Run v10 backtest</button>
+      </div>
+    </div>
+    <div class="progress" id="progress" style="display:none"><div class="fill" id="progFill" style="width:0%"></div></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="panel grid-12" id="resultsPanel" style="display:none">
+    <h2>Performance summary <span class="num">v10 results</span></h2>
+    <div class="kpi-grid" id="kpiGrid"></div>
+  </section>
+
+  <section class="panel grid-12" id="equityPanel" style="display:none">
+    <h2>Equity curve vs buy-and-hold <span class="num">path</span></h2>
+    <canvas id="equityChart"></canvas>
+    <canvas id="ddChart"></canvas>
+  </section>
+
+  <section class="panel grid-12" id="logPanel" style="display:none">
+    <h2>Trade log <span class="num">last 200</span></h2>
+    <div class="trade-log">
+      <table>
+        <thead><tr>
+          <th>Day</th><th>Signal</th><th>Dir</th><th>Size</th><th>Regime</th>
+          <th>Entry</th><th>Exit T+5</th><th>Return</th><th>Cum</th>
+        </tr></thead>
+        <tbody id="tradeRows"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+// v10 signal computation — matched to the rapid signal lab outputs
+
+function computeVolumeThrust(ohlc, i) {
+  if (i < 20 || !ohlc[i] || !ohlc[i-1]) return null;
+  let avgV = 0, c = 0;
+  for (let k = 0; k < 20; k++) {
+    if (ohlc[i - k]) { avgV += ohlc[i - k].v; c++; }
+  }
+  if (c === 0 || avgV === 0) return null;
+  avgV /= c;
+  const sign = ohlc[i].c > ohlc[i - 1].c ? 1 : -1;
+  return sign * (ohlc[i].v / avgV);
+}
+
+function computeHLClose(ohlc, i) {
+  if (!ohlc[i]) return null;
+  const range = ohlc[i].h - ohlc[i].l;
+  return range > 0 ? (ohlc[i].c - ohlc[i].l) / range : 0.5;
+}
+
+function computeATRCompression(series, ohlc, i) {
+  if (i < 75 || !ohlc[i]) return null;
+  const atrAt = (idx) => {
+    let s = 0, c = 0;
+    for (let k = 0; k < 14; k++) {
+      const j = idx - k;
+      if (j > 0 && j < ohlc.length && ohlc[j] && ohlc[j-1]) {
+        s += Math.max(
+          ohlc[j].h - ohlc[j].l,
+          Math.abs(ohlc[j].h - ohlc[j-1].c),
+          Math.abs(ohlc[j].l - ohlc[j-1].c)
+        );
+        c++;
+      }
+    }
+    return c > 0 ? s / c / series[idx] : null;
+  };
+  const todayATR = atrAt(i);
+  if (todayATR == null) return null;
+  let sum = 0, cnt = 0;
+  for (let k = 1; k <= 60; k++) {
+    const a = atrAt(i - k);
+    if (a != null) { sum += a; cnt++; }
+  }
+  if (cnt === 0) return null;
+  return todayATR / (sum / cnt);
+}
+
+function computeBBSqueeze(series, i) {
+  if (i < 80) return null;
+  const cvAt = (idx) => {
+    const slice = series.slice(idx - 20, idx);
+    const m = slice.reduce((a,b) => a+b, 0) / slice.length;
+    const sd = Math.sqrt(slice.reduce((a,b) => a + (b-m)**2, 0) / slice.length);
+    return sd / m;
+  };
+  const today = cvAt(i);
+  if (today == null) return null;
+  const hist = [];
+  for (let k = 1; k <= 60; k++) {
+    const v = cvAt(i - k);
+    if (v != null && isFinite(v)) hist.push(v);
+  }
+  if (hist.length === 0) return null;
+  const sorted = [...hist].sort((a,b) => a - b);
+  let rank = sorted.findIndex(v => v >= today);
+  if (rank < 0) rank = sorted.length;
+  return rank / sorted.length;  // 0 to 1
+}
+
+// Z-score using a rolling 252-day window of prior data (no look-ahead)
+function rollingZScore(values, i, window = 252) {
+  if (i < 30) return null;
+  const sliceSize = Math.min(window, i);
+  const slice = values.slice(i - sliceSize, i).filter(v => v != null && isFinite(v));
+  if (slice.length < 30 || values[i] == null) return null;
+  const m = slice.reduce((a,b) => a+b, 0) / slice.length;
+  const sd = Math.sqrt(slice.reduce((a,b) => a + (b-m)**2, 0) / slice.length) || 1;
+  return (values[i] - m) / sd;
+}
+
+async function runV10Backtest(series, ohlc, lookback, threshold, txBps, sizingMode, onProgress) {
+  const N = series.length;
+  const txCost = txBps / 10000;
+
+  // Pre-compute raw signals at every day
+  onProgress(0.1, 'computing raw signals…');
+  await new Promise(r => setTimeout(r, 0));
+  const rawVT = new Array(N).fill(null);
+  const rawHL = new Array(N).fill(null);
+  const rawATR = new Array(N).fill(null);
+  const rawBB = new Array(N).fill(null);
+  for (let i = 0; i < Math.min(N, ohlc.length); i++) {
+    rawVT[i] = computeVolumeThrust(ohlc, i);
+    rawHL[i] = computeHLClose(ohlc, i);
+    rawATR[i] = computeATRCompression(series, ohlc, i);
+    rawBB[i] = computeBBSqueeze(series, i);
+  }
+
+  // Rolling z-scores
+  onProgress(0.4, 'normalizing signals…');
+  await new Promise(r => setTimeout(r, 0));
+  const zVT = new Array(N).fill(null);
+  const zHL = new Array(N).fill(null);
+  const zATR = new Array(N).fill(null);
+  for (let i = 0; i < N; i++) {
+    zVT[i] = rollingZScore(rawVT, i);
+    zHL[i] = rollingZScore(rawHL, i);
+    zATR[i] = rollingZScore(rawATR, i);
+  }
+
+  // IC-weighted signal magnitudes (from the real-data analysis)
+  const W_VT = 0.279;
+  const W_HL = 0.232;
+  const W_ATR = 0.177;
+  const W_SUM = W_VT + W_HL + W_ATR;
+
+  // Build combined signal with regime conditioning
+  onProgress(0.6, 'building combined signal with regime flips…');
+  await new Promise(r => setTimeout(r, 0));
+  const combined = new Array(N).fill(null);
+  const flipApplied = new Array(N).fill(false);
+  for (let i = 0; i < N; i++) {
+    if (zVT[i] == null || zHL[i] == null || zATR[i] == null || rawBB[i] == null) continue;
+    // bb_squeeze top quartile flips ATR direction (lift −0.50 finding)
+    const flipATR = rawBB[i] >= 0.75 ? -1 : 1;
+    if (flipATR === -1) flipApplied[i] = true;
+    combined[i] = (
+      W_VT * zVT[i] +
+      W_HL * zHL[i] +
+      flipATR * W_ATR * zATR[i]
+    ) / W_SUM;
+  }
+
+  // Backtest — 5-day hold, non-overlapping
+  onProgress(0.75, 'simulating trades…');
+  await new Promise(r => setTimeout(r, 0));
+  const HOLD = 5;
+  const startI = Math.max(80, N - lookback);
+  const endI = N - HOLD - 1;
+  const trades = [];
+  const equityCurve = [];
+  let equity = 100, peak = 100;
+  let currentExitDay = -1;  // day at which current position exits
+
+  for (let i = startI; i <= endI; i++) {
+    let pnl = 0;
+    if (i > currentExitDay && combined[i] != null && Math.abs(combined[i]) >= threshold) {
+      const dir = Math.sign(combined[i]);
+      // Position sizing
+      let size;
+      if (sizingMode === 'fixed') size = dir;
+      else if (sizingMode === 'compression') {
+        // Larger size when compression is extreme (signal is stronger)
+        const compressionBoost = rawATR[i] != null ? Math.max(0.5, Math.min(2.0, 1 / rawATR[i])) : 1;
+        size = dir * compressionBoost * 0.5;
+      } else {  // kelly (vol-scaled)
+        // Vol-scaled: smaller position in high-vol periods
+        const targetVol = 0.20;
+        let realizedVol = 0.15;
+        if (i >= 20) {
+          let v = 0;
+          for (let k = 1; k <= 20; k++) {
+            const r = Math.log(series[i - k + 1] / series[i - k]);
+            v += r * r;
+          }
+          realizedVol = Math.sqrt(v / 20 * 252);
+        }
+        size = dir * Math.max(0.3, Math.min(1.5, targetVol / realizedVol));
+      }
+
+      // Charge entry tx cost
+      const entryCost = Math.abs(size) * txCost;
+      equity *= (1 - entryCost);
+
+      // Compute trade P&L over hold period
+      const entryPrice = series[i];
+      const exitPrice = series[i + HOLD];
+      const grossReturn = size * Math.log(exitPrice / entryPrice);
+      const exitCost = Math.abs(size) * txCost;
+      const netReturn = grossReturn - exitCost;
+
+      equity *= Math.exp(netReturn);
+      peak = Math.max(peak, equity);
+
+      trades.push({
+        day: i, signal: combined[i], dir, size,
+        entryPrice, exitPrice,
+        regimeFlip: flipApplied[i],
+        grossReturn, netReturn, pnl: netReturn,
+        equity,
+      });
+      currentExitDay = i + HOLD;
+      // Skip forward 5 days (non-overlapping)
+      for (let k = 0; k < HOLD && i + k <= endI; k++) {
+        equityCurve.push({ day: i + k, equity, drawdown: (equity - peak) / peak, price: series[i + k] });
+      }
+      i += HOLD - 1;  // loop will i++ to next entry candidate
+    } else {
+      equityCurve.push({ day: i, equity, drawdown: (equity - peak) / peak, price: series[i] });
+    }
+  }
+
+  onProgress(1.0, 'computing stats…');
+  return computeStats({ trades, equityCurve, series, startI, endI });
+}
+
+function computeStats({ trades, equityCurve, series, startI, endI }) {
+  if (equityCurve.length === 0) return { stats: { error: 'no data' } };
+
+  const finalEq = equityCurve[equityCurve.length - 1].equity;
+  const totalReturn = (finalEq - 100) / 100;
+  const days = equityCurve.length;
+  const years = days / 252;
+  const cagr = years > 0 ? Math.pow(finalEq / 100, 1/years) - 1 : 0;
+
+  const dailyRets = [];
+  for (let i = 1; i < equityCurve.length; i++) {
+    dailyRets.push(Math.log(equityCurve[i].equity / equityCurve[i-1].equity));
+  }
+  const m = dailyRets.reduce((a,b) => a+b, 0) / Math.max(dailyRets.length,1);
+  const sd = Math.sqrt(dailyRets.reduce((a,b) => a + (b-m)**2, 0) / Math.max(dailyRets.length,1));
+  const sharpe = sd > 0 ? (m * 252) / (sd * Math.sqrt(252)) : 0;
+  const negRets = dailyRets.filter(r => r < 0);
+  const downsideSd = negRets.length > 0 ? Math.sqrt(negRets.reduce((a,b) => a + b*b, 0) / negRets.length) : 0;
+  const sortino = downsideSd > 0 ? (m * 252) / (downsideSd * Math.sqrt(252)) : 0;
+  const maxDD = Math.min(...equityCurve.map(p => p.drawdown));
+  const calmar = maxDD < 0 ? cagr / Math.abs(maxDD) : 0;
+
+  const winners = trades.filter(t => t.pnl > 0);
+  const losers = trades.filter(t => t.pnl <= 0);
+  const winRate = trades.length > 0 ? winners.length / trades.length : 0;
+  const avgWin = winners.length > 0 ? winners.reduce((a,b) => a+b.pnl, 0) / winners.length : 0;
+  const avgLoss = losers.length > 0 ? losers.reduce((a,b) => a+b.pnl, 0) / losers.length : 0;
+  const profitFactor = (losers.length > 0 && avgLoss < 0)
+    ? Math.abs(winners.reduce((a,b) => a+b.pnl, 0) / losers.reduce((a,b) => a+b.pnl, 0))
+    : 0;
+  const flipsApplied = trades.filter(t => t.regimeFlip).length;
+
+  // B&H
+  const firstPrice = equityCurve[0]?.price ?? series[startI];
+  const lastPrice = equityCurve[equityCurve.length - 1]?.price ?? series[endI];
+  const bhReturn = firstPrice > 0 ? (lastPrice / firstPrice - 1) : 0;
+
+  return {
+    trades, equityCurve,
+    stats: {
+      totalReturn, cagr, sharpe, sortino, maxDD, calmar,
+      winRate, avgWin, avgLoss, profitFactor,
+      bhReturn, years, totalTrades: trades.length, flipsApplied,
+    },
+  };
+}
+
+// ============ UI ============
+
+async function loadIndex() {
+  try {
+    const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-cache' });
+    const idx = await resp.json();
+    const select = document.getElementById('tickerSelect');
+    select.innerHTML = idx.tickers.map(t => `<option value="${t.ticker}">${t.ticker} · ${t.name}</option>`).join('');
+    document.getElementById('dataBanner').innerHTML = `<span class="pulse"></span>${idx.tickers.length} tickers`;
+  } catch (e) {
+    document.getElementById('dataBanner').textContent = 'no data';
+    document.getElementById('dataBanner').style.borderColor = 'var(--bear)';
+    document.getElementById('dataBanner').style.color = 'var(--bear)';
+  }
+}
+
+async function loadTicker(ticker) {
+  const filename = ticker.replace(/[=^]/g, '_') + '.json';
+  const resp = await fetch(`data/${filename}?t=${Date.now()}`, { cache: 'no-cache' });
+  return await resp.json();
+}
+
+document.getElementById('runBtn').addEventListener('click', async () => {
+  const ticker = document.getElementById('tickerSelect').value;
+  if (!ticker) { alert('select ticker'); return; }
+  const lookback = parseInt(document.getElementById('lookbackSelect').value);
+  const threshold = parseFloat(document.getElementById('thresholdSelect').value);
+  const sizingMode = document.getElementById('sizingMode').value;
+  const txBps = parseInt(document.getElementById('txCost').value);
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = 'loading…';
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('status').textContent = `fetching ${ticker} data…`;
+
+  try {
+    const td = await loadTicker(ticker);
+    if (!td.historical?.series || td.historical.series.length < 200) {
+      document.getElementById('status').textContent = `⚠ ${ticker} insufficient history`;
+      btn.disabled = false; btn.textContent = '▶ Run v10 backtest';
+      return;
+    }
+    document.getElementById('status').textContent = `${td.historical.series.length} bars loaded · running v10…`;
+    btn.textContent = 'running…';
+
+    const result = await runV10Backtest(
+      td.historical.series, td.historical.ohlc,
+      Math.min(lookback, td.historical.series.length - 80),
+      threshold, txBps, sizingMode,
+      (f, msg) => {
+        document.getElementById('progFill').style.width = (f * 100) + '%';
+        document.getElementById('status').textContent = msg;
+      }
+    );
+
+    document.getElementById('progFill').style.width = '100%';
+    document.getElementById('status').textContent = `complete · ${result.stats.totalTrades} trades over ${result.stats.years.toFixed(1)}y · ${result.stats.flipsApplied} regime flips applied`;
+    renderResults(result);
+    btn.textContent = '▶ Run v10 backtest'; btn.disabled = false;
+  } catch (e) {
+    document.getElementById('status').textContent = 'error: ' + e.message;
+    console.error(e);
+    btn.textContent = '▶ Run v10 backtest'; btn.disabled = false;
+  }
+});
+
+function renderResults(r) {
+  ['resultsPanel','equityPanel','logPanel'].forEach(id => document.getElementById(id).style.display = 'block');
+  const s = r.stats;
+  function k(label, v, sub, cls = '') {
+    return `<div class="kpi"><div class="lbl">${label}</div><div class="val ${cls}">${v}</div>${sub ? `<div class="sub-val">${sub}</div>` : ''}</div>`;
+  }
+  const tc = s.totalReturn > 0 ? 'bull' : 'bear';
+  const sc = s.sharpe > 1 ? 'bull' : s.sharpe > 0 ? 'warn' : 'bear';
+  const wrc = s.winRate > 0.55 ? 'bull' : s.winRate > 0.45 ? 'warn' : 'bear';
+  document.getElementById('kpiGrid').innerHTML =
+    k('Total return', (s.totalReturn*100).toFixed(1) + '%', `vs B&H ${(s.bhReturn*100).toFixed(1)}%`, tc) +
+    k('CAGR', (s.cagr*100).toFixed(1) + '%', `${s.years.toFixed(1)}y`, s.cagr > 0 ? 'bull' : 'bear') +
+    k('Sharpe', s.sharpe.toFixed(2), 'risk-adjusted', sc) +
+    k('Sortino', s.sortino.toFixed(2), 'downside-only', s.sortino > 1 ? 'bull' : 'warn') +
+    k('Max DD', (s.maxDD*100).toFixed(1) + '%', `Calmar ${s.calmar.toFixed(2)}`) +
+    k('Win rate', (s.winRate*100).toFixed(1) + '%', `${s.totalTrades} trades`, wrc) +
+    k('Profit factor', s.profitFactor.toFixed(2), `win ${(s.avgWin*100).toFixed(2)}% · loss ${(s.avgLoss*100).toFixed(2)}%`) +
+    k('Regime flips', s.flipsApplied + '', 'bb_squeeze high → atr flip');
+
+  drawEquity(r.equityCurve);
+  drawDrawdown(r.equityCurve);
+
+  let cum = 0;
+  const rows = r.trades.slice(-200).reverse().map((t) => {
+    const realIdx = r.trades.indexOf(t);
+    let cumAt = 0;
+    for (let i = 0; i <= realIdx; i++) cumAt += r.trades[i].pnl;
+    return `<tr>
+      <td>${t.day}</td>
+      <td>${t.signal.toFixed(2)}</td>
+      <td class="${t.dir > 0 ? 'bull' : 'bear'}">${t.dir > 0 ? 'L' : 'S'}</td>
+      <td>${(t.size).toFixed(2)}</td>
+      <td>${t.regimeFlip ? '⚡flip' : '—'}</td>
+      <td>$${t.entryPrice.toFixed(2)}</td>
+      <td>$${t.exitPrice.toFixed(2)}</td>
+      <td class="${t.pnl > 0 ? 'bull' : 'bear'}">${(t.pnl * 100).toFixed(2)}%</td>
+      <td>${(cumAt * 100).toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tradeRows').innerHTML = rows;
+}
+
+function drawEquity(curve) {
+  const canvas = document.getElementById('equityChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = 340;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#0e1119'; ctx.fillRect(0, 0, w, h);
+  if (curve.length === 0) return;
+  const pad = { l: 50, r: 14, t: 14, b: 24 };
+  const plotW = w - pad.l - pad.r, plotH = h - pad.t - pad.b;
+  const eq = curve.map(p => p.equity);
+  const prices = curve.map(p => p.price);
+  const startPrice = prices[0];
+  const bh = prices.map(p => p / startPrice * 100);
+  const all = [...eq, ...bh];
+  const minV = Math.min(...all, 90), maxV = Math.max(...all, 110);
+
+  ctx.strokeStyle = '#1c2029'; ctx.font = '9px JetBrains Mono'; ctx.fillStyle = '#454d5d';
+  for (let i = 0; i <= 5; i++) {
+    const v = minV + (maxV - minV) * (1 - i/5);
+    const y = pad.t + plotH * i/5;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillText('$' + v.toFixed(0), 4, y + 3);
+  }
+
+  ctx.strokeStyle = '#454d5d'; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
+  ctx.beginPath();
+  bh.forEach((e, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (1 - (e - minV) / (maxV - minV)) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle = '#7fd4c8'; ctx.lineWidth = 1.7;
+  ctx.beginPath();
+  eq.forEach((e, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (1 - (e - minV) / (maxV - minV)) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle = '#7fd4c8'; ctx.fillText('— v10 strategy', w - 220, pad.t + 8);
+  ctx.fillStyle = '#454d5d'; ctx.fillText('-- buy & hold', w - 100, pad.t + 8);
+}
+
+function drawDrawdown(curve) {
+  const canvas = document.getElementById('ddChart');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = 140;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#0e1119'; ctx.fillRect(0, 0, w, h);
+  if (curve.length === 0) return;
+  const pad = { l: 50, r: 14, t: 14, b: 18 };
+  const plotW = w - pad.l - pad.r, plotH = h - pad.t - pad.b;
+  const dds = curve.map(p => p.drawdown);
+  const minDD = Math.min(...dds, -0.05);
+
+  ctx.strokeStyle = '#1c2029'; ctx.font = '9px JetBrains Mono'; ctx.fillStyle = '#454d5d';
+  for (let i = 0; i <= 3; i++) {
+    const v = minDD * i/3;
+    const y = pad.t + (i/3) * plotH;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+    ctx.fillText((v*100).toFixed(1) + '%', 4, y + 3);
+  }
+  ctx.fillStyle = 'rgba(232,92,92,0.25)';
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t);
+  dds.forEach((dd, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (dd / minDD) * plotH;
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(pad.l + plotW, pad.t); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#e85c5c'; ctx.lineWidth = 1; ctx.beginPath();
+  dds.forEach((dd, i) => {
+    const x = pad.l + (i / (curve.length - 1)) * plotW;
+    const y = pad.t + (dd / minDD) * plotH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.fillStyle = '#e85c5c'; ctx.fillText('drawdown', w - 70, pad.t + 8);
+}
+
+loadIndex();
+</script>
+</body>
+</html>
