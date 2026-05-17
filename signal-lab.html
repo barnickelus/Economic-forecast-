@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Signal Lab · Real-Data IC Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06070b; --bg2:#0a0c12; --bg3:#0e1119;
+    --ink:#d4dae6; --ink2:#6c7585; --ink3:#454d5d;
+    --acc:#7fd4c8; --acc2:#a8e8de;
+    --bull:#5dcf7e; --bear:#e85c5c; --warn:#e2c25b; --neutral:#6c7585;
+    --line:#1c2029;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5}
+  body{padding:14px 14px 60px;min-height:100vh;
+    background:radial-gradient(ellipse at 10% -5%, rgba(127,212,200,0.06), transparent 50%), linear-gradient(180deg, #06070b 0%, #08090e 100%);}
+  header{max-width:1400px;margin:0 auto 18px;padding-bottom:12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;letter-spacing:-.3px;margin:0;color:var(--acc2)}
+  h1 .v{color:var(--acc);font-style:italic;font-size:16px;margin-left:6px}
+  .tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:14px;margin-top:4px}
+  .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:8px;flex-wrap:wrap}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .nav a.active{color:var(--acc);border-color:var(--acc)}
+  main{max-width:1400px;margin:0 auto;display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
+  .panel{background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);border:1px solid var(--line);padding:14px 16px;position:relative}
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:1px solid var(--acc);border-right:1px solid var(--acc)}
+  .panel h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;margin:0 0 4px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 6px}
+  .panel .sub{font-size:11px;color:var(--ink2);margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;line-height:1.5}
+  .grid-12{grid-column:span 12}.grid-6{grid-column:span 12}.grid-4{grid-column:span 12}
+  @media(min-width:900px){.grid-6{grid-column:span 6}.grid-4{grid-column:span 4}}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+  .ctl label{display:block;font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .ctl select,.ctl input{width:100%;background:var(--bg3);color:var(--ink);border:1px solid var(--line);padding:6px 8px;font-family:inherit;font-size:12px}
+  .run-btn{background:var(--acc);color:var(--bg);border:none;padding:10px 22px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
+  .run-btn:hover{background:var(--acc2)}
+  .run-btn:disabled{opacity:.4;cursor:not-allowed}
+  .ic-table{width:100%;border-collapse:collapse;font-size:11px}
+  .ic-table th{text-align:left;color:var(--ink3);font-weight:400;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 6px;border-bottom:1px solid var(--line)}
+  .ic-table th.num{text-align:right}
+  .ic-table td{padding:6px 6px;border-bottom:1px dotted var(--line)}
+  .ic-table td.num{text-align:right;font-family:'JetBrains Mono'}
+  .ic-table .name{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink)}
+  .ic-table .grade-A{color:var(--bull);font-weight:600}
+  .ic-table .grade-B{color:var(--warn);font-weight:500}
+  .ic-table .grade-C{color:var(--neutral)}
+  .ic-table .grade-F{color:var(--bear)}
+  .ic-table .verdict{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:12px}
+  .ic-table tr:hover{background:rgba(127,212,200,0.03)}
+  .live-banner{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:rgba(127,212,200,0.08);border:1px solid var(--acc);font-size:10px;letter-spacing:2px;color:var(--acc);text-transform:uppercase}
+  .progress{width:100%;height:6px;background:var(--bg3);border:1px solid var(--line);position:relative;margin-top:8px}
+  .progress .fill{height:100%;background:var(--acc);transition:width 0.2s}
+  .status{font-size:10px;color:var(--ink2);margin-top:4px}
+  #signalCode{width:100%;min-height:160px;background:#000;color:var(--acc2);border:1px solid var(--line);padding:10px;font-family:'JetBrains Mono';font-size:11px;line-height:1.5;resize:vertical}
+  .joint-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}
+  .joint-card{padding:10px 12px;border:1px solid var(--line);background:var(--bg3)}
+  .joint-card .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
+  .joint-card .val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--ink)}
+  .joint-card .val.good{color:var(--bull)}
+  .joint-card .val.bad{color:var(--bear)}
+  .joint-card .val.warn{color:var(--warn)}
+  .joint-card .desc{font-size:10px;color:var(--ink2);margin-top:4px}
+  details{margin-top:10px;border:1px solid var(--line);padding:8px 12px;background:rgba(0,0,0,0.15)}
+  details summary{cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--acc2);font-style:italic}
+  details p, details pre{font-size:11px;color:var(--ink2);margin:6px 0;line-height:1.55}
+  pre{background:rgba(0,0,0,0.3);padding:8px;overflow-x:auto;font-family:'JetBrains Mono';font-size:10.5px}
+  .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 6px var(--acc);animation:pulse 1.5s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Signal Lab<span class="v">/ real-data IC analysis · v1</span></h1>
+    <div class="tag">test any signal against real historical data with proper statistical guardrails</div>
+    <nav class="nav">
+      <a href="index.html">live dashboard</a>
+      <a href="backtest.html">backtest v7</a>
+      <a href="backtest-v8.html">v8 rebuild</a>
+      <a href="signal-lab.html" class="active">signal lab</a>
+    </nav>
+  </div>
+  <div><div class="live-banner" id="dataBanner">loading…</div></div>
+</header>
+
+<main>
+  <!-- THESIS -->
+  <section class="panel grid-12">
+    <h2>What this is <span class="num">methodology</span></h2>
+    <div class="sub">All previous work was on synthetic data. This page runs the same IC analysis on <em>real historical prices</em> from your ticker universe. Every signal we've discussed (compression, momentum, mean reversion, microstructure) gets evaluated against forward 1d/5d/10d returns and forward 5-day move magnitude — with train/test split, Bonferroni-aware significance, and grading. The "joint-signal radar" section then tests <em>conditional IC</em>: does signal A become predictive when signal B is in a specific regime? This is the WiFi-CSI analog — information hidden in conjunctions.</div>
+    <details>
+      <summary>How to read the results</summary>
+      <p><b>IC</b> = Spearman rank correlation between signal value and forward return. Range −1 to +1.</p>
+      <p><b>Grade A</b> (|IC| ≥ 0.10, t > 3): strong, robust signal. Worth trading on.</p>
+      <p><b>Grade B</b> (|IC| ≥ 0.05, t > 2): meaningful but weak. Use as filter, not primary.</p>
+      <p><b>Grade C</b> (|IC| ≥ 0.03): marginal, probably noise after costs.</p>
+      <p><b>Grade F</b> (|IC| < 0.03): pure noise. Drop.</p>
+      <p><b>Critical:</b> with 9 signals tested, Bonferroni-adjusted significance threshold is t > 3.0. Single-test t > 2.0 means nothing.</p>
+      <p><b>Train/Test gap:</b> if train IC is high but test IC is low, the signal is overfit to history and won't generalize. Look for signals where train IC ≈ test IC.</p>
+    </details>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="panel grid-12">
+    <h2>Run configuration <span class="num">setup</span></h2>
+    <div class="controls">
+      <div class="ctl">
+        <label>Ticker</label>
+        <select id="tickerSelect"><option>loading…</option></select>
+      </div>
+      <div class="ctl">
+        <label>Train/test split</label>
+        <select id="splitSelect">
+          <option value="0.5">50/50</option>
+          <option value="0.6">60/40</option>
+          <option value="0.7">70/30</option>
+          <option value="0.75" selected>75/25</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>Forward horizon</label>
+        <select id="horizonSelect">
+          <option value="1">1 day</option>
+          <option value="3">3 days</option>
+          <option value="5" selected>5 days</option>
+          <option value="10">10 days</option>
+          <option value="20">20 days</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>&nbsp;</label>
+        <button class="run-btn" id="runBtn">▶ Analyze signals</button>
+      </div>
+    </div>
+    <div class="progress" id="progress" style="display:none"><div class="fill" id="progFill" style="width:0%"></div></div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <!-- STANDARD SIGNALS RESULTS -->
+  <section class="panel grid-12" id="standardPanel" style="display:none">
+    <h2>Standard signal IC results <span class="num">real data · directional</span></h2>
+    <div class="sub">Each signal's predictive power for the <em>direction</em> of forward returns at your chosen horizon. Positive IC = high signal predicts up. Negative = high signal predicts down. Both directions can be tradeable; what matters is consistency between train and test.</div>
+    <table class="ic-table" id="standardTable">
+      <thead><tr>
+        <th>Signal</th>
+        <th class="num">Train IC</th>
+        <th class="num">Test IC</th>
+        <th class="num">Test t</th>
+        <th class="num">Grade</th>
+        <th>Verdict</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- COMPRESSION (MAGNITUDE) RESULTS -->
+  <section class="panel grid-12" id="magnitudePanel" style="display:none">
+    <h2>Magnitude-prediction signals <span class="num">real data · vol</span></h2>
+    <div class="sub">These signals don't predict direction — they predict <em>how big</em> the forward move will be. Useful for volatility trades, position sizing, or stop placement. Compression signals theoretically belong here.</div>
+    <table class="ic-table" id="magTable">
+      <thead><tr>
+        <th>Signal</th>
+        <th class="num">Train IC</th>
+        <th class="num">Test IC</th>
+        <th class="num">Test t</th>
+        <th class="num">Grade</th>
+        <th>Verdict</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- JOINT RADAR -->
+  <section class="panel grid-12" id="jointPanel" style="display:none">
+    <h2>Joint-signal radar <span class="num">conditional IC</span></h2>
+    <div class="sub">The WiFi-CSI analog: individual signals may look weak, but their <em>combinations</em> can carry signal. For each pair (A, B), we measure A's IC <em>only on days when B is in its top/bottom quartile</em>. If conditional IC >> unconditional IC, the signals are <em>complementary</em>: B identifies regimes where A works.</div>
+    <table class="ic-table" id="jointTable">
+      <thead><tr>
+        <th>When B is high…</th>
+        <th>Signal A's IC</th>
+        <th class="num">Cond IC</th>
+        <th class="num">Uncond IC</th>
+        <th class="num">Lift</th>
+        <th>Verdict</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <details>
+      <summary>What "lift" means</summary>
+      <p>Lift = conditional IC − unconditional IC. A signal might have IC of 0.02 overall (looks like noise), but IC of 0.15 when filtered by another signal (regime conditioning). That's lift of 0.13 — the second signal is identifying when the first one works.</p>
+      <p>This is exactly how WiFi CSI radar works: each antenna's signal alone is noise, but the <em>conditional</em> pattern across antennas reveals structure. We test all signal pairs.</p>
+    </details>
+  </section>
+
+  <!-- SUMMARY -->
+  <section class="panel grid-12" id="summaryPanel" style="display:none">
+    <h2>Summary <span class="num">interpretation</span></h2>
+    <div id="summaryContent"></div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="panel grid-12">
+    <h2>Methodology <span class="num">disclosure</span></h2>
+    <details>
+      <summary>Signal library (what gets tested)</summary>
+      <p>Compression: <code>atr_compression</code>, <code>bb_squeeze</code>, <code>range_compression</code>, <code>vol_acceleration</code></p>
+      <p>Directional: <code>rsi_14</code>, <code>distance_ma_50</code>, <code>momentum_quality</code>, <code>mean_rev_8d</code>, <code>volume_thrust</code>, <code>hl_close_position</code></p>
+      <p>Each tested at the chosen forward horizon (1d/5d/10d/20d) for direction, and 5-day forward absolute move for magnitude.</p>
+    </details>
+    <details>
+      <summary>Why train/test split matters</summary>
+      <p>Without it, a signal that just happens to correlate with the historical period (overfit) looks identical to a signal with real edge. With it, we can separate: a real signal has comparable IC on both halves; an overfit one drops to near zero on test.</p>
+    </details>
+    <details>
+      <summary>What this cannot tell you</summary>
+      <p>IC measures <em>predictive correlation</em>, not <em>tradeable profit</em>. A signal with IC of 0.10 still needs to overcome transaction costs to make money. Most signals with IC below 0.05 cannot survive costs even if statistically real. We surface IC honestly; whether to trade is a separate question.</p>
+    </details>
+  </section>
+</main>
+
+<script>
+// ============================================================
+// SIGNAL DEFINITIONS — same library used in synthetic tests
+// ============================================================
+
+const signals = {
+
+  'rsi_14': (series, ohlc) => {
+    const N = series.length;
+    const out = new Array(N).fill(null);
+    for (let i = 14; i < N; i++) {
+      let g = 0, l = 0;
+      for (let j = 1; j <= 14; j++) {
+        const c = series[i - j + 1] - series[i - j];
+        if (c > 0) g += c; else l -= c;
+      }
+      out[i] = l === 0 ? 100 : 100 - 100 / (1 + (g / 14) / (l / 14));
+    }
+    return out;
+  },
+
+  'distance_ma_50': (series, ohlc) => {
+    const N = series.length;
+    const out = new Array(N).fill(null);
+    for (let i = 50; i < N; i++) {
+      let s = 0;
+      for (let k = 0; k < 50; k++) s += series[i - k];
+      out[i] = (series[i] - s/50) / (s/50);
+    }
+    return out;
+  },
+
+  'momentum_quality': (series, ohlc) => {
+    const N = series.length;
+    const out = new Array(N).fill(null);
+    for (let i = 21; i < N; i++) {
+      const rets = [];
+      for (let k = 0; k < 20; k++) rets.push(Math.log(series[i - k] / series[i - k - 1]));
+      const m = rets.reduce((a,b) => a+b, 0) / rets.length;
+      const sd = Math.sqrt(rets.reduce((a,b) => a + (b-m)**2, 0) / rets.length);
+      out[i] = sd > 0 ? m / sd : 0;
+    }
+    return out;
+  },
+
+  'mean_rev_8d': (series, ohlc) => {
+    const N = series.length;
+    const out = new Array(N).fill(null);
+    for (let i = 9; i < N; i++) {
+      const logs = [];
+      for (let k = 0; k < 8; k++) logs.push(Math.log(series[i - k]));
+      const m = logs.reduce((a,b) => a+b, 0) / 8;
+      const v = logs.reduce((a,b) => a + (b-m)**2, 0) / 8;
+      out[i] = (Math.log(series[i]) - m) / (Math.sqrt(v) || 1);
+    }
+    return out;
+  },
+
+  'atr_compression': (series, ohlc) => {
+    if (!ohlc || ohlc.length < series.length / 2) return new Array(series.length).fill(null);
+    const N = Math.min(series.length, ohlc.length);
+    const atr = new Array(N).fill(null);
+    for (let i = 14; i < N; i++) {
+      let s = 0, count = 0;
+      for (let k = 0; k < 14; k++) {
+        const idx = i - k;
+        if (idx > 0 && idx < ohlc.length && ohlc[idx-1]) {
+          const tr = Math.max(
+            ohlc[idx].h - ohlc[idx].l,
+            Math.abs(ohlc[idx].h - ohlc[idx-1].c),
+            Math.abs(ohlc[idx].l - ohlc[idx-1].c)
+          );
+          s += tr; count++;
+        }
+      }
+      if (count > 0) atr[i] = s / count / series[i];
+    }
+    const out = new Array(N).fill(null);
+    for (let i = 74; i < N; i++) {
+      const slice = atr.slice(i - 60, i).filter(v => v != null);
+      if (slice.length === 0) continue;
+      const avg = slice.reduce((a,b) => a+b, 0) / slice.length;
+      out[i] = atr[i] / avg;
+    }
+    return out;
+  },
+
+  'bb_squeeze': (series, ohlc) => {
+    const N = series.length;
+    const cv = new Array(N).fill(null);
+    for (let i = 20; i < N; i++) {
+      const slice = series.slice(i - 20, i);
+      const m = slice.reduce((a,b) => a+b, 0) / slice.length;
+      const sd = Math.sqrt(slice.reduce((a,b) => a + (b-m)**2, 0) / slice.length);
+      cv[i] = sd / m;
+    }
+    const ranked = new Array(N).fill(null);
+    for (let i = 80; i < N; i++) {
+      const slice = cv.slice(i - 60, i).filter(v => v != null);
+      if (slice.length === 0) continue;
+      const sorted = [...slice].sort((a,b) => a - b);
+      let rank = sorted.findIndex(v => v >= cv[i]);
+      if (rank < 0) rank = sorted.length;
+      ranked[i] = rank / slice.length;
+    }
+    return ranked;
+  },
+
+  'range_compression': (series, ohlc) => {
+    if (!ohlc) return new Array(series.length).fill(null);
+    const N = Math.min(series.length, ohlc.length);
+    const out = new Array(series.length).fill(null);
+    for (let i = 70; i < N; i++) {
+      const recent = ohlc.slice(i - 10, i);
+      const longer = ohlc.slice(i - 60, i);
+      if (recent.some(o => !o) || longer.some(o => !o)) continue;
+      const recentRange = (Math.max(...recent.map(o => o.h)) - Math.min(...recent.map(o => o.l))) / series[i];
+      const longerRange = (Math.max(...longer.map(o => o.h)) - Math.min(...longer.map(o => o.l))) / series[i];
+      out[i] = longerRange > 0 ? recentRange / longerRange : null;
+    }
+    return out;
+  },
+
+  'vol_acceleration': (series, ohlc) => {
+    const N = series.length;
+    const out = new Array(N).fill(null);
+    for (let i = 21; i < N; i++) {
+      let v5 = 0, v20 = 0;
+      for (let k = 1; k <= 5; k++) { const r = Math.log(series[i - k + 1] / series[i - k]); v5 += r * r; }
+      for (let k = 1; k <= 20; k++) { const r = Math.log(series[i - k + 1] / series[i - k]); v20 += r * r; }
+      out[i] = Math.sqrt(v5/5) - Math.sqrt(v20/20);
+    }
+    return out;
+  },
+
+  'volume_thrust': (series, ohlc) => {
+    if (!ohlc) return new Array(series.length).fill(null);
+    const N = Math.min(series.length, ohlc.length);
+    const out = new Array(series.length).fill(null);
+    for (let i = 20; i < N; i++) {
+      if (!ohlc[i] || !ohlc[i - 1]) continue;
+      let avgV = 0, c = 0;
+      for (let k = 0; k < 20; k++) {
+        if (ohlc[i - k]) { avgV += ohlc[i - k].v; c++; }
+      }
+      if (c === 0) continue;
+      avgV /= c;
+      if (avgV === 0) continue;
+      const sign = ohlc[i].c > ohlc[i - 1].c ? 1 : -1;
+      out[i] = sign * (ohlc[i].v / avgV);
+    }
+    return out;
+  },
+
+  'hl_close_position': (series, ohlc) => {
+    if (!ohlc) return new Array(series.length).fill(null);
+    const N = Math.min(series.length, ohlc.length);
+    const out = new Array(series.length).fill(null);
+    for (let i = 0; i < N; i++) {
+      if (!ohlc[i]) continue;
+      const range = ohlc[i].h - ohlc[i].l;
+      out[i] = range > 0 ? (ohlc[i].c - ohlc[i].l) / range : 0.5;
+    }
+    return out;
+  },
+};
+
+const COMPRESSION_SIGS = ['atr_compression', 'bb_squeeze', 'range_compression', 'vol_acceleration'];
+const DIRECTIONAL_SIGS = ['rsi_14', 'distance_ma_50', 'momentum_quality', 'mean_rev_8d', 'volume_thrust', 'hl_close_position'];
+
+// ============================================================
+// STATISTICS
+// ============================================================
+
+function forwardReturn(series, i, h) {
+  if (i + h >= series.length) return null;
+  return Math.log(series[i + h] / series[i]);
+}
+function absForwardMove(series, i, h) {
+  if (i + h >= series.length) return null;
+  let m = 0;
+  for (let k = 1; k <= h; k++) {
+    const move = Math.abs(Math.log(series[i + k] / series[i]));
+    if (move > m) m = move;
+  }
+  return m;
+}
+
+function spearmanIC(x, y) {
+  const pairs = [];
+  for (let i = 0; i < x.length; i++) {
+    if (x[i] != null && y[i] != null && isFinite(x[i]) && isFinite(y[i])) pairs.push([x[i], y[i]]);
+  }
+  if (pairs.length < 30) return { ic: null, n: pairs.length, t: null };
+  function rank(arr) {
+    const idx = arr.map((v, i) => ({v, i})).sort((a,b) => a.v - b.v);
+    const r = new Array(arr.length);
+    for (let i = 0; i < idx.length; i++) r[idx[i].i] = i + 1;
+    return r;
+  }
+  const xR = rank(pairs.map(p => p[0]));
+  const yR = rank(pairs.map(p => p[1]));
+  const n = pairs.length;
+  const xm = (n + 1) / 2, ym = (n + 1) / 2;
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xR[i] - xm) * (yR[i] - ym);
+    dx += (xR[i] - xm) ** 2;
+    dy += (yR[i] - ym) ** 2;
+  }
+  const ic = num / Math.sqrt(dx * dy);
+  const t = Math.abs(ic) >= 1 ? Infinity : ic * Math.sqrt((n - 2) / (1 - ic * ic));
+  return { ic, n, t };
+}
+
+function gradeIC(testIC, testT, trainIC) {
+  if (testIC == null) return { grade: '—', verdict: 'insufficient data' };
+  const absIC = Math.abs(testIC);
+  const sameSign = trainIC == null || Math.sign(testIC) === Math.sign(trainIC) || Math.abs(trainIC) < 0.02;
+  if (!sameSign) return { grade: 'F', verdict: 'sign flips train→test · NOT REAL' };
+  if (absIC >= 0.10 && Math.abs(testT) > 3) return { grade: 'A', verdict: 'strong real edge · survives Bonferroni' };
+  if (absIC >= 0.05 && Math.abs(testT) > 2) return { grade: 'B', verdict: 'meaningful but weak' };
+  if (absIC >= 0.03) return { grade: 'C', verdict: 'marginal · likely noise after costs' };
+  return { grade: 'F', verdict: 'noise' };
+}
+
+// ============================================================
+// MAIN ANALYSIS
+// ============================================================
+
+async function analyzeSignals(series, ohlc, trainFrac, horizon, onProgress) {
+  const N = series.length;
+  const trainEnd = Math.floor(N * trainFrac);
+
+  // Compute all signals
+  const sigVals = {};
+  const allSigs = [...COMPRESSION_SIGS, ...DIRECTIONAL_SIGS];
+  let progress = 0;
+  for (const name of allSigs) {
+    sigVals[name] = signals[name](series, ohlc);
+    progress++;
+    onProgress(progress / (allSigs.length * 2), `computing ${name}…`);
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  // Compute forward returns at chosen horizon
+  const fwdRet = new Array(N).fill(null);
+  const fwdMove = new Array(N).fill(null);
+  for (let i = 0; i < N; i++) {
+    fwdRet[i] = forwardReturn(series, i, horizon);
+    fwdMove[i] = absForwardMove(series, i, 5);  // magnitude always at 5d
+  }
+
+  // Directional IC for each signal
+  const dirResults = {};
+  for (const name of allSigs) {
+    const trainSig = sigVals[name].slice(0, trainEnd);
+    const trainFwd = fwdRet.slice(0, trainEnd);
+    const testSig = sigVals[name].slice(trainEnd);
+    const testFwd = fwdRet.slice(trainEnd);
+    dirResults[name] = {
+      train: spearmanIC(trainSig, trainFwd),
+      test: spearmanIC(testSig, testFwd),
+    };
+    progress++;
+    onProgress(progress / (allSigs.length * 2), `directional IC: ${name}…`);
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  // Magnitude IC for compression signals
+  const magResults = {};
+  for (const name of COMPRESSION_SIGS) {
+    const trainSig = sigVals[name].slice(0, trainEnd);
+    const trainMove = fwdMove.slice(0, trainEnd);
+    const testSig = sigVals[name].slice(trainEnd);
+    const testMove = fwdMove.slice(trainEnd);
+    magResults[name] = {
+      train: spearmanIC(trainSig, trainMove),
+      test: spearmanIC(testSig, testMove),
+    };
+  }
+
+  // JOINT analysis: for each pair (A, B), compute A's IC conditional on B being in top/bottom quartile
+  const jointResults = [];
+  for (const a of allSigs) {
+    for (const b of allSigs) {
+      if (a === b) continue;
+      // Find quartile thresholds for B (test set only, to avoid look-ahead in eval)
+      const bTest = sigVals[b].slice(trainEnd).filter(v => v != null);
+      if (bTest.length < 50) continue;
+      const sortedB = [...bTest].sort((p, q) => p - q);
+      const q75 = sortedB[Math.floor(sortedB.length * 0.75)];
+
+      // Build A and forward-return arrays filtered to days where B is in top quartile
+      const aFiltered = [], fwdFiltered = [];
+      for (let i = trainEnd; i < N; i++) {
+        if (sigVals[b][i] != null && sigVals[b][i] >= q75 && sigVals[a][i] != null && fwdRet[i] != null) {
+          aFiltered.push(sigVals[a][i]);
+          fwdFiltered.push(fwdRet[i]);
+        }
+      }
+      if (aFiltered.length < 30) continue;
+      const condIC = spearmanIC(aFiltered, fwdFiltered);
+      const uncondIC = dirResults[a].test;
+      if (condIC.ic == null || uncondIC.ic == null) continue;
+      const lift = condIC.ic - uncondIC.ic;
+      jointResults.push({ a, b, condIC: condIC.ic, condT: condIC.t, condN: condIC.n, uncondIC: uncondIC.ic, lift });
+    }
+  }
+
+  // Sort joint results by absolute lift
+  jointResults.sort((p, q) => Math.abs(q.lift) - Math.abs(p.lift));
+
+  return { dirResults, magResults, jointResults, trainEnd, N };
+}
+
+// ============================================================
+// UI
+// ============================================================
+
+async function loadIndex() {
+  try {
+    const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-cache' });
+    const idx = await resp.json();
+    const select = document.getElementById('tickerSelect');
+    select.innerHTML = idx.tickers.map(t => `<option value="${t.ticker}">${t.ticker} · ${t.name}</option>`).join('');
+    document.getElementById('dataBanner').innerHTML = `<span class="pulse"></span>${idx.tickers.length} tickers loaded`;
+  } catch (e) {
+    document.getElementById('dataBanner').textContent = 'no data — run fetch workflow';
+    document.getElementById('dataBanner').style.borderColor = 'var(--bear)';
+    document.getElementById('dataBanner').style.color = 'var(--bear)';
+  }
+}
+
+async function loadTicker(ticker) {
+  const filename = ticker.replace(/[=^]/g, '_') + '.json';
+  const resp = await fetch(`data/${filename}?t=${Date.now()}`, { cache: 'no-cache' });
+  return await resp.json();
+}
+
+document.getElementById('runBtn').addEventListener('click', async () => {
+  const ticker = document.getElementById('tickerSelect').value;
+  if (!ticker) { alert('select a ticker'); return; }
+  const trainFrac = parseFloat(document.getElementById('splitSelect').value);
+  const horizon = parseInt(document.getElementById('horizonSelect').value);
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true; btn.textContent = 'loading…';
+  document.getElementById('progress').style.display = 'block';
+  document.getElementById('status').textContent = `fetching ${ticker} data…`;
+
+  try {
+    const data = await loadTicker(ticker);
+    if (!data.historical || !data.historical.series || data.historical.series.length < 200) {
+      document.getElementById('status').textContent = `⚠ ${ticker}: insufficient history (${data.historical?.series?.length || 0} bars)`;
+      btn.disabled = false; btn.textContent = '▶ Analyze signals';
+      return;
+    }
+    const series = data.historical.series;
+    const ohlc = data.historical.ohlc;
+    document.getElementById('status').textContent = `loaded ${series.length} bars (${(series.length / 252).toFixed(1)} years) · analyzing…`;
+    btn.textContent = 'analyzing…';
+
+    const results = await analyzeSignals(series, ohlc, trainFrac, horizon, (frac, msg) => {
+      document.getElementById('progFill').style.width = (frac * 100) + '%';
+      document.getElementById('status').textContent = msg;
+    });
+
+    document.getElementById('progFill').style.width = '100%';
+    document.getElementById('status').textContent = `complete · ${results.N} bars, train=${results.trainEnd}, test=${results.N - results.trainEnd}`;
+
+    renderResults(results, ticker, horizon);
+    btn.textContent = '▶ Analyze signals'; btn.disabled = false;
+  } catch (e) {
+    document.getElementById('status').textContent = 'error: ' + e.message;
+    console.error(e);
+    btn.textContent = '▶ Analyze signals'; btn.disabled = false;
+  }
+});
+
+function renderResults(results, ticker, horizon) {
+  document.getElementById('standardPanel').style.display = 'block';
+  document.getElementById('magnitudePanel').style.display = 'block';
+  document.getElementById('jointPanel').style.display = 'block';
+  document.getElementById('summaryPanel').style.display = 'block';
+
+  // Standard table (directional)
+  const standardRows = DIRECTIONAL_SIGS.concat(COMPRESSION_SIGS).map(name => {
+    const r = results.dirResults[name];
+    if (!r || r.test.ic == null) return `<tr><td class="name">${name}</td><td colspan="5">—</td></tr>`;
+    const g = gradeIC(r.test.ic, r.test.t, r.train.ic);
+    return `<tr>
+      <td class="name">${name}</td>
+      <td class="num">${r.train.ic != null ? r.train.ic.toFixed(3) : '—'}</td>
+      <td class="num">${r.test.ic.toFixed(3)}</td>
+      <td class="num">${r.test.t != null ? r.test.t.toFixed(2) : '—'}</td>
+      <td class="num grade-${g.grade}">${g.grade}</td>
+      <td class="verdict">${g.verdict}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('standardTable').querySelector('tbody').innerHTML = standardRows;
+
+  // Magnitude table
+  const magRows = COMPRESSION_SIGS.map(name => {
+    const r = results.magResults[name];
+    if (!r || r.test.ic == null) return `<tr><td class="name">${name}</td><td colspan="5">—</td></tr>`;
+    const g = gradeIC(r.test.ic, r.test.t, r.train.ic);
+    return `<tr>
+      <td class="name">${name}</td>
+      <td class="num">${r.train.ic != null ? r.train.ic.toFixed(3) : '—'}</td>
+      <td class="num">${r.test.ic.toFixed(3)}</td>
+      <td class="num">${r.test.t != null ? r.test.t.toFixed(2) : '—'}</td>
+      <td class="num grade-${g.grade}">${g.grade}</td>
+      <td class="verdict">${g.verdict}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('magTable').querySelector('tbody').innerHTML = magRows;
+
+  // Joint table: show top 15 by absolute lift
+  const topJoint = results.jointResults.slice(0, 15);
+  const jointRows = topJoint.map(j => {
+    const liftCls = Math.abs(j.lift) > 0.10 ? 'grade-A' : Math.abs(j.lift) > 0.05 ? 'grade-B' : 'grade-C';
+    const verdict = Math.abs(j.lift) > 0.10 && Math.abs(j.condT) > 3
+      ? `${j.a} becomes ${j.condIC > 0 ? 'positive' : 'negative'} predictive in this regime`
+      : Math.abs(j.lift) > 0.05
+      ? `meaningful regime conditioning`
+      : 'marginal lift';
+    return `<tr>
+      <td class="name">${j.b} top quartile</td>
+      <td class="name">${j.a}</td>
+      <td class="num">${j.condIC.toFixed(3)} <span style="color:var(--ink3);font-size:9px">(n=${j.condN})</span></td>
+      <td class="num">${j.uncondIC.toFixed(3)}</td>
+      <td class="num ${liftCls}">${j.lift >= 0 ? '+' : ''}${j.lift.toFixed(3)}</td>
+      <td class="verdict">${verdict}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('jointTable').querySelector('tbody').innerHTML = jointRows;
+
+  // Summary
+  const gradeA = Object.entries(results.dirResults).filter(([_, r]) => {
+    if (!r.test.ic) return false;
+    const g = gradeIC(r.test.ic, r.test.t, r.train.ic);
+    return g.grade === 'A';
+  }).map(([n]) => n);
+  const gradeB = Object.entries(results.dirResults).filter(([_, r]) => {
+    if (!r.test.ic) return false;
+    const g = gradeIC(r.test.ic, r.test.t, r.train.ic);
+    return g.grade === 'B';
+  }).map(([n]) => n);
+  const magGradeA = Object.entries(results.magResults).filter(([_, r]) => {
+    if (!r.test.ic) return false;
+    const g = gradeIC(r.test.ic, r.test.t, r.train.ic);
+    return g.grade === 'A';
+  }).map(([n]) => n);
+  const topJointLift = results.jointResults[0];
+
+  let summary = `<div class="joint-grid">`;
+  summary += `<div class="joint-card"><div class="lbl">Ticker</div><div class="val">${ticker}</div><div class="desc">${horizon}d forward horizon</div></div>`;
+  summary += `<div class="joint-card"><div class="lbl">Grade-A directional</div><div class="val ${gradeA.length > 0 ? 'good' : 'bad'}">${gradeA.length}</div><div class="desc">${gradeA.join(', ') || 'none found'}</div></div>`;
+  summary += `<div class="joint-card"><div class="lbl">Grade-B directional</div><div class="val ${gradeB.length > 0 ? 'warn' : ''}">${gradeB.length}</div><div class="desc">${gradeB.join(', ') || 'none'}</div></div>`;
+  summary += `<div class="joint-card"><div class="lbl">Grade-A magnitude</div><div class="val ${magGradeA.length > 0 ? 'good' : 'bad'}">${magGradeA.length}</div><div class="desc">${magGradeA.join(', ') || 'none'}</div></div>`;
+  if (topJointLift) {
+    summary += `<div class="joint-card"><div class="lbl">Best joint lift</div><div class="val ${Math.abs(topJointLift.lift) > 0.10 ? 'good' : 'warn'}">${topJointLift.lift >= 0 ? '+' : ''}${topJointLift.lift.toFixed(3)}</div><div class="desc">${topJointLift.a} given ${topJointLift.b} top quartile</div></div>`;
+  }
+  summary += `</div>`;
+
+  // Honest reading
+  if (gradeA.length === 0 && magGradeA.length === 0 && (!topJointLift || Math.abs(topJointLift.lift) < 0.10)) {
+    summary += `<div style="margin-top:14px;padding:12px 14px;border-left:3px solid var(--bear);background:rgba(232,92,92,0.04);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;line-height:1.6;color:var(--ink2)">No Grade-A signals found on this ticker. The signal library does not have real edge on ${ticker} at this horizon. Try a different horizon, a different ticker, or expand the signal library.</div>`;
+  } else if (gradeA.length > 0 || magGradeA.length > 0) {
+    summary += `<div style="margin-top:14px;padding:12px 14px;border-left:3px solid var(--bull);background:rgba(93,207,126,0.04);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;line-height:1.6;color:var(--ink2)">Real signal(s) detected. <b style="color:var(--bull);font-style:normal">${[...gradeA, ...magGradeA].join(', ')}</b> show edge on out-of-sample data with statistical significance surviving Bonferroni correction. Next step: build a backtest using these signals to see if edge survives transaction costs.</div>`;
+  } else if (topJointLift && Math.abs(topJointLift.lift) > 0.10) {
+    summary += `<div style="margin-top:14px;padding:12px 14px;border-left:3px solid var(--warn);background:rgba(226,194,91,0.04);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;line-height:1.6;color:var(--ink2)">No individual signal has Grade-A edge, but conditional signals show meaningful lift. <b style="color:var(--warn);font-style:normal">${topJointLift.a}</b> becomes predictive when <b style="color:var(--warn);font-style:normal">${topJointLift.b}</b> is in its top quartile (lift ${topJointLift.lift >= 0 ? '+' : ''}${topJointLift.lift.toFixed(3)}). Worth investigating further as a regime-conditional strategy.</div>`;
+  }
+
+  document.getElementById('summaryContent').innerHTML = summary;
+}
+
+loadIndex();
+</script>
+</body>
+</html>
