@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-18T21:47:26.786Z",
+  "generatedAt": "2026-05-18T23:06:33.445Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 78.12,
-      "changePct": 0.7882955527745219,
+      "spot": 78.565,
+      "changePct": 1.3624224283631545,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4570.8,
-      "changePct": -8.336508573147494,
+      "spot": 4577.3,
+      "changePct": -8.206156622881778,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 76952.55,
-      "changePct": 15.848218721415261,
+      "spot": 77056.56,
+      "changePct": 16.004800579056283,
       "healthyCount": 2,
       "totalCount": 2
     }
