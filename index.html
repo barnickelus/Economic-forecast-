@@ -877,6 +877,100 @@ async function fetchLiveData(){
   }
 }
 
+/* --- Live quote refresh (browser-side, bypasses stale GitHub Action) ---
+   The committed JSON files can go stale if the scheduled GitHub Action
+   pauses (free-tier cron is unreliable). This layer fetches CURRENT quotes
+   directly in the browser so the dashboard is never more stale than the
+   moment you loaded it. Yahoo blocks direct browser calls (CORS), so we
+   route through public CORS proxies with fallbacks. If all fail, we keep
+   the committed-file values and flag the data as snapshot-age. */
+
+const CORS_PROXIES = [
+  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+];
+
+async function fetchQuoteLive(symbol){
+  // Yahoo chart endpoint returns current price + previous close in meta.
+  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
+  for (const proxy of CORS_PROXIES){
+    try {
+      const resp = await fetch(proxy(yahooUrl), { cache: 'no-cache' });
+      if (!resp.ok) continue;
+      const j = await resp.json();
+      const meta = j?.chart?.result?.[0]?.meta;
+      if (!meta || meta.regularMarketPrice == null) continue;
+      const spot = meta.regularMarketPrice;
+      const prev = meta.chartPreviousClose ?? meta.previousClose ?? spot;
+      return {
+        spot,
+        prev,
+        change: spot - prev,
+        changePct: prev ? ((spot - prev) / prev) * 100 : 0,
+      };
+    } catch(e){ /* try next proxy */ }
+  }
+  return null;  // all proxies failed
+}
+
+async function refreshLiveQuotes(){
+  // Map the symbols we care about for the current ticker's signal set.
+  const cfg = LIVE_DATA.config || {};
+  const sectorETF = cfg.sectorETF || (CURRENT_TICKER === 'SI=F' ? 'SIL' : null);
+  const jobs = [];
+
+  // Primary asset — use the futures symbol itself
+  jobs.push(['asset', CURRENT_TICKER]);
+  // Sector ETF (miners for silver) — THIS is what drives the smart-money signal
+  if (sectorETF) jobs.push(['sector', sectorETF]);
+  // Macro complex
+  jobs.push(['gold', 'GC=F']);
+  jobs.push(['dxy', 'DX-Y.NYB']);
+  jobs.push(['oil', 'CL=F']);
+  jobs.push(['vix', '^VIX']);
+  jobs.push(['spx', '^GSPC']);
+  jobs.push(['copper', 'HG=F']);
+
+  const results = await Promise.allSettled(
+    jobs.map(async ([key, sym]) => [key, await fetchQuoteLive(sym)])
+  );
+
+  let liveCount = 0;
+  let assetLive = null;
+  for (const r of results){
+    if (r.status !== 'fulfilled') continue;
+    const [key, quote] = r.value;
+    if (!quote) continue;
+    liveCount++;
+    if (key === 'asset'){
+      assetLive = quote;
+      // Update both the raw asset and display spot
+      LIVE_DATA.asset = { ...(LIVE_DATA.asset||{}), ...quote };
+      LIVE_DATA.silver = LIVE_DATA.asset;
+      LIVE_DATA.display = { ...(LIVE_DATA.display||{}), ...quote };
+      LIVE_DATA.silverDisplay = LIVE_DATA.display;
+    } else if (key === 'sector'){
+      LIVE_DATA.sector = { ...(LIVE_DATA.sector||{}), ...quote };
+      LIVE_DATA.sil = LIVE_DATA.sector;
+      LIVE_DATA.silverETF = LIVE_DATA.sector;
+    } else {
+      // macro keys
+      LIVE_DATA[key] = { ...(LIVE_DATA[key]||{}), ...quote };
+      if (LIVE_DATA.macro) LIVE_DATA.macro[key] = LIVE_DATA[key];
+    }
+  }
+
+  if (liveCount > 0){
+    LIVE_DATA.liveRefreshAt = new Date().toISOString();
+    LIVE_DATA.liveRefreshCount = liveCount;
+    LIVE_DATA.dataSource = 'live-browser';
+    const px = assetLive ? `$${assetLive.spot.toFixed(2)} (${assetLive.changePct>=0?'+':''}${assetLive.changePct.toFixed(2)}%)` : '';
+    setBannerState('ok', `LIVE (browser) · ${liveCount} quotes refreshed now · ${px}`);
+  }
+  return liveCount;
+}
+
 /* --- Compute v3 signals ------------------------------------------- */
 function computeAll(){
   const d = LIVE_DATA;
@@ -1969,16 +2063,21 @@ function render(){
 
   // === Context table ===
   const d = LIVE_DATA;
+  // Helpers so the table reflects ACTUAL live direction rather than
+  // hard-coded snapshot-era values.
+  const dir = pct => pct >= 0 ? 'up' : 'down';
+  const dcls = pct => pct >= 0 ? 'bull' : 'bear';
+  const sgn = pct => (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
   const ctx = [
-    { name:'Silver', val:'$'+d.silver.spot, state:'down '+d.silver.changePct.toFixed(2)+'%', cls:'bear' },
-    { name:'Gold', val:'$'+d.gold.spot.toLocaleString(), state:'down '+d.gold.changePct.toFixed(2)+'%', cls:'bear' },
+    { name:'Silver', val:'$'+d.silver.spot.toFixed(2), state:dir(d.silver.changePct)+' '+sgn(d.silver.changePct), cls:dcls(d.silver.changePct) },
+    { name:'Gold', val:'$'+d.gold.spot.toLocaleString(), state:dir(d.gold.changePct)+' '+sgn(d.gold.changePct), cls:dcls(d.gold.changePct) },
     { name:'G/S ratio', val:result.context.gsRatio.toFixed(1), state:'vs eq '+result.context.gsEq.toFixed(1), cls:'warn' },
-    { name:'DXY', val:d.dxy.spot.toString(), state:'firm', cls:'bear' },
-    { name:'Copper', val:'$'+d.copper.spot, state:d.copper.changePct.toFixed(2)+'%', cls:'bear' },
-    { name:'Crude (Brent)', val:'$'+d.oil.spot, state:'+'+d.oil.changePct.toFixed(2)+'% · Hormuz risk', cls:'bull' },
-    { name:'VIX', val:d.vix.spot.toString(), state:'+'+d.vix.changePct.toFixed(0)+'%', cls:'bear' },
-    { name:'S&P 500', val:d.spx.spot.toLocaleString(), state:d.spx.changePct.toFixed(2)+'%', cls:'bear' },
-    { name:'Silver miners (SIL)', val:'$'+d.sil.spot, state:d.sil.changePct.toFixed(2)+'%', cls:'bear' },
+    { name:'DXY', val:d.dxy.spot.toString(), state:sgn(d.dxy.changePct), cls:dcls(-d.dxy.changePct) },
+    { name:'Copper', val:'$'+d.copper.spot, state:sgn(d.copper.changePct), cls:dcls(d.copper.changePct) },
+    { name:'Crude (Brent)', val:'$'+d.oil.spot, state:sgn(d.oil.changePct)+' · Hormuz risk', cls:'warn' },
+    { name:'VIX', val:d.vix.spot.toString(), state:sgn(d.vix.changePct), cls:dcls(-d.vix.changePct) },
+    { name:'S&P 500', val:d.spx.spot.toLocaleString(), state:sgn(d.spx.changePct), cls:dcls(d.spx.changePct) },
+    { name:'Silver miners (SIL)', val:'$'+d.sil.spot.toFixed(2), state:sgn(d.sil.changePct), cls:dcls(d.sil.changePct) },
     { name:'Realized vol (20d)', val:(result.context.vol20Ann*100).toFixed(1)+'%', state:result.context.vol20Ann>0.40?'elevated':'normal', cls:result.context.vol20Ann>0.40?'bear':'neutral' },
     { name:'COT large specs', val:'22k net-long', state:'2-yr low', cls:'warn' },
     { name:'COT gross long/short', val:'32.5k / 10.2k', state:'13-yr low both · liquidity vacuum', cls:'bear' },
@@ -2129,7 +2228,7 @@ async function init(){
   // 2) Render immediately with snapshot so user sees content fast
   render();
 
-  // 3) Load ticker dropdown and fetch live data in parallel
+  // 3) Load ticker dropdown and fetch committed file in parallel
   const [indexData] = await Promise.all([
     loadTickerIndex(),
     fetchLiveData(),
@@ -2141,8 +2240,16 @@ async function init(){
   // 5) Update header title with asset name
   updateAssetTitle();
 
-  // 6) Re-render with live data
+  // 6) Re-render with committed-file data (fast paint)
   render();
+
+  // 7) Overlay live browser-fetched quotes (fixes stale GitHub Action),
+  //    then re-render so the smart-money / cross-asset signals use
+  //    current prices rather than a possibly-stale snapshot.
+  try {
+    const n = await refreshLiveQuotes();
+    if (n > 0) render();
+  } catch(e){ /* keep file data if live refresh fails */ }
 }
 
 function updateAssetTitle(){
@@ -2163,6 +2270,10 @@ async function switchTicker(newTicker){
   await fetchLiveData();
   updateAssetTitle();
   render();
+  try {
+    const n = await refreshLiveQuotes();
+    if (n > 0) render();
+  } catch(e){ /* keep file data if live refresh fails */ }
 }
 
 document.getElementById('refreshBtn').addEventListener('click', async () => {
@@ -2172,6 +2283,10 @@ document.getElementById('refreshBtn').addEventListener('click', async () => {
   await fetchLiveData();
   updateAssetTitle();
   render();
+  try {
+    const n = await refreshLiveQuotes();
+    if (n > 0) render();
+  } catch(e){ /* keep file data if live refresh fails */ }
   btn.textContent = '↻ refresh';
   btn.disabled = false;
 });
