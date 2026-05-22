@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalyst Layer · Prediction-Market Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06070b;--bg2:#0a0c12;--bg3:#0e1119;--ink:#d4dae6;--ink2:#6c7585;--ink3:#454d5d;--acc:#7fd4c8;--acc2:#a8e8de;--bull:#5dcf7e;--bear:#e85c5c;--warn:#e2c25b;--purp:#b59ce8;--line:#1c2029;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5}
+  body{padding:14px 14px 60px;min-height:100vh;background:radial-gradient(ellipse at 90% -5%, rgba(181,156,232,0.07), transparent 50%), linear-gradient(180deg,#06070b,#08090e);}
+  header{max-width:1100px;margin:0 auto 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;margin:0;color:var(--acc2)}
+  h1 .v{color:var(--purp);font-style:italic;font-size:16px;margin-left:6px}
+  .tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:14px;margin-top:4px;max-width:760px}
+  .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:8px;flex-wrap:wrap}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .nav a.active{color:var(--purp);border-color:var(--purp)}
+  main{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+  .panel{background:linear-gradient(180deg,var(--bg2),var(--bg));border:1px solid var(--line);padding:14px 16px;position:relative}
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:1px solid var(--purp);border-left:1px solid var(--purp)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:1px solid var(--purp);border-right:1px solid var(--purp)}
+  .panel h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;margin:0 0 4px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 6px}
+  .sub{font-size:13px;color:var(--ink2);margin-bottom:10px;font-family:'Cormorant Garamond',serif;font-style:italic}
+  .disclaimer{border:1px solid var(--warn);background:rgba(226,194,91,0.06);padding:10px 14px;font-family:'Cormorant Garamond',serif;font-size:14px;line-height:1.55;color:var(--ink)}
+  .ctlbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
+  .run-btn{background:var(--purp);color:var(--bg);border:none;padding:9px 18px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
+  .run-btn:hover{filter:brightness(1.1)}
+  input.q{background:var(--bg3);color:var(--ink);border:1px solid var(--line);padding:7px 10px;font-family:inherit;font-size:12px;flex:1;min-width:180px}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;font-weight:400}
+  td:first-child,th:first-child{text-align:left}
+  .bull{color:var(--bull)}.bear{color:var(--bear)}.warn{color:var(--warn)}.dim{color:var(--ink3)}.purp{color:var(--purp)}
+  .flag{display:inline-block;font-size:9px;letter-spacing:1px;padding:1px 6px;border:1px solid;border-radius:2px;text-transform:uppercase;margin-left:6px}
+  .flag.move{border-color:var(--warn);color:var(--warn)}
+  .flag.diverge{border-color:var(--purp);color:var(--purp)}
+  .status{font-size:11px;color:var(--ink3);margin-top:8px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px}
+  .read{padding:12px 14px;border:1px solid var(--line);margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:15px;line-height:1.6}
+  .note{font-size:11px;color:var(--ink3);font-style:italic;margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.5}
+  code{background:var(--bg3);padding:1px 5px;color:var(--acc2);font-size:11px}
+  .oilbox{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0}
+  .oilstat{font-size:12px}.oilstat b{color:var(--acc2);font-size:16px;font-family:'JetBrains Mono'}
+</style>
+</head>
+<body>
+<header>
+  <h1>Catalyst Layer <span class="v">/ prediction markets</span></h1>
+  <div class="tag">Upstream monitor: market-implied odds of the events that drive silver through the oil channel. Flags when odds reprice BEFORE the oil tape moves — the latency window. Early-warning context, NOT a backtested signal.</div>
+  <nav class="nav">
+    <a href="index.html">live</a>
+    <a href="backtest-v10.html">v10</a>
+    <a href="signal-lab.html">lab</a>
+    <a href="macro-lab.html">macro</a>
+    <a href="vol-lab.html">vol</a>
+    <a href="catalyst.html" class="active">catalyst</a>
+  </nav>
+</header>
+<main>
+
+  <div class="panel">
+    <h2>What this is <span class="num">read first</span></h2>
+    <div class="disclaimer">
+      Prediction markets price the <b>probability of the catalyst itself</b> — the binary that determines whether silver keeps or loses its geopolitical premium. This page fetches <b>live</b> odds and tracks their <b>change</b>, because the repricing velocity is the signal, not the level. When odds move hard while oil hasn't yet, that divergence is the early-warning window. <b>This is not backtested against silver</b> — we have no historical odds time-series. Treat it as upstream context and a logging instrument, not a measured edge. Start logging now to build the history that would let us test it later.
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Tracked contracts <span class="num">polymarket · live</span></h2>
+    <div class="sub">Default set: the events that actually transmit to silver via oil and rates. Edit the search terms to match live contract titles, then Fetch.</div>
+    <div class="ctlbar">
+      <input class="q" id="q" value="iran ceasefire, strait of hormuz, fed june rate, israel iran" />
+      <button class="run-btn" id="fetchBtn">▶ Fetch live odds</button>
+    </div>
+    <table id="oddsTable"><thead><tr><th>Contract</th><th>Yes %</th><th>24h Δ</th><th>vol $</th><th>flags</th></tr></thead><tbody><tr><td class="dim" colspan="5">Tap Fetch to pull live Polymarket odds…</td></tr></tbody></table>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Oil cross-check <span class="num">divergence</span></h2>
+    <div class="sub">Brent/WTI live. If a catalyst contract reprices sharply but oil is flat, that's the latency window — the prediction market moved first.</div>
+    <div class="oilbox" id="oilbox"><span class="oilstat dim">Fetched with odds…</span></div>
+    <div class="read" id="read">Awaiting data.</div>
+    <div class="note">
+      Mapping to silver (via oil): rising deal/ceasefire odds → oil-down pressure → silver loses geopolitical premium (bearish tilt). Falling deal odds / rising conflict odds → oil-up → silver fear bid (bullish tilt). Direction of the <i>event</i> is what the market prices; the silver effect still runs through oil and is conditional, not certain. A <span class="purp">DIVERGE</span> flag = odds moved &gt;5pts/24h while |Brent move| &lt; 1% — prediction market is ahead of the commodity tape.
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Daily log <span class="num">build the history</span></h2>
+    <div class="sub">Snapshots persist in your browser so you accumulate the odds time-series we'd need to actually backtest prediction-market → silver lead/lag. Logs one row per contract per fetch (deduped by day).</div>
+    <div class="ctlbar">
+      <button class="run-btn" id="logBtn" style="background:var(--acc)">+ Log today's snapshot</button>
+      <button class="run-btn" id="exportBtn" style="background:var(--bg3);color:var(--acc);border:1px solid var(--acc)">⬇ Export CSV</button>
+      <button class="run-btn" id="clearBtn" style="background:var(--bg3);color:var(--bear);border:1px solid var(--bear)">✕ Clear log</button>
+    </div>
+    <table id="logTable"><thead><tr><th>Date</th><th>Contract</th><th>Yes %</th><th>Brent</th></tr></thead><tbody></tbody></table>
+    <div class="status" id="logStatus"></div>
+  </div>
+
+</main>
+
+<script>
+const CORS_PROXIES=[u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
+async function viaProxy(url){for(const p of CORS_PROXIES){try{const r=await fetch(p(url),{cache:'no-cache'});if(r.ok)return await r.json();}catch(e){}}return null;}
+
+// Polymarket Gamma API — public, no key. Search markets by keyword.
+async function fetchContracts(terms){
+  const out=[];
+  for(const term of terms){
+    const url='https://gamma-api.polymarket.com/markets?closed=false&active=true&limit=4&order=volume&ascending=false&search='+encodeURIComponent(term.trim());
+    const j=await viaProxy(url);
+    if(Array.isArray(j)){
+      for(const m of j){
+        let yes=null;
+        try{const op=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices; if(op&&op.length)yes=parseFloat(op[0])*100;}catch(e){}
+        out.push({q:term.trim(),title:m.question||m.title||term,yes,vol:m.volume24hr||m.volume||0,
+          delta:(m.oneDayPriceChange!=null)?m.oneDayPriceChange*100:null});
+      }
+    }
+  }
+  // dedupe by title
+  const seen=new Set(),uniq=[];for(const o of out){if(o.title&&!seen.has(o.title)){seen.add(o.title);uniq.push(o);}}
+  return uniq;
+}
+async function fetchOil(){
+  // reuse Yahoo via proxy for Brent (BZ=F) and WTI (CL=F)
+  async function q(sym){const u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?interval=1d&range=5d';const j=await viaProxy(u);const meta=j?.chart?.result?.[0]?.meta;if(!meta)return null;const s=meta.regularMarketPrice,p=meta.chartPreviousClose??s;return{spot:s,changePct:p?((s-p)/p*100):0};}
+  return{brent:await q('BZ=F'),wti:await q('CL=F')};
+}
+
+let LAST_ODDS=[],LAST_OIL=null;
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x==null?'—':(x>=0?'+':'')+x.toFixed(d);
+
+async function doFetch(){
+  $('status').textContent='Fetching live odds + oil… (CORS proxies can be slow/unreliable)';
+  const terms=$('q').value.split(',').filter(t=>t.trim());
+  let contracts=[],oil=null;
+  try{ [contracts,oil]=await Promise.all([fetchContracts(terms),fetchOil()]); }
+  catch(e){ $('status').textContent='Fetch failed: '+e.message+' — proxies may be down; try again or check network settings.'; return; }
+  LAST_ODDS=contracts; LAST_OIL=oil;
+
+  const brentMove=oil?.brent?.changePct ?? null;
+  const tb=$('oddsTable').querySelector('tbody'); tb.innerHTML='';
+  if(!contracts.length){ tb.innerHTML='<tr><td class="dim" colspan="5">No contracts returned. Polymarket titles may differ — edit search terms to match live market names.</td></tr>'; }
+  for(const c of contracts){
+    const big=c.delta!=null&&Math.abs(c.delta)>=5;
+    const diverge=big&&brentMove!=null&&Math.abs(brentMove)<1;
+    let flags='';
+    if(big)flags+='<span class="flag move">moved '+fmt(c.delta)+'pt</span>';
+    if(diverge)flags+='<span class="flag diverge">diverge</span>';
+    const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';
+    tb.innerHTML+='<tr><td>'+c.title.slice(0,60)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'pt</td><td class="dim">'+(c.vol?('$'+Math.round(c.vol).toLocaleString()):'—')+'</td><td>'+flags+'</td></tr>';
+  }
+  // oil box
+  const ob=$('oilbox');
+  if(oil&&(oil.brent||oil.wti)){
+    ob.innerHTML='';
+    if(oil.brent)ob.innerHTML+='<div class="oilstat">Brent <b>$'+oil.brent.spot.toFixed(2)+'</b> <span class="'+(oil.brent.changePct>=0?'bull':'bear')+'">'+fmt(oil.brent.changePct,2)+'%</span></div>';
+    if(oil.wti)ob.innerHTML+='<div class="oilstat">WTI <b>$'+oil.wti.spot.toFixed(2)+'</b> <span class="'+(oil.wti.changePct>=0?'bull':'bear')+'">'+fmt(oil.wti.changePct,2)+'%</span></div>';
+  } else ob.innerHTML='<span class="oilstat dim">Oil fetch failed (proxy). Odds still valid above.</span>';
+
+  // synthesis read
+  const movers=contracts.filter(c=>c.delta!=null&&Math.abs(c.delta)>=5);
+  const diverging=movers.filter(c=>brentMove!=null&&Math.abs(brentMove)<1);
+  let r='';
+  if(diverging.length){
+    r='<b class="purp">Latency window detected.</b> '+diverging.length+' contract(s) repriced &gt;5pt in 24h while Brent moved '+fmt(brentMove,2)+'% (flat). The prediction market is ahead of the oil tape — this is the early-warning signal. Watch for oil to follow in the implied direction over the next sessions.';
+  } else if(movers.length){
+    r='<b class="warn">Catalyst repricing.</b> '+movers.length+' contract(s) moved materially. Oil is moving too (Brent '+fmt(brentMove,2)+'%), so the commodity tape is tracking the catalyst — less latency edge, but confirms the regime.';
+  } else {
+    r='Quiet. No catalyst contract moved &gt;5pt in 24h. Consistent with the chop regime — the coil stays coiled until one of these reprices. This is the no-edge state the dashboard calls STAND ASIDE.';
+  }
+  $('read').innerHTML=r;
+  $('status').textContent='Updated '+new Date().toLocaleString()+' · '+contracts.length+' contracts.';
+}
+
+// ---- daily log (browser persistence via in-memory + window.storage if available) ----
+let LOG=[];
+function renderLog(){
+  const tb=$('logTable').querySelector('tbody');tb.innerHTML='';
+  for(const row of LOG.slice(-40).reverse()){
+    tb.innerHTML+='<tr><td>'+row.date+'</td><td>'+row.title.slice(0,46)+'</td><td class="purp">'+(row.yes==null?'—':row.yes.toFixed(0)+'%')+'</td><td class="dim">'+(row.brent==null?'—':'$'+row.brent.toFixed(2))+'</td></tr>';
+  }
+  $('logStatus').textContent=LOG.length+' rows logged.';
+}
+function logSnapshot(){
+  if(!LAST_ODDS.length){$('logStatus').textContent='Fetch odds first.';return;}
+  const date=new Date().toISOString().slice(0,10);
+  const brent=LAST_OIL?.brent?.spot??null;
+  for(const c of LAST_ODDS){
+    if(LOG.some(r=>r.date===date&&r.title===c.title))continue;
+    LOG.push({date,title:c.title,yes:c.yes,brent});
+  }
+  persist();renderLog();
+}
+function exportCSV(){
+  const rows=[['date','contract','yes_pct','brent']].concat(LOG.map(r=>[r.date,'"'+r.title.replace(/"/g,'')+'"',r.yes==null?'':r.yes.toFixed(1),r.brent==null?'':r.brent.toFixed(2)]));
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='catalyst-log.csv';a.click();
+}
+async function persist(){ if(window.storage){try{await window.storage.set('catalyst_log',JSON.stringify(LOG));}catch(e){}} }
+async function restore(){ if(window.storage){try{const r=await window.storage.get('catalyst_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}} renderLog(); }
+
+$('fetchBtn').addEventListener('click',doFetch);
+$('logBtn').addEventListener('click',logSnapshot);
+$('exportBtn').addEventListener('click',exportCSV);
+$('clearBtn').addEventListener('click',()=>{LOG=[];persist();renderLog();});
+restore();
+</script>
+</body>
+</html>
