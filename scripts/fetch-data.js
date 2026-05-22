@@ -37,6 +37,14 @@ const ASSET_CONFIG = {
   'HL':     { name: 'Hecla Mining', assetClass: 'equity', sectorETF: 'SIL', typicalVolAnnual: 0.55 },
   'PAAS':   { name: 'Pan American', assetClass: 'equity', sectorETF: 'SIL', typicalVolAnnual: 0.50 },
   'BTC-USD': { name: 'Bitcoin',   assetClass: 'crypto', sectorETF: 'ETH-USD', typicalVolAnnual: 0.65 },
+
+  // Macro context tickers (added for cross-asset IC analysis in macro lab)
+  'DX-Y.NYB': { name: 'US Dollar Index', assetClass: 'macro', sectorETF: 'UUP', typicalVolAnnual: 0.08 },
+  'HG=F':     { name: 'Copper',          assetClass: 'commodity', sectorETF: 'COPX', typicalVolAnnual: 0.25 },
+  'CL=F':     { name: 'Crude Oil',       assetClass: 'commodity', sectorETF: 'XLE', typicalVolAnnual: 0.40 },
+  '^VIX':     { name: 'VIX',             assetClass: 'macro', sectorETF: 'VXX', typicalVolAnnual: 1.20 },
+  '^TNX':     { name: '10Y Treasury Yield', assetClass: 'macro', sectorETF: 'TLT', typicalVolAnnual: 0.20 },
+  'CNY=X':    { name: 'USDCNY',          assetClass: 'macro', sectorETF: 'CYB', typicalVolAnnual: 0.05 },
 };
 
 const MACRO_SYMBOLS = {
@@ -71,15 +79,29 @@ async function fetchYahoo(symbol, range = '3mo', interval = '1d') {
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const data = await resp.json();
   const r = data?.chart?.result?.[0];
-  if (!r?.meta?.regularMarketPrice) throw new Error('no chart data');
+  if (!r) throw new Error('no chart result');
+  // Futures/index symbols (CL=F, ^VIX, ^TNX, HG=F) often OMIT meta.regularMarketPrice
+  // even when full OHLC is present (esp. when market closed). Don't reject on that —
+  // require usable price data from EITHER meta OR the close series.
+  const hasMetaPrice = r.meta && r.meta.regularMarketPrice != null;
+  const closes = r?.indicators?.quote?.[0]?.close?.filter(x => x != null) || [];
+  if (!hasMetaPrice && closes.length === 0) throw new Error('no usable price data');
   return r;
 }
 
 function quoteFromYahoo(r) {
-  const m = r.meta;
-  const spot = m.regularMarketPrice;
-  const prev = m.chartPreviousClose ?? m.previousClose;
-  return { spot, prev, change: spot - prev, changePct: (spot - prev) / prev * 100 };
+  const m = r.meta || {};
+  const closes = r?.indicators?.quote?.[0]?.close?.filter(x => x != null) || [];
+  // spot: prefer meta price, else last series close (futures/index when closed)
+  const spot = (m.regularMarketPrice != null) ? m.regularMarketPrice
+             : (closes.length ? closes[closes.length - 1] : null);
+  // prev: prefer the SERIES prior close (roll-safe — same contract) over
+  // meta.chartPreviousClose, which breaks across futures contract rolls.
+  let prev;
+  if (closes.length >= 2) prev = closes[closes.length - 2];
+  else prev = m.chartPreviousClose ?? m.previousClose ?? spot;
+  const changePct = (prev && spot != null) ? (spot - prev) / prev * 100 : 0;
+  return { spot, prev, change: (spot != null && prev != null) ? spot - prev : 0, changePct };
 }
 
 function seriesFromYahoo(r) {
@@ -117,7 +139,9 @@ async function fetchTicker(tickerSymbol, config, macroData) {
     data.series = seriesFromYahoo(r);
     data.recentOHLC = ohlcFromYahoo(r, 6);
     data.sources.asset = `yahoo:${tickerSymbol}`;
-    data.log.push(`✓ ${tickerSymbol}: $${data.asset.spot.toFixed(2)} (${data.asset.changePct >= 0 ? '+' : ''}${data.asset.changePct.toFixed(2)}%)`);
+    const sp = (data.asset.spot != null) ? data.asset.spot.toFixed(2) : 'n/a';
+    const pc = (data.asset.changePct != null) ? `${data.asset.changePct >= 0 ? '+' : ''}${data.asset.changePct.toFixed(2)}%` : 'n/a';
+    data.log.push(`✓ ${tickerSymbol}: $${sp} (${pc})`);
   } catch (e) {
     data.log.push(`✗ ${tickerSymbol}: ${e.message}`);
     return data;
@@ -326,7 +350,15 @@ async function main() {
     fs.writeFileSync(path.join(outDir, 'latest.json'), JSON.stringify(legacy, null, 2));
   }
 
-  console.log(`\n=== Done. ${indexEntry.tickers.length} ticker(s) updated. ===`);
+  // Explicit accounting: which tickers wrote vs were dropped (so silent
+  // failures — like the futures/index tickers — can never recur unnoticed).
+  const wrote = indexEntry.tickers.map(t => t.ticker);
+  const dropped = tickerList.filter(t => !wrote.includes(t));
+  console.log(`\n=== Done. ${wrote.length}/${tickerList.length} tickers written. ===`);
+  console.log(`    wrote:   ${wrote.join(', ')}`);
+  if (dropped.length) {
+    console.log(`    DROPPED: ${dropped.join(', ')}  ← these failed to fetch; check logs above`);
+  }
 }
 
 main().catch(e => {
