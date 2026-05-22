@@ -123,6 +123,17 @@ function matchesTerm(title,term){
   // require that at least the distinctive words appear
   return words.length>0 && words.every(w=>t.includes(w));
 }
+// parse a resolution date out of the title; return true if it's already past
+function titleDatePast(title){
+  const months={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};
+  const m=title.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);
+  if(!m)return false;
+  const now=new Date();
+  const yr=m[3]?parseInt(m[3]):now.getFullYear();
+  const day=m[2]?parseInt(m[2]):28;
+  const d=new Date(yr,months[m[1]],day);
+  return d < new Date(now.getFullYear(),now.getMonth(),now.getDate());
+}
 async function fetchContracts(terms){
   const out=[];
   for(const term of terms){
@@ -148,7 +159,7 @@ async function fetchContracts(terms){
     // prefer live markets, top 5 by volume
     const rows=got.map(m=>marketToRow(m,tt))
       .filter(r=>matchesTerm(r.title,tt))
-      .map(r=>{ r.resolved = (r.yes!=null && (r.yes<=0.5 || r.yes>=99.5) && (r.delta==null || Math.abs(r.delta)<0.1)); return r; })
+      .map(r=>{ const datePast=titleDatePast(r.title); r.resolved = datePast || (r.yes!=null && (r.yes<=0.5 || r.yes>=99.5) && (r.delta==null || Math.abs(r.delta)<0.1)); r.expired=datePast; return r; })
       .sort((a,b)=>{ if(a.resolved!==b.resolved) return a.resolved?1:-1; return (b.vol||0)-(a.vol||0); })
       .slice(0,5);
     out.push(...rows);
@@ -157,8 +168,26 @@ async function fetchContracts(terms){
   return uniq;
 }
 async function fetchOil(){
-  // reuse Yahoo via proxy for Brent (BZ=F) and WTI (CL=F)
-  async function q(sym){const u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?interval=1d&range=5d';const j=await viaProxy(u);const meta=j?.chart?.result?.[0]?.meta;if(!meta)return null;const s=meta.regularMarketPrice,p=meta.chartPreviousClose??s;return{spot:s,changePct:p?((s-p)/p*100):0};}
+  // Compute change from the LAST TWO DAILY CLOSES in the series (same contract),
+  // NOT chartPreviousClose — which breaks on futures rolls and manufactured a
+  // fake -11% print. Add a sanity guard for implausible single-day moves.
+  async function q(sym){
+    const u='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(sym)+'?interval=1d&range=10d';
+    const j=await viaProxy(u);
+    const res=j?.chart?.result?.[0]; const meta=res?.meta;
+    if(!meta)return null;
+    const spot=meta.regularMarketPrice;
+    // pull the close series, drop nulls
+    const closes=(res?.indicators?.quote?.[0]?.close||[]).filter(v=>v!=null);
+    let prev=null, asof=null;
+    if(closes.length>=2){ prev=closes[closes.length-2]; }   // yesterday's close, same contract
+    else { prev=meta.chartPreviousClose??meta.previousClose??spot; }
+    const ts=res?.timestamp; if(ts&&ts.length)asof=new Date(ts[ts.length-1]*1000);
+    let changePct = prev?((spot-prev)/prev*100):0;
+    // sanity guard: oil rarely moves >8% in a day; if so, flag rather than trust
+    const suspect = Math.abs(changePct)>8;
+    return {spot,changePct,asof,suspect,prev};
+  }
   return{brent:await q('BZ=F'),wti:await q('CL=F')};
 }
 
@@ -184,16 +213,23 @@ async function doFetch(){
     if(big)flags+='<span class="flag move">moved '+fmt(c.delta)+'pt</span>';
     if(diverge)flags+='<span class="flag diverge">diverge</span>';
     const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';
-    if(c.resolved)flags+='<span class="flag" style="border-color:var(--ink3);color:var(--ink3)">settled/past</span>';
+    if(c.expired)flags+='<span class="flag" style="border-color:var(--ink3);color:var(--ink3)">expired</span>';
+    else if(c.resolved)flags+='<span class="flag" style="border-color:var(--ink3);color:var(--ink3)">settled</span>';
     const rowStyle=c.resolved?' style="opacity:0.45"':'';
     tb.innerHTML+='<tr'+rowStyle+'><td>'+c.title.slice(0,60)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'pt</td><td class="dim">'+(c.vol?('$'+Math.round(c.vol).toLocaleString()):'—')+'</td><td>'+flags+'</td></tr>';
   }
   // oil box
   const ob=$('oilbox');
+  function oilLine(label,o){
+    if(!o)return '';
+    const cls=o.suspect?'warn':(o.changePct>=0?'bull':'bear');
+    const flag=o.suspect?' <span class="flag" style="border-color:var(--warn);color:var(--warn)">⚠ verify</span>':'';
+    return '<div class="oilstat">'+label+' <b>$'+o.spot.toFixed(2)+'</b> <span class="'+cls+'">'+fmt(o.changePct,2)+'%</span>'+flag+'</div>';
+  }
   if(oil&&(oil.brent||oil.wti)){
-    ob.innerHTML='';
-    if(oil.brent)ob.innerHTML+='<div class="oilstat">Brent <b>$'+oil.brent.spot.toFixed(2)+'</b> <span class="'+(oil.brent.changePct>=0?'bull':'bear')+'">'+fmt(oil.brent.changePct,2)+'%</span></div>';
-    if(oil.wti)ob.innerHTML+='<div class="oilstat">WTI <b>$'+oil.wti.spot.toFixed(2)+'</b> <span class="'+(oil.wti.changePct>=0?'bull':'bear')+'">'+fmt(oil.wti.changePct,2)+'%</span></div>';
+    ob.innerHTML=oilLine('Brent',oil.brent)+oilLine('WTI',oil.wti);
+    const asof=oil.brent?.asof||oil.wti?.asof;
+    if(asof)ob.innerHTML+='<div class="oilstat dim" style="width:100%;font-size:10px;margin-top:4px">last close: '+asof.toLocaleDateString()+' · change vs prior daily close (roll-safe)'+((oil.brent?.suspect||oil.wti?.suspect)?' · ⚠ a flagged move exceeds 8%/day — verify against another source before trusting':'')+'</div>';
   } else ob.innerHTML='<span class="oilstat dim">Oil fetch failed (proxy). Odds still valid above.</span>';
 
   // synthesis read
