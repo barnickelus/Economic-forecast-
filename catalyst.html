@@ -72,7 +72,7 @@
     <h2>Tracked contracts <span class="num">polymarket · live</span></h2>
     <div class="sub">Default set: the events that actually transmit to silver via oil and rates. Edit the search terms to match live contract titles, then Fetch.</div>
     <div class="ctlbar">
-      <input class="q" id="q" value="iran ceasefire, strait of hormuz, fed june rate, israel iran" />
+      <input class="q" id="q" value="iran, hormuz, fed rate, israel, oil price" />
       <button class="run-btn" id="fetchBtn">▶ Fetch live odds</button>
     </div>
     <table id="oddsTable"><thead><tr><th>Contract</th><th>Yes %</th><th>24h Δ</th><th>vol $</th><th>flags</th></tr></thead><tbody><tr><td class="dim" colspan="5">Tap Fetch to pull live Polymarket odds…</td></tr></tbody></table>
@@ -107,22 +107,49 @@
 const CORS_PROXIES=[u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
 async function viaProxy(url){for(const p of CORS_PROXIES){try{const r=await fetch(p(url),{cache:'no-cache'});if(r.ok)return await r.json();}catch(e){}}return null;}
 
-// Polymarket Gamma API — public, no key. Search markets by keyword.
+// Polymarket — public, no key. The /markets endpoint IGNORES ?search (returns
+// top-volume junk), so we use the public-search endpoint AND keyword-filter
+// client-side so only genuine matches to YOUR terms appear.
+function marketToRow(m,term){
+  let yes=null;
+  try{const op=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices;if(op&&op.length)yes=parseFloat(op[0])*100;}catch(e){}
+  if(yes==null && m.lastTradePrice!=null) yes=parseFloat(m.lastTradePrice)*100;
+  return {q:term,title:m.question||m.title||m.groupItemTitle||term,yes,
+    vol:m.volume24hr||m.volume24hrClob||m.volume||0,
+    delta:(m.oneDayPriceChange!=null)?parseFloat(m.oneDayPriceChange)*100:null};
+}
+function matchesTerm(title,term){
+  const t=title.toLowerCase(); const words=term.toLowerCase().split(/\s+/).filter(w=>w.length>2);
+  // require that at least the distinctive words appear
+  return words.length>0 && words.every(w=>t.includes(w));
+}
 async function fetchContracts(terms){
   const out=[];
   for(const term of terms){
-    const url='https://gamma-api.polymarket.com/markets?closed=false&active=true&limit=4&order=volume&ascending=false&search='+encodeURIComponent(term.trim());
-    const j=await viaProxy(url);
-    if(Array.isArray(j)){
-      for(const m of j){
-        let yes=null;
-        try{const op=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices; if(op&&op.length)yes=parseFloat(op[0])*100;}catch(e){}
-        out.push({q:term.trim(),title:m.question||m.title||term,yes,vol:m.volume24hr||m.volume||0,
-          delta:(m.oneDayPriceChange!=null)?m.oneDayPriceChange*100:null});
-      }
+    const tt=term.trim(); if(!tt)continue;
+    // 1) try the real text-search endpoint
+    let got=[];
+    const sUrl='https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(tt)+'&limit_per_type=10&events_status=active';
+    const sj=await viaProxy(sUrl);
+    if(sj){
+      // public-search returns {events:[{markets:[...]}], ...} or {markets:[...]}
+      const evs=sj.events||[]; const mks=sj.markets||[];
+      for(const ev of evs){ for(const m of (ev.markets||[])) got.push(m); }
+      for(const m of mks) got.push(m);
     }
+    // 2) fallback: pull a big active list and keyword-filter client-side
+    if(!got.length){
+      const lUrl='https://gamma-api.polymarket.com/markets?closed=false&active=true&limit=200&order=volume24hr&ascending=false';
+      const lj=await viaProxy(lUrl);
+      if(Array.isArray(lj)) got=lj;
+    }
+    // keep only genuine keyword matches, top 4 by volume
+    const rows=got.map(m=>marketToRow(m,tt))
+      .filter(r=>matchesTerm(r.title,tt))
+      .sort((a,b)=>(b.vol||0)-(a.vol||0))
+      .slice(0,4);
+    out.push(...rows);
   }
-  // dedupe by title
   const seen=new Set(),uniq=[];for(const o of out){if(o.title&&!seen.has(o.title)){seen.add(o.title);uniq.push(o);}}
   return uniq;
 }
@@ -146,7 +173,7 @@ async function doFetch(){
 
   const brentMove=oil?.brent?.changePct ?? null;
   const tb=$('oddsTable').querySelector('tbody'); tb.innerHTML='';
-  if(!contracts.length){ tb.innerHTML='<tr><td class="dim" colspan="5">No contracts returned. Polymarket titles may differ — edit search terms to match live market names.</td></tr>'; }
+  if(!contracts.length){ tb.innerHTML='<tr><td class="dim" colspan="5">No contracts matched your terms. Polymarket may not have an active market on that exact topic, or the title wording differs. Try broader single words (e.g. "iran", "hormuz", "fed") rather than phrases.</td></tr>'; }
   for(const c of contracts){
     const big=c.delta!=null&&Math.abs(c.delta)>=5;
     const diverge=big&&brentMove!=null&&Math.abs(brentMove)<1;
