@@ -159,7 +159,7 @@ async function fetchContracts(terms){
     // prefer live markets, top 5 by volume
     const rows=got.map(m=>marketToRow(m,tt))
       .filter(r=>matchesTerm(r.title,tt))
-      .map(r=>{ const datePast=titleDatePast(r.title); r.resolved = datePast || (r.yes!=null && (r.yes<=0.5 || r.yes>=99.5) && (r.delta==null || Math.abs(r.delta)<0.1)); r.expired=datePast; return r; })
+      .map(r=>{ const datePast=titleDatePast(r.title); const pinned=(r.yes!=null && (r.yes<=1 || r.yes>=99)); r.resolved = datePast || pinned; r.expired=datePast; r.settled=pinned&&!datePast; return r; })
       .sort((a,b)=>{ if(a.resolved!==b.resolved) return a.resolved?1:-1; return (b.vol||0)-(a.vol||0); })
       .slice(0,5);
     out.push(...rows);
@@ -233,7 +233,7 @@ async function doFetch(){
   } else ob.innerHTML='<span class="oilstat dim">Oil fetch failed (proxy). Odds still valid above.</span>';
 
   // synthesis read
-  const movers=contracts.filter(c=>c.delta!=null&&Math.abs(c.delta)>=5);
+  const movers=contracts.filter(c=>!c.resolved&&c.delta!=null&&Math.abs(c.delta)>=5);
   const diverging=movers.filter(c=>brentMove!=null&&Math.abs(brentMove)<1);
   let r='';
   if(diverging.length){
