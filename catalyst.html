@@ -85,7 +85,7 @@
     <div class="oilbox" id="oilbox"><span class="oilstat dim">Fetched with odds…</span></div>
     <div class="read" id="read">Awaiting data.</div>
     <div class="note">
-      Mapping to silver (via oil): rising deal/ceasefire odds → oil-down pressure → silver loses geopolitical premium (bearish tilt). Falling deal odds / rising conflict odds → oil-up → silver fear bid (bullish tilt). Direction of the <i>event</i> is what the market prices; the silver effect still runs through oil and is conditional, not certain. A <span class="purp">DIVERGE</span> flag = odds moved &gt;5pts/24h while |Brent move| &lt; 1% — prediction market is ahead of the commodity tape.
+      Mapping to silver (via oil — DOMINANT channel is rates/dollar, not fear-premium): rising deal/ceasefire odds → oil down → inflation &amp; rate-hike pressure ease → real rates &amp; dollar soften → <b>silver rallies (bullish tilt)</b>. Silver is half industrial, so it benefits when an energy/inflation shock <i>recedes</i> more than it loses from a fading fear-premium. Conversely, oil spiking on a Hormuz supply shock is <i>stagflationary</i> → hawkish Fed, strong dollar → bearish silver. (This is the corrected mapping; the older "silver loses premium when oil falls" framing was the minority channel and had the sign backwards.) A <span class="purp">DIVERGE</span> flag = odds moved &gt;5pts/24h while |Brent move| &lt; 1% — prediction market is ahead of the commodity tape. Note: contracts with PAST resolution dates settle at 0%/100% and are not forecasts — search forward-dated markets (June, July, 2026+).
     </div>
   </div>
 
@@ -143,11 +143,14 @@ async function fetchContracts(terms){
       const lj=await viaProxy(lUrl);
       if(Array.isArray(lj)) got=lj;
     }
-    // keep only genuine keyword matches, top 4 by volume
+    // keep only genuine keyword matches; drop apparently-resolved contracts
+    // (Yes pinned at 0 or 100 with no movement = already settled / past-dated),
+    // prefer live markets, top 5 by volume
     const rows=got.map(m=>marketToRow(m,tt))
       .filter(r=>matchesTerm(r.title,tt))
-      .sort((a,b)=>(b.vol||0)-(a.vol||0))
-      .slice(0,4);
+      .map(r=>{ r.resolved = (r.yes!=null && (r.yes<=0.5 || r.yes>=99.5) && (r.delta==null || Math.abs(r.delta)<0.1)); return r; })
+      .sort((a,b)=>{ if(a.resolved!==b.resolved) return a.resolved?1:-1; return (b.vol||0)-(a.vol||0); })
+      .slice(0,5);
     out.push(...rows);
   }
   const seen=new Set(),uniq=[];for(const o of out){if(o.title&&!seen.has(o.title)){seen.add(o.title);uniq.push(o);}}
@@ -181,7 +184,9 @@ async function doFetch(){
     if(big)flags+='<span class="flag move">moved '+fmt(c.delta)+'pt</span>';
     if(diverge)flags+='<span class="flag diverge">diverge</span>';
     const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';
-    tb.innerHTML+='<tr><td>'+c.title.slice(0,60)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'pt</td><td class="dim">'+(c.vol?('$'+Math.round(c.vol).toLocaleString()):'—')+'</td><td>'+flags+'</td></tr>';
+    if(c.resolved)flags+='<span class="flag" style="border-color:var(--ink3);color:var(--ink3)">settled/past</span>';
+    const rowStyle=c.resolved?' style="opacity:0.45"':'';
+    tb.innerHTML+='<tr'+rowStyle+'><td>'+c.title.slice(0,60)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'pt</td><td class="dim">'+(c.vol?('$'+Math.round(c.vol).toLocaleString()):'—')+'</td><td>'+flags+'</td></tr>';
   }
   // oil box
   const ob=$('oilbox');
