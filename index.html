@@ -1,2327 +1,267 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kelly v3 · Silver Live — institutional flow via negative space</title>
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Silver Intelligence · v11</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#06070b;
-    --bg2:#0a0c12;
-    --bg3:#0e1119;
-    --ink:#d4dae6;
-    --ink2:#6c7585;
-    --ink3:#454d5d;
-    --acc:#7fd4c8;      /* mint — primary accent */
-    --acc2:#a8e8de;
-    --bull:#5dcf7e;
-    --bear:#e85c5c;
-    --warn:#e2c25b;
-    --neutral:#6c7585;
-    --line:#1c2029;
-    --line2:#11141a;
-    --shadow:#3a4150;
-  }
+  :root{--bg:#06070b;--bg2:#0a0c12;--bg3:#0e1119;--ink:#d4dae6;--ink2:#7a8496;--ink3:#454d5d;
+    --acc:#7fd4c8;--acc2:#a8e8de;--bull:#5dcf7e;--bear:#e85c5c;--warn:#e2c25b;--purp:#b59ce8;--line:#1c2029;--gold:#d4af6a;}
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;line-height:1.5;}
-  body{
-    background:
-      radial-gradient(ellipse at 10% -5%, rgba(127,212,200,0.06), transparent 50%),
-      radial-gradient(ellipse at 100% 100%, rgba(168,232,222,0.04), transparent 55%),
-      linear-gradient(180deg, #06070b 0%, #08090e 100%);
-    min-height:100vh;
-    padding:14px 14px 60px;
-  }
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;opacity:.025;mix-blend-mode:overlay;z-index:0;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-  }
-  header{max-width:1400px;margin:0 auto 16px;padding-bottom:12px;border-bottom:1px solid var(--line);position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
-  .head-left h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:30px;letter-spacing:-.3px;margin:0;color:var(--acc2)}
-  .head-left h1 .v{color:var(--acc);font-style:italic;font-size:18px;margin-left:4px}
-  .head-left .tag{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:13px;margin-top:2px}
-  .head-right{text-align:right;font-size:11px;color:var(--ink2)}
-  .head-right .price{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--ink);font-weight:500;line-height:1}
-  .head-right .price.bear{color:var(--bear)}
-  .head-right .price.bull{color:var(--bull)}
-  .head-right .change{font-size:13px;margin-top:2px}
-  .head-right .ts{font-size:10px;letter-spacing:1px;color:var(--ink3);margin-top:6px}
-
-  main{max-width:1400px;margin:0 auto;position:relative;z-index:1;
-    display:grid;grid-template-columns:1fr;gap:14px;
-  }
-  @media(min-width:1100px){
-    main{grid-template-columns:repeat(12, 1fr)}
-  }
-
-  /* panel layouts */
-  .verdict{grid-column:span 12;display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:1100px){.verdict{grid-template-columns:1.4fr 1fr 1fr}}
-  .shadows{grid-column:span 12;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-  .grid-12{grid-column:span 12}
-  .grid-6{grid-column:span 12}
-  @media(min-width:1100px){.grid-6{grid-column:span 6}}
-
-  .panel{
-    background:linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
-    border:1px solid var(--line);
-    padding:14px 16px;
-    position:relative;
-  }
-  .panel::before{
-    content:"";position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:1px solid var(--acc);border-left:1px solid var(--acc);
-  }
-  .panel::after{
-    content:"";position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:1px solid var(--acc);border-right:1px solid var(--acc);
-  }
-  .panel h2{
-    font-family:'Cormorant Garamond',serif;
-    font-weight:500;font-size:17px;margin:0 0 4px;letter-spacing:.3px;color:var(--acc2);
-    display:flex;align-items:baseline;gap:8px;justify-content:space-between;
-  }
-  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 6px;flex-shrink:0}
-  .panel .sub{font-size:11px;color:var(--ink2);margin-bottom:10px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:12.5px;line-height:1.5}
-
-  /* signal cards */
-  .shadow-card .reading{
-    display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;
-    padding:6px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  }
-  .reading .label{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase}
-  .reading .value{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
-  .reading .value.bull{color:var(--bull)}
-  .reading .value.bear{color:var(--bear)}
-  .reading .value.warn{color:var(--warn)}
-  .reading .value.neutral{color:var(--neutral)}
-  .interpretation{font-size:11px;color:var(--ink2);margin-top:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;line-height:1.55}
-  .interpretation b{color:var(--ink);font-style:normal;font-weight:500}
-  .interpretation .bull{color:var(--bull);font-style:normal}
-  .interpretation .bear{color:var(--bear);font-style:normal}
-  .interpretation .warn{color:var(--warn);font-style:normal}
-  .mini-canvas{width:100%;height:50px;margin-top:8px;display:block}
-
-  /* verdict main */
-  .verdict-main{display:flex;flex-direction:column;justify-content:space-between}
-  .verdict-needle{
-    display:flex;align-items:center;justify-content:center;flex-direction:column;
-    padding:14px 0;
-  }
-  .verdict-readout{
-    font-family:'Cormorant Garamond',serif;
-    font-size:48px;
-    line-height:1;
-    color:var(--ink);
-    margin-bottom:6px;
-  }
-  .verdict-readout.long{color:var(--bull)}
-  .verdict-readout.short{color:var(--bear)}
-  .verdict-readout.flat{color:var(--neutral)}
-  .verdict-label{font-size:9px;letter-spacing:3px;color:var(--ink3);text-transform:uppercase;margin-bottom:14px}
-  .kelly-readout{font-family:'JetBrains Mono';font-size:13px;color:var(--ink2);text-align:center;margin-top:6px;letter-spacing:1px}
-  .kelly-readout b{color:var(--acc2);font-weight:500;font-size:15px}
-
-  /* crowdedness gauge */
-  .gauge{position:relative;width:100%;height:36px;background:var(--bg3);border:1px solid var(--line);overflow:hidden;margin-top:6px}
-  .gauge-fill{
-    position:absolute;left:0;top:0;height:100%;
-    background:linear-gradient(90deg, rgba(93,207,126,0.4) 0%, rgba(226,194,91,0.5) 50%, rgba(232,92,92,0.6) 100%);
-    transition:width 0.6s ease;
-  }
-  .gauge-marker{
-    position:absolute;top:-3px;width:2px;height:42px;background:var(--ink);
-    transition:left 0.6s ease;
-    box-shadow:0 0 8px rgba(255,255,255,0.5);
-  }
-  .gauge-ticks{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--ink3);letter-spacing:1px}
-  .gauge-bigval{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--ink);text-align:center;font-weight:500;line-height:1;margin-top:6px}
-  .gauge-bigval.high{color:var(--bear)}
-  .gauge-bigval.med{color:var(--warn)}
-  .gauge-bigval.low{color:var(--bull)}
-  .crowdedness-components{margin-top:10px}
-  .crowd-comp{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:3px 0;font-size:10px;border-bottom:1px dotted var(--line2);
-  }
-  .crowd-comp .nm{color:var(--ink2)}
-  .crowd-comp .bar{
-    flex:1;height:4px;background:var(--bg3);margin:0 10px;position:relative;
-  }
-  .crowd-comp .bar::after{
-    content:"";position:absolute;left:0;top:0;height:100%;background:var(--acc);
-  }
-  .crowd-comp .vl{color:var(--ink);font-family:'JetBrains Mono';font-size:10px;min-width:35px;text-align:right}
-
-  /* signal table */
-  .sig-table{width:100%;border-collapse:collapse;font-size:11px}
-  .sig-table th{
-    text-align:left;color:var(--ink3);font-weight:400;font-size:9px;
-    letter-spacing:1.5px;text-transform:uppercase;padding:8px 4px;
-    border-bottom:1px solid var(--line);
-  }
-  .sig-table th.num{text-align:right}
-  .sig-table td{padding:7px 4px;border-bottom:1px dotted var(--line2);}
-  .sig-table .name{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink)}
-  .sig-table .sublbl{font-size:9px;color:var(--ink3);font-family:'JetBrains Mono';letter-spacing:1px}
-  .sig-table .num{text-align:right;font-family:'JetBrains Mono'}
-  .sig-table .sig.bull{color:var(--bull)}
-  .sig-table .sig.bear{color:var(--bear)}
-  .sig-table .sig.neutral{color:var(--neutral)}
-  .sig-table .source{font-size:9px;color:var(--ink3);font-family:'JetBrains Mono';letter-spacing:1px;text-transform:uppercase}
-
-  /* methodology */
-  details{margin-top:12px;border:1px solid var(--line);padding:10px 14px;background:rgba(0,0,0,.15)}
-  details summary{cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--acc2);font-style:italic}
-  details[open] summary{margin-bottom:8px}
-  details p{font-size:11px;color:var(--ink2);margin:6px 0;line-height:1.6}
-  details em{color:var(--ink);font-style:italic}
-  details code{background:var(--bg3);padding:1px 6px;color:var(--acc2);font-size:11px;border:1px solid var(--line)}
-
-  /* refresh banner */
-  .live-banner{
-    display:inline-flex;align-items:center;gap:6px;padding:3px 10px;
-    background:rgba(127,212,200,0.08);border:1px solid var(--acc);
-    font-size:10px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;
-    margin-top:6px;
-  }
-  .live-dot{
-    width:6px;height:6px;border-radius:50%;background:var(--acc);
-    animation:pulse 1.8s infinite ease-in-out;
-  }
-  @keyframes pulse{
-    0%,100%{opacity:1;box-shadow:0 0 6px var(--acc)}
-    50%{opacity:0.4;box-shadow:0 0 1px var(--acc)}
-  }
-
-  /* footer */
-  footer{max-width:1400px;margin:30px auto 0;color:var(--ink2);font-size:11px;border-top:1px solid var(--line);padding-top:14px;position:relative;z-index:1}
-  footer em{font-family:'Cormorant Garamond',serif;color:var(--acc)}
-  footer .lineage{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:var(--ink3);letter-spacing:1px}
-
-  /* setup hint shown only when seed data detected */
-  .setup-hint{
-    grid-column:span 12;
-    background:linear-gradient(180deg, rgba(226,194,91,0.08), rgba(226,194,91,0.04));
-    border:1px solid var(--warn);
-    padding:16px 20px;
-    position:relative;
-    display:none;
-  }
-  .setup-hint.show{display:block}
-  .setup-hint h3{
-    font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;color:var(--warn);
-    margin:0 0 8px;display:flex;align-items:center;gap:10px;
-  }
-  .setup-hint h3::before{content:"⚙";font-size:20px}
-  .setup-hint ol{margin:8px 0 4px 20px;padding:0;font-size:12px;line-height:1.7;color:var(--ink)}
-  .setup-hint ol li{margin-bottom:4px}
-  .setup-hint code{background:var(--bg3);padding:1px 6px;color:var(--warn);font-size:11px;border:1px solid var(--line)}
-  .setup-hint .dismiss{
-    position:absolute;top:8px;right:12px;cursor:pointer;color:var(--ink3);
-    background:transparent;border:none;font-size:18px;
-  }
-  .setup-hint .dismiss:hover{color:var(--warn)}
-
-  /* refresh button */
-  .refresh{
-    background:transparent;color:var(--acc);border:1px solid var(--acc);
-    padding:6px 12px;font-family:inherit;font-size:11px;letter-spacing:1.5px;
-    text-transform:uppercase;cursor:pointer;transition:.2s;
-  }
-  .refresh:hover{background:var(--acc);color:var(--bg)}
-
-  /* probabilistic forecast panel */
-  .forecast-grid{
-    display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-top:8px;
-  }
-  @media(max-width:900px){.forecast-grid{grid-template-columns:1fr}}
-  .pdf-chart{height:200px;width:100%;background:var(--bg3);border:1px solid var(--line);position:relative}
-  .prob-table{width:100%;border-collapse:collapse;font-size:11px}
-  .prob-table th{
-    text-align:left;color:var(--ink3);font-weight:400;font-size:9px;
-    letter-spacing:1.5px;text-transform:uppercase;padding:8px 4px;
-    border-bottom:1px solid var(--line);
-  }
-  .prob-table th.num{text-align:right}
-  .prob-table td{padding:9px 4px;border-bottom:1px dotted var(--line2)}
-  .prob-table .desc{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink)}
-  .prob-table .pct{
-    text-align:right;font-family:'JetBrains Mono';
-    font-size:14px;color:var(--ink);font-weight:500;
-  }
-  .prob-table .pct.high{color:var(--bull)}
-  .prob-table .pct.med{color:var(--warn)}
-  .prob-table .pct.low{color:var(--bear)}
-  .prob-table .bar{
-    display:inline-block;height:4px;background:var(--acc);
-    margin-left:8px;vertical-align:middle;
-  }
-  .calibration-note{
-    background:rgba(232,194,91,0.06);border-left:2px solid var(--warn);
-    padding:8px 12px;margin-top:10px;font-size:10px;color:var(--ink2);
-    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12px;line-height:1.55;
-  }
-  .calibration-note b{color:var(--warn);font-style:normal;font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase}
-
-  .forecast-headline{
-    text-align:center;padding:14px 12px;border:1px solid var(--line);background:var(--paper);
-  }
-  .forecast-headline .lbl{font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin-bottom:6px}
-  .forecast-headline .big{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;color:var(--ink)}
-  .forecast-headline .big.bull{color:var(--bull)}
-  .forecast-headline .big.bear{color:var(--bear)}
-  .forecast-headline .big.neutral{color:var(--neutral)}
-  .forecast-headline .sub-readout{font-size:11px;color:var(--ink2);margin-top:4px;font-family:'JetBrains Mono'}
-
-  /* prediction interval bars */
-  .pi-bar{
-    height:36px;background:var(--bg3);border:1px solid var(--line);
-    position:relative;margin:8px 0;
-  }
-  .pi-bar .pi-range{
-    position:absolute;top:0;bottom:0;
-    background:linear-gradient(90deg, rgba(232,92,92,0.4), rgba(232,194,91,0.4), rgba(127,212,200,0.4), rgba(93,207,126,0.4));
-  }
-  .pi-bar .pi-center{
-    position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--acc);
-    box-shadow:0 0 6px var(--acc);
-  }
-  .pi-bar .pi-label{
-    position:absolute;font-size:9px;font-family:'JetBrains Mono';color:var(--ink2);
-    letter-spacing:1px;
-  }
-  .pi-bar .pi-label.lo{left:4px;top:50%;transform:translateY(-50%)}
-  .pi-bar .pi-label.hi{right:4px;top:50%;transform:translateY(-50%)}
-  .pi-bar .pi-label.ctr{top:-16px;transform:translateX(-50%);color:var(--acc);font-size:10px}
-
-  /* fractal analysis */
-  .fractal-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:8px;
-  }
-  .fractal-card{
-    border:1px solid var(--line);background:var(--paper);padding:12px;position:relative;
-  }
-  .fractal-card .nm{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
-  .fractal-card .val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;color:var(--ink);line-height:1}
-  .fractal-card .val.trend{color:var(--bull)}
-  .fractal-card .val.revert{color:var(--bear)}
-  .fractal-card .val.random{color:var(--neutral)}
-  .fractal-card .sub-readout{font-size:10px;color:var(--ink2);margin-top:4px;font-family:'JetBrains Mono';letter-spacing:0.5px}
-  .fractal-card .desc{font-size:11px;color:var(--ink2);margin-top:8px;font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.5}
-
-  .h-bar{
-    height:24px;background:var(--bg3);border:1px solid var(--line);
-    position:relative;margin:8px 0;
-  }
-  .h-bar::before{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(90deg,
-      rgba(232,92,92,0.4) 0%,
-      rgba(232,194,91,0.4) 35%,
-      rgba(127,212,200,0.4) 50%,
-      rgba(232,194,91,0.4) 65%,
-      rgba(93,207,126,0.4) 100%);
-  }
-  .h-bar .marker{
-    position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);
-    box-shadow:0 0 6px rgba(255,255,255,0.4);
-  }
-  .h-bar-ticks{display:flex;justify-content:space-between;margin-top:2px;font-size:8px;color:var(--ink3);letter-spacing:0.5px}
-
-  .mf-bar{
-    height:8px;background:var(--bg3);border:1px solid var(--line);
-    margin:6px 0;position:relative;overflow:hidden;
-  }
-  .mf-bar .fill{
-    height:100%;background:linear-gradient(90deg, var(--acc), var(--warn), var(--bear));
-    transition:width 0.5s ease;
-  }
-
-  .fractal-interp{
-    margin-top:16px;padding:12px 16px;border:1px solid var(--acc);background:rgba(127,212,200,0.04);
-  }
-  .fractal-interp .header{
-    font-size:10px;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;margin-bottom:8px;
-  }
-  .fractal-interp .narrative{
-    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:var(--ink);line-height:1.6;
-  }
-  .fractal-interp .narrative b{color:var(--acc2);font-style:normal;font-weight:500}
-  .fractal-interp .narrative .bull{color:var(--bull);font-style:normal}
-  .fractal-interp .narrative .bear{color:var(--bear);font-style:normal}
-  .fractal-interp .narrative .warn{color:var(--warn);font-style:normal}
-
-  /* agent voting */
-  .agent-row{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:8px 12px;border:1px solid var(--line);background:var(--bg3);
-    margin-bottom:6px;font-size:11px;
-  }
-  .agent-row .nm{font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--ink2);flex:1}
-  .agent-row .score{font-family:'JetBrains Mono';font-size:11px;color:var(--ink3);margin-right:10px;min-width:50px;text-align:right}
-  .agent-row .vote{
-    font-family:'JetBrains Mono';font-size:10px;letter-spacing:1.5px;
-    padding:3px 10px;border:1px solid;min-width:60px;text-align:center;
-  }
-  .agent-row .vote.long{color:var(--bull);border-color:var(--bull);background:rgba(93,207,126,0.08)}
-  .agent-row .vote.short{color:var(--bear);border-color:var(--bear);background:rgba(232,92,92,0.08)}
-  .agent-row .vote.neutral{color:var(--neutral);border-color:var(--neutral);background:rgba(108,117,133,0.06)}
-
-  .consensus-readout{
-    display:flex;justify-content:space-between;gap:14px;font-size:11px;
-  }
-  .consensus-readout .item{flex:1;text-align:center;padding:6px 4px;background:var(--bg3);border:1px solid var(--line)}
-  .consensus-readout .item .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:3px}
-  .consensus-readout .item .val{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink)}
-  .consensus-readout .item .val.good{color:var(--bull)}
-  .consensus-readout .item .val.bad{color:var(--bear)}
-  .consensus-readout .item .val.warn{color:var(--warn)}
-
-  /* exit grid */
-  .exit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .exit-trigger{
-    border:1px solid var(--line);background:var(--bg3);padding:10px;
-    position:relative;
-  }
-  .exit-trigger .lbl{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px}
-  .exit-trigger .price{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--ink);font-weight:500;line-height:1}
-  .exit-trigger .pct{font-family:'JetBrains Mono';font-size:10px;color:var(--ink2);margin-top:2px;letter-spacing:0.5px}
-  .exit-trigger.tp{border-left:3px solid var(--bull)}
-  .exit-trigger.sl{border-left:3px solid var(--bear)}
-  .exit-trigger.trail{border-left:3px solid var(--warn)}
-  .exit-trigger.time{border-left:3px solid var(--acc)}
-  .exit-trigger .price.bull{color:var(--bull)}
-  .exit-trigger .price.bear{color:var(--bear)}
-  .exit-inactive{
-    padding:14px;text-align:center;color:var(--ink3);
-    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;
-    border:1px dashed var(--line);
-  }
-
-  /* data source variants */
-  .live-banner.stale{background:rgba(226,194,91,0.08);border-color:var(--warn);color:var(--warn)}
-  .live-banner.stale .live-dot{background:var(--warn);box-shadow:0 0 6px var(--warn)}
-  .live-banner.error{background:rgba(232,92,92,0.08);border-color:var(--bear);color:var(--bear)}
-  .live-banner.error .live-dot{background:var(--bear);box-shadow:0 0 6px var(--bear);animation:none}
-  .live-banner.loading .live-dot{animation:pulse 0.8s infinite ease-in-out}
-  .fetch-log{font-size:10px;color:var(--ink3);margin-top:6px;font-family:'JetBrains Mono';letter-spacing:0.5px}
-  .fetch-log .ok{color:var(--bull)}
-  .fetch-log .fail{color:var(--bear)}
-</style>
-</head>
-<body>
-
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5}
+  body{padding:14px 14px 80px;min-height:100vh;background:radial-gradient(ellipse at 50% -8%,rgba(127,212,200,0.06),transparent 55%),linear-gradient(180deg,#06070b,#08090e)}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;margin:0;letter-spacing:-.4px;color:var(--acc2)}
+  h1 .v{color:var(--acc);font-style:italic;font-size:17px;margin-left:8px}
+  .sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:15px;margin-top:4px}
+  .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:10px;flex-wrap:wrap}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  .nav a.active{color:var(--acc);border-color:var(--acc)}
+  .grid{display:grid;gap:14px}
+  .panel{background:linear-gradient(180deg,var(--bg2),var(--bg));border:1px solid var(--line);padding:16px 18px;position:relative}
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:13px;height:13px;border-top:1px solid var(--acc);border-left:1px solid var(--acc)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;border-bottom:1px solid var(--acc);border-right:1px solid var(--acc)}
+  .panel h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;margin:0 0 2px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
+  .panel h2 .num{font-family:'JetBrains Mono';font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 7px}
+  .psub{font-size:13px;color:var(--ink2);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:12px}
+  .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:18px}
+  @media(max-width:760px){.hero{grid-template-columns:1fr}}
+  .verdict-big{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:600;letter-spacing:-1px;line-height:1.05}
+  .verdict-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-top:4px}
+  .price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600}
+  .chg{font-size:16px;margin-left:8px}
+  .meta{font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-top:6px}
+  .bull{color:var(--bull)}.bear{color:var(--bear)}.warn{color:var(--warn)}.dim{color:var(--ink3)}.purp{color:var(--purp)}.gold{color:var(--gold)}.acc{color:var(--acc)}
+  .bar{height:7px;background:var(--bg3);border:1px solid var(--line);position:relative;margin:4px 0 2px}
+  .bar i{position:absolute;top:0;bottom:0;left:0;background:linear-gradient(90deg,var(--acc),var(--acc2));display:block}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:12px}
+  .row:last-child{border-bottom:none}
+  .row .lab{color:var(--ink2)}.row .val{font-weight:700}
+  .chan{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:760px){.chan{grid-template-columns:1fr}}
+  .chanbox{border:1px solid var(--line);padding:12px 14px;background:var(--bg3)}
+  .chanbox h3{margin:0 0 6px;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600}
+  .chanbox .mech{font-size:11px;color:var(--ink3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.45}
+  .tilt{font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border:1px solid;display:inline-block;margin-top:8px}
+  .tilt.up{color:var(--bull);border-color:var(--bull)}.tilt.down{color:var(--bear);border-color:var(--bear)}.tilt.neutral{color:var(--ink3);border-color:var(--ink3)}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;font-weight:400}
+  td:first-child,th:first-child{text-align:left}
+  .btn{background:var(--acc);color:var(--bg);border:none;padding:9px 18px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
+  .btn:hover{background:var(--acc2)}
+  .btn.ghost{background:var(--bg3);color:var(--acc);border:1px solid var(--acc)}
+  .flag{display:inline-block;font-size:9px;letter-spacing:1px;padding:1px 6px;border:1px solid;text-transform:uppercase;margin-left:5px}
+  .note{font-size:11px;color:var(--ink3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.5;margin-top:10px}
+  .lessons li{margin:5px 0;font-size:12px;color:var(--ink2)}
+  .lessons b{color:var(--ink)}
+  canvas{width:100%;height:120px;display:block}
+  .pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bull);margin-right:5px;animation:p 2s infinite}
+  @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+  .banner{font-size:11px;letter-spacing:1px;padding:8px 14px;border:1px solid var(--warn);color:var(--warn);background:rgba(226,194,91,.06);margin-bottom:14px;text-transform:uppercase}
+  .banner.ok{border-color:var(--bull);color:var(--bull);background:rgba(93,207,126,.06)}
+</style></head>
+<body><div class="wrap">
 <header>
-  <div class="head-left">
-    <h1 id="dashTitle">Kelly Live <span class="v">/ v4</span></h1>
-    <div class="tag" id="dashTag">institutional flow detection via negative space</div>
-    <div class="live-banner" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span class="live-dot" id="liveDot"></span>
-      <span id="liveStatus">initializing…</span>
-      <button class="refresh" id="refreshBtn" style="margin-left:6px;padding:3px 10px;font-size:9px">↻ refresh</button>
-    </div>
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <label style="font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase">Ticker:</label>
-      <select id="tickerSelect" style="background:var(--bg2);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font-family:inherit;font-size:11px;letter-spacing:.5px;cursor:pointer">
-        <option value="">loading…</option>
-      </select>
-      <input type="text" id="tickerInput" placeholder="or type ticker"
-        style="background:var(--bg2);color:var(--ink);border:1px solid var(--line);padding:4px 8px;font-family:inherit;font-size:11px;letter-spacing:.5px;width:90px;text-transform:uppercase" />
-      <button class="refresh" id="tickerLoadBtn" style="padding:4px 10px;font-size:9px">load</button>
-      <a href="backtest.html" style="margin-left:8px;padding:4px 10px;font-size:9px;border:1px solid var(--warn);color:var(--warn);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase">backtest →</a>
-      <a href="backtest-v8.html" style="margin-left:6px;padding:4px 10px;font-size:9px;border:1px solid var(--bull);color:var(--bull);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase">v8 →</a>
-      <a href="signal-lab.html" style="margin-left:6px;padding:4px 10px;font-size:9px;border:1px solid var(--acc);color:var(--acc);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase">lab →</a>
-      <a href="backtest-v10.html" style="margin-left:6px;padding:4px 10px;font-size:9px;border:1px solid var(--acc2);color:var(--acc2);background:rgba(168,232,222,0.08);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase">v10 →</a>
-      <a href="macro-lab.html" style="margin-left:6px;padding:4px 10px;font-size:9px;border:1px solid #b59ce8;color:#b59ce8;background:rgba(181,156,232,0.08);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase">macro →</a>
-    </div>
-  </div>
-  <div class="head-right">
-    <div class="price" id="spotPrice">$—</div>
-    <div class="change" id="spotChange">—</div>
-    <div class="ts" id="spotSource">— · Yahoo Finance</div>
-  </div>
+  <h1>Silver Intelligence <span class="v">/ v11 · synthesis</span></h1>
+  <div class="sub">Rebuilt on what this project actually proved: direction is unpredictable, compressions chop 77% of the time, and geopolitics splits into two opposite-signed channels. This dashboard refuses to fake an edge it doesn't have.</div>
+  <nav class="nav">
+    <a href="index.html">v6 (legacy)</a><a href="backtest-v10.html">v10</a><a href="signal-lab.html">lab</a>
+    <a href="macro-lab.html">macro</a><a href="vol-lab.html">vol</a><a href="catalyst.html">catalyst</a>
+    <a href="v11.html" class="active">v11</a>
+  </nav>
 </header>
 
-<main>
-  <!-- FIRST-TIME SETUP HINT (only shown when seed data is detected) -->
-  <section class="setup-hint" id="setupHint">
-    <button class="dismiss" id="dismissHint" title="Dismiss">×</button>
-    <h3>First-time setup needed</h3>
-    <p style="font-size:12px;color:var(--ink2);margin:4px 0 8px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px">
-      You're seeing the embedded seed data, which means GitHub Actions hasn't fetched fresh data yet. Three quick steps:
-    </p>
-    <ol>
-      <li>Go to your repo's <b>Settings → Actions → General</b> and set workflow permissions to <code>Read and write permissions</code></li>
-      <li>Go to the <b>Actions</b> tab → click <code>Fetch Silver Data</code> → click <b>Run workflow</b></li>
-      <li>Wait ~30 seconds, then refresh this page. The banner above should turn green and show "LIVE."</li>
-    </ol>
-    <p style="font-size:11px;color:var(--ink3);margin-top:8px;font-family:'JetBrains Mono'">
-      The workflow runs automatically every 30 minutes after the first trigger. Full instructions are in <code>README.md</code>.
-    </p>
-  </section>
+<div id="banner" class="banner">● initializing — fetching live data…</div>
 
-  <!-- PROBABILISTIC FORECAST -->
-  <section class="panel" style="grid-column:span 12">
-    <h2>Probabilistic forecast <span class="num">module · 0 · next 5 sessions</span></h2>
-    <div class="sub">The same Kelly–Shannon math that drives sizing also gives us a posterior distribution over future returns. Center bar = best estimate; band width = model uncertainty; rows are concrete probabilities of named outcomes. <em>Confidence is honest: when signals disagree, the band widens and probabilities cluster near 50%.</em></div>
+<div class="grid">
 
-    <div class="forecast-grid">
+  <!-- HERO: price + honest verdict -->
+  <div class="panel">
+    <div class="hero">
       <div>
-        <!-- Three named prediction intervals -->
-        <div style="font-size:10px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:4px">5-session return · prediction interval</div>
-        <div class="pi-bar" id="piBar5d">
-          <div class="pi-range" id="piRange5d"></div>
-          <div class="pi-center" id="piCenter5d"></div>
-          <span class="pi-label lo" id="piLabelLo5d">—</span>
-          <span class="pi-label ctr" id="piLabelCtr5d">—</span>
-          <span class="pi-label hi" id="piLabelHi5d">—</span>
-        </div>
-        <div style="font-size:9px;color:var(--ink3);letter-spacing:1px;margin-top:2px">68% confidence band around central estimate</div>
-
-        <div style="margin-top:14px;font-size:10px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase">20-session (~1 month) interval</div>
-        <div class="pi-bar" id="piBar20d">
-          <div class="pi-range" id="piRange20d"></div>
-          <div class="pi-center" id="piCenter20d"></div>
-          <span class="pi-label lo" id="piLabelLo20d">—</span>
-          <span class="pi-label ctr" id="piLabelCtr20d">—</span>
-          <span class="pi-label hi" id="piLabelHi20d">—</span>
-        </div>
-        <div style="font-size:9px;color:var(--ink3);letter-spacing:1px;margin-top:2px">68% confidence band — wider due to compounding uncertainty</div>
-
-        <div class="calibration-note">
-          <b>honest calibration</b>
-          These are model-implied probabilities derived from the same signals driving Kelly sizing. They are NOT backtested against thousands of historical outcomes. Treat them as <em>structured beliefs</em> with explicit uncertainty, not as oracle predictions. When signal disagreement (spread) is high, probabilities are pulled toward 50% — which is the system being honest about not knowing.
-        </div>
+        <div class="verdict-sub">Silver · SI=F · live</div>
+        <div><span class="price" id="px">—</span><span class="chg" id="chg"></span></div>
+        <div class="meta" id="pxmeta">awaiting data</div>
+        <canvas id="spark"></canvas>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div class="forecast-headline">
-          <div class="lbl">Headline forecast · 5 sessions</div>
-          <div class="big" id="forecastHeadline">—</div>
-          <div class="sub-readout" id="forecastSubReadout">computing…</div>
+      <div>
+        <div class="verdict-sub">Regime verdict</div>
+        <div class="verdict-big" id="verdict">—</div>
+        <div class="verdict-sub" id="verdictwhy"></div>
+        <div style="margin-top:14px">
+          <div class="row"><span class="lab">Compression (apex proximity)</span><span class="val" id="comp">—</span></div>
+          <div class="bar"><i id="compbar" style="width:0%"></i></div>
+          <div class="row"><span class="lab">Realized vol (20d, annual)</span><span class="val" id="rvol">—</span></div>
+          <div class="row"><span class="lab">Range position (52d)</span><span class="val" id="rangepos">—</span></div>
         </div>
-
-        <table class="prob-table">
-          <thead>
-            <tr><th>Event</th><th class="num">Probability</th></tr>
-          </thead>
-          <tbody id="probTable"></tbody>
-        </table>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- VERDICT ROW -->
-  <section class="panel verdict-main" style="grid-column:span 12">
-    <h2>Verdict <span class="num">v3 · synthesis</span></h2>
-    <div class="sub">Consensus across all signals after reflexivity and negative-space adjustments. Kelly sizing capped at ±1× notional.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch">
-      <div class="verdict-needle" style="border-right:1px solid var(--line)">
-        <div class="verdict-readout" id="verdictText">—</div>
-        <div class="verdict-label" id="verdictLabel">computing</div>
-        <div class="kelly-readout">Kelly f* = <b id="kellyVal">—</b></div>
-        <div class="kelly-readout">confidence: <b id="confLevel">—</b></div>
+  <!-- DUAL CHANNEL GEOPOLITICAL MODEL -->
+  <div class="panel">
+    <h2>Dual-channel geopolitical model <span class="num">corrected · this thread</span></h2>
+    <div class="psub">The key finding: geopolitics is NOT one signal. Middle East fear and Ukraine fear push silver in OPPOSITE directions. Lumping them is the error that had the sign backwards.</div>
+    <div class="chan">
+      <div class="chanbox">
+        <h3 class="gold">Middle East → via OIL</h3>
+        <div class="mech">Iran/Hormuz escalation → oil up → stagflation → hawkish Fed, strong dollar → <b class="bear">bearish silver</b>. De-escalation → oil down → dovish → <b class="bull">bullish silver</b>. Silver trades as a <i>reflation/peace</i> asset here — its industrial half dominates.</div>
+        <div id="metilt" class="tilt neutral">tilt: loading</div>
       </div>
-      <div style="border-right:1px solid var(--line);padding:0 16px">
-        <div class="reading" style="border:none;padding-top:0">
-          <span class="label">Crowdedness</span>
-          <span class="value" id="crowdLabel">—</span>
-        </div>
-        <div class="gauge" style="margin-top:6px">
-          <div class="gauge-fill" id="crowdFill" style="width:0%"></div>
-          <div class="gauge-marker" id="crowdMarker" style="left:0%"></div>
-        </div>
-        <div class="gauge-ticks"><span>low</span><span>moderate</span><span>extreme</span></div>
-        <div class="gauge-bigval" id="crowdVal">—</div>
-        <div class="crowdedness-components" id="crowdComp"></div>
-      </div>
-      <div style="padding:0">
-        <div class="reading" style="border:none;padding-top:0">
-          <span class="label">Action</span>
-          <span class="value" id="actionLabel">—</span>
-        </div>
-        <div class="interpretation" id="actionDetail" style="margin-top:8px">—</div>
+      <div class="chanbox">
+        <h3 class="purp">Ukraine/Russia → via SAFE-HAVEN</h3>
+        <div class="mech">Oreshnik / NATO-border escalation → pure flight-to-safety, no oil offset → <b class="bull">bullish silver</b> alongside gold. This is the ONE geopolitical fear that lifts silver directly. Currently UNPRICED by most models — a blind spot until now.</div>
+        <div id="uktilt" class="tilt up">tilt: bullish (active escalation)</div>
       </div>
     </div>
-  </section>
+    <div class="note">When both align bullish (ME de-escalation + Ukraine fear), silver gets a double bid — rarer and more durable than a single-channel pop. When they oppose, they cancel and the coil holds. Read them separately, never net them blindly.</div>
+  </div>
 
-  <!-- AGENT CONSENSUS + EXIT DISCIPLINE -->
-  <section class="panel grid-6">
-    <h2>Multi-agent consensus <span class="num">module · 0a · vote filter</span></h2>
-    <div class="sub">Four independent agents vote based on orthogonal signal lenses. Consensus across agents acts as a <em>hard gate</em> on Kelly sizing — stricter than continuous spread weighting and far fewer false positives.</div>
-    <div id="agentGrid" style="margin-top:10px"></div>
-    <div id="consensusReadout" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"></div>
-  </section>
+  <!-- CATALYST ODDS (live) -->
+  <div class="panel">
+    <h2>Catalyst layer <span class="num">polymarket · live</span></h2>
+    <div class="psub">Upstream event probabilities. Resolved/expired contracts auto-filtered. Now tracks BOTH theaters — the Ukraine row is the vector added today.</div>
+    <button class="btn" id="fetchCat">▶ Fetch catalyst odds</button>
+    <table id="catTable" style="margin-top:8px"><thead><tr><th>Contract</th><th>Yes%</th><th>24h Δ</th><th>flags</th></tr></thead><tbody><tr><td class="dim" colspan="4">Tap fetch…</td></tr></tbody></table>
+    <div class="row" style="margin-top:8px"><span class="lab">Oil cross-check</span><span class="val" id="oilrow">—</span></div>
+  </div>
 
-  <section class="panel grid-6">
-    <h2>Exit discipline <span class="num">module · 0b · take-profit / stop / trail</span></h2>
-    <div class="sub">Kelly-optimal exit doesn't wait for the maximum. We compute take-profit at <b>75% of expected move</b>, stop-loss at <b>1σ adverse</b>, trail stop, and time stop based on the 5-day forecast distribution.</div>
-    <div id="exitGrid" style="margin-top:10px"></div>
-    <div id="exitNote" style="margin-top:10px;padding:8px 12px;border-left:2px solid var(--warn);background:rgba(232,194,91,0.05);font-size:11px;color:var(--ink2);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;line-height:1.5"></div>
-  </section>
+  <!-- WHAT WE PROVED -->
+  <div class="panel">
+    <h2>What this project proved <span class="num">do not re-litigate</span></h2>
+    <ul class="lessons" style="margin:0;padding-left:18px">
+      <li><b>Direction at a coil is unpredictable.</b> 114 episodes, 3 assets, no entry signal separated crash from rally out-of-sample. Don't bet direction on compression.</li>
+      <li><b>Compressions chop 77% of the time.</b> Big move only 23% (8% crash / 15% rally). The base case is sideways.</li>
+      <li><b>Every long-volatility idea lost.</b> Vacuum, apex geometry, rate-of-compression, onset-timing, managed exits — all bled the vol-risk premium. The only positive structure was <b>selling</b> premium into chop (thin, tail-exposed).</li>
+      <li><b>The long straddle is the only direction-agnostic structure that pays in both tails</b> (+4.5% crash & rally) — but loses overall because chop dominates.</li>
+      <li><b>Geopolitics is two opposite channels</b> (above). The "silver = war hedge" instinct is wrong for the Middle East and right only for Ukraine.</li>
+      <li><b>Data integrity is a signal.</b> Futures-roll artifacts faked a −11% oil print; stale miners data faked a SHORT. Always verify before trusting a dramatic reading.</li>
+    </ul>
+  </div>
 
-  <!-- NEGATIVE-SPACE SIGNALS GRID -->
-  <section class="panel" style="grid-column:span 12">
-    <h2>Negative-space institutional flow signals <span class="num">module · I</span></h2>
-    <div class="sub">Seven shadow signals that detect what institutions are doing by examining the public traces of their hidden activity. None of these require expensive options-chain or dark-pool subscriptions.</div>
-    <div class="shadows" id="shadowGrid"></div>
-  </section>
-
-  <!-- CLASSICAL + DYNAMIC SIGNALS -->
-  <section class="panel grid-6">
-    <h2>Reversion & momentum signals <span class="num">module · II</span></h2>
-    <div class="sub">V2 signals retained, with dynamic equilibrium for carry and crowdedness multiplier applied. Bullish signals are dampened by crowdedness; bearish signals are amplified.</div>
-    <table class="sig-table">
-      <thead>
-        <tr><th>Signal</th><th class="num">Raw</th><th class="num">Adj</th><th class="num">Source</th></tr>
-      </thead>
-      <tbody id="classicalSignals"></tbody>
-    </table>
-  </section>
-
-  <section class="panel grid-6">
-    <h2>Cross-asset & macro context <span class="num">module · III</span></h2>
-    <div class="sub">Coupling state across the precious-metals + risk regime. Includes the Soros-style reflexivity check on whether silver is leading or lagging its correlated assets.</div>
-    <table class="sig-table">
-      <thead>
-        <tr><th>Asset / metric</th><th class="num">Reading</th><th class="num">State</th></tr>
-      </thead>
-      <tbody id="contextTable"></tbody>
-    </table>
-  </section>
-
-  <!-- FRACTAL ANALYSIS -->
-  <section class="panel" style="grid-column:span 12">
-    <h2>Fractal analysis <span class="num">module · IV · Hurst &amp; multifractal</span></h2>
-    <div class="sub">Mandelbrot's framework: measure how the price series scales across timeframes. Hurst exponent H tells you the <em>regime</em> — trending, random, or mean-reverting. Multifractal spectrum width measures complexity and widens before regime breaks. These readings directly inform which of our other signals to trust.</div>
-    <div class="fractal-grid" id="fractalGrid"></div>
-    <div class="fractal-interp" id="fractalInterp"></div>
-  </section>
-
-  <!-- METHODOLOGY -->
-  <section class="panel" style="grid-column:span 12">
-    <h2>Methodology — the negative-space framework <span class="num">disclosure</span></h2>
-    <details open>
-      <summary>The thesis: institutional flow is invisible in raw price data but visible in its derivatives</summary>
-      <p>Hedge funds, dealers, and dark-pool participants don't want their flow seen. They use VWAP algos, iceberg orders, and dark venues precisely because lit-market visibility would let competitors front-run them. But every hidden flow casts a shadow on observable public data — and that shadow has a characteristic shape. Renaissance and Citadel pay ~$50M/year for tick-level positioning data; we approximate the same information by computing derivatives and ratios of free public data that respond to that flow.</p>
-    </details>
-    <details>
-      <summary>Signal 1: Gamma proxy via intraday vs close-to-close vol ratio</summary>
-      <p>Dealers short gamma must <em>delta-hedge by selling rallies and buying dips</em>. This dampens intraday vol but doesn't dampen close-to-close vol, because hedging stops at the close. Compute <code>intraday_range / |close_to_close|</code>. When this ratio is high (≥3), dealers are short gamma and pinning the price. When it's low (≤1.5), dealers are long gamma and amplifying moves. The pin breaks abruptly when it does — usually on options expiry or major data.</p>
-    </details>
-    <details>
-      <summary>Signal 2: Skew proxy via down-vol vs up-vol asymmetry</summary>
-      <p>Put-call skew exists because everyone hedges in the same direction. Its shadow on price data: realized vol on <em>down days</em> is systematically larger than on <em>up days</em>. Compute <code>downVol = sqrt(mean(r²) for r<0) − sqrt(mean(r²) for r>0)</code> over a rolling window. When this gap widens, downside skew is rich — puts are being aggressively bid. When the gap compresses or inverts, the put hedge has been bought out — the next move down has no buyers because everyone is already hedged.</p>
-    </details>
-    <details>
-      <summary>Signal 3: Dark-pool proxy via price-impact-per-volume (Kyle's lambda)</summary>
-      <p>If a 2% price move happens on tiny lit volume, the actual flow happened off-tape (dark pools, OTC, block trades). Compute <code>|return| / volume</code> over a rolling window. When this ratio spikes, hidden flow is happening — usually institutional accumulation or distribution. The direction of the move tells you which side. This is the standard "price impact" coefficient from market microstructure (Kyle 1985).</p>
-    </details>
-    <details>
-      <summary>Signal 4: Crowdedness velocity — the second derivative matters</summary>
-      <p>You don't need to measure crowdedness levels — you need its rate of change. RSI moving from 50→80 in 3 sessions tells you more than RSI = 80 alone, because the acceleration is what reveals reflexive position-building. Compute the gradient (rate of change) and curvature (second derivative) of each crowdedness input. When inputs are accelerating together, positioning is building fast — the unwind will be violent.</p>
-    </details>
-    <details>
-      <summary>Signal 5: Absorption via high-low/close-close ratio</summary>
-      <p>If a day's high-low range is 4% but close-close is 0.5%, somebody fought hard and the market closed in the middle — that's absorption. Either huge buyers absorbed supply (bullish), or huge sellers absorbed demand (bearish). The next 1–3 sessions resolve which side won. This single signal has more predictive power for short-horizon turns than any other I've found, and it requires only OHLC.</p>
-    </details>
-    <details>
-      <summary>Signal 6: Smart-money divergence via mining-stock spread</summary>
-      <p>Silver miners (SIL, SILJ, HL, PAAS) reflect institutional theme allocation. They lead the metal by 3–10 days at turning points because allocators move into the theme before the commodity. When miners diverge from spot — especially when they <em>underperform</em> while spot makes new highs — institutional distribution is happening. Compute <code>SIL_return - SI_return</code> over rolling windows; persistent negative readings flag distribution.</p>
-    </details>
-    <details>
-      <summary>Signal 7: Overnight-vs-intraday return decomposition</summary>
-      <p>Algo and institutional flow concentrates during US/European session hours; retail flow concentrates overnight (Asian/electronic). Decomposing returns into intraday (RTH) and overnight (ETH) components reveals who is driving. Rallies happening overnight on light volume are retail FOMO (fragile). Rallies happening during NY hours on heavy volume are institutional (durable). When these diverge, the rally is suspect.</p>
-    </details>
-    <details>
-      <summary>Why this matters — the math connecting to Kelly</summary>
-      <p>Each negative-space signal contributes additional <em>bits of information</em> (per Kelly–Shannon) that wouldn't be available from price alone. The bits add nearly linearly when the signals are uncorrelated — gamma proxy and dark-pool proxy capture different flows, so their information is additive. The reflexivity multiplier (crowdedness) then modulates these bits: when crowd > 50%, all bullish bits are heavily discounted. This is the actual structural reason Medallion works — many uncorrelated low-edge signals, all sized by Kelly, all aware of their own crowdedness.</p>
-    </details>
-  </section>
-
-  <footer>
-    <em>Constructed live from public data: futures OHLC, COT positioning, ETF flows, gold spot, miner ETF prices.</em>
-    Updates on each refresh. All math is exposed in the source.
-    <div class="lineage">
-      <span>· Pseudo-Socrates (cycle math)</span>
-      <span>· Kelly Silver v1 (signal sizing)</span>
-      <span>· Capital Weather Map (cross-asset)</span>
-      <span>· Kelly v2 (reflexivity + RSI/MA)</span>
-      <span>· v3 (negative-space institutional flow) ← current</span>
-    </div>
-  </footer>
-</main>
+</div>
 
 <script>
-/* ====================================================================
-   KELLY v3 — LIVE SILVER
-   Negative-space institutional flow detection
-==================================================================== */
+const SV=[["2021-05-20",28.052,28.052,27.72,26],["2021-05-21",27.473,28.12,27.39,95],["2021-05-24",27.887,27.9,27.74,85],["2021-05-25",28.037,28.037,27.67,81],["2021-05-26",27.853,27.853,27.853,744],["2021-05-27",27.919,27.92,27.695,525],["2021-05-28",27.993,27.993,27.54,181],["2021-06-01",28.083,28.58,27.995,187],["2021-06-02",28.186,28.186,27.785,35],["2021-06-03",27.46,27.46,27.19,20],["2021-06-04",27.879,27.879,27.879,0],["2021-06-07",28.001,28.001,27.615,4],["2021-06-08",27.715,28.01,27.705,27],["2021-06-09",27.985,27.985,27.695,8],["2021-06-10",28.015,28.025,27.71,6],["2021-06-11",28.131,28.36,28.115,172],["2021-06-14",28.024,28.105,27.825,4],["2021-06-15",27.679,27.985,27.57,57],["2021-06-16",27.8,27.8,27.8,112],["2021-06-17",25.844,25.844,25.844,51],["2021-06-18",25.958,26.43,25.958,3],["2021-06-21",26.015,26.015,26.015,0],["2021-06-22",25.848,25.848,25.848,81],["2021-06-23",26.108,26.108,26.108,8],["2021-06-24",26.047,26.047,26.047,0],["2021-06-25",26.082,26.175,26.082,9],["2021-06-28",26.218,26.218,26.218,42308],["2021-06-29",25.872,26.21,25.56,20140],["2021-06-30",26.165,26.23,25.84,725],["2021-07-01",26.075,26.42,26.05,1037],["2021-07-02",26.481,26.675,26.105,330],["2021-07-06",26.154,26.87,26.154,389],["2021-07-07",26.11,26.5,26.07,546],["2021-07-08",25.967,26.29,25.89,175],["2021-07-09",26.211,26.215,25.835,64],["2021-07-12",26.217,26.3,26.06,74],["2021-07-13",26.115,26.205,26.1,66],["2021-07-14",26.246,26.445,26.1,14],["2021-07-15",26.375,26.445,26.265,203],["2021-07-16",25.777,26.43,25.65,100],["2021-07-19",25.126,25.61,25.045,173],["2021-07-20",24.977,25.195,24.855,48],["2021-07-21",25.238,25.238,24.955,61],["2021-07-22",25.365,25.365,25.24,26],["2021-07-23",25.218,25.43,25.13,88],["2021-07-26",25.295,25.295,25.295,83],["2021-07-27",24.632,25.265,24.632,54],["2021-07-28",24.856,24.856,24.725,551],["2021-07-29",25.764,25.855,25.04,355],["2021-07-30",25.528,25.665,25.5,40],["2021-08-02",25.557,25.557,25.45,55],["2021-08-03",25.566,25.566,25.285,8],["2021-08-04",25.446,25.97,25.446,19],["2021-08-05",25.277,25.52,25.277,4],["2021-08-06",24.312,24.49,24.25,6],["2021-08-09",23.255,23.255,23.255,2],["2021-08-10",23.377,23.485,23.377,3],["2021-08-11",23.474,23.474,23.474,1],["2021-08-12",23.105,23.105,23.105,19],["2021-08-13",23.768,23.795,23.35,3],["2021-08-16",23.78,23.78,23.78,0],["2021-08-17",23.648,23.648,23.648,0],["2021-08-18",23.412,23.455,23.28,3],["2021-08-19",23.22,23.22,23.22,25],["2021-08-20",23.105,23.105,23.105,13],["2021-08-23",23.649,23.65,23.14,13],["2021-08-24",23.89,23.89,23.89,20],["2021-08-25",23.771,23.835,23.771,19],["2021-08-26",23.546,23.555,23.545,4],["2021-08-27",24.06,24.06,23.715,63309],["2021-08-30",23.96,24.22,23.905,10816],["2021-08-31",23.96,24.195,23.815,728],["2021-09-01",24.177,24.255,23.79,521],["2021-09-02",23.875,24.18,23.775,184],["2021-09-03",24.762,24.81,23.905,193],["2021-09-07",24.334,24.81,24.185,32],["2021-09-08",24.012,24.4,23.94,105],["2021-09-09",24.133,24.24,23.845,104],["2021-09-10",23.855,24.135,23.855,13],["2021-09-13",23.753,23.755,23.325,184],["2021-09-14",23.842,23.85,23.64,82],["2021-09-15",23.759,23.8,23.759,25],["2021-09-16",22.752,23.515,22.61,75],["2021-09-17",22.295,22.905,22.295,74],["2021-09-20",22.163,22.375,22.14,132],["2021-09-21",22.573,22.573,22.47,55],["2021-09-22",22.869,23.045,22.8,3],["2021-09-23",22.642,22.65,22.642,22],["2021-09-24",22.388,22.585,22.09,15],["2021-09-27",22.657,23.735,22.605,131],["2021-09-28",22.43,22.46,22.175,278],["2021-09-29",21.459,22.515,21.459,70],["2021-09-30",22.021,22.035,22.021,36],["2021-10-01",22.51,22.51,22.51,1],["2021-10-04",22.618,22.618,22.618,5],["2021-10-05",22.582,22.582,22.582,10],["2021-10-06",22.506,22.506,22.375,135],["2021-10-07",22.632,22.632,22.632,91],["2021-10-08",22.679,23.005,22.57,62],["2021-10-11",22.64,22.64,22.64,0],["2021-10-12",22.491,22.575,22.491,5],["2021-10-13",23.149,23.149,23.149,1],["2021-10-14",23.456,23.46,23.456,28],["2021-10-15",23.328,23.328,23.328,0],["2021-10-18",23.243,23.28,23.215,16],["2021-10-19",23.862,24.07,23.862,2],["2021-10-20",24.424,24.424,24.424,151],["2021-10-21",24.15,24.48,24.14,100],["2021-10-22",24.429,24.429,24.37,2],["2021-10-25",24.572,24.575,24.572,49],["2021-10-26",24.086,24.086,24.086,37],["2021-10-27",24.189,24.189,24.16,51],["2021-10-28",24.117,24.245,24.117,12],["2021-10-29",23.945,23.945,23.8,36],["2021-11-01",24.064,24.1,24,33],["2021-11-02",23.5,23.5,23.5,21],["2021-11-03",23.226,23.58,23.225,24],["2021-11-04",23.906,23.906,23.69,15],["2021-11-05",24.152,24.235,23.835,21],["2021-11-08",24.537,24.555,24.275,23],["2021-11-09",24.313,24.313,24.313,0],["2021-11-10",24.767,24.767,24.767,5],["2021-11-11",25.301,25.301,25.295,23],["2021-11-12",25.344,25.41,24.925,15],["2021-11-15",25.107,25.285,25.065,156],["2021-11-16",24.944,25.005,24.875,122],["2021-11-17",25.167,25.21,24.88,20],["2021-11-18",24.901,25.21,24.82,165],["2021-11-19",24.78,24.875,24.78,107],["2021-11-22",24.297,24.54,24.19,42],["2021-11-23",23.435,23.605,23.4,23],["2021-11-24",23.496,23.496,23.496,3],["2021-11-26",23.107,23.107,23.107,61278],["2021-11-29",22.799,23.415,22.73,10390],["2021-11-30",22.765,23.26,22.705,2513],["2021-12-01",22.299,22.995,22.155,488],["2021-12-02",22.28,22.4,22.24,127],["2021-12-03",22.445,22.47,22.04,197],["2021-12-06",22.228,22.49,22.1,85],["2021-12-07",22.487,22.56,22.375,52],["2021-12-08",22.39,22.445,22.31,268],["2021-12-09",21.974,22.285,21.89,32],["2021-12-10",22.16,22.165,21.8,18],["2021-12-13",22.29,22.29,22.13,7],["2021-12-14",21.887,22.25,21.66,3],["2021-12-15",21.508,21.64,21.5,5],["2021-12-16",22.455,22.455,22.12,88],["2021-12-17",22.507,22.507,22.45,31],["2021-12-20",22.275,22.37,22.275,87],["2021-12-21",22.502,22.74,22.225,188],["2021-12-22",22.792,22.792,22.465,190],["2021-12-23",22.931,22.931,22.72,419],["2021-12-27",22.979,22.98,22.68,3],["2021-12-28",23.111,23.295,23.055,154],["2021-12-29",22.848,23.005,22.635,264],["2021-12-30",23.028,23.085,22.62,194],["2021-12-31",23.328,23.328,23.2,86],["2022-01-03",22.79,23.31,22.79,31],["2022-01-04",23.038,23.038,22.955,7],["2022-01-05",23.15,23.15,22.785,437],["2022-01-06",22.174,22.8,22.05,103],["2022-01-07",22.394,22.394,22.394,17],["2022-01-10",22.446,22.49,22.355,377],["2022-01-11",22.806,22.806,22.59,155],["2022-01-12",23.2,23.2,23.2,1],["2022-01-13",23.155,23.155,23.155,0],["2022-01-14",22.911,23,22.9,36],["2022-01-18",23.487,23.487,23.4,207],["2022-01-19",24.226,24.226,24.226,3],["2022-01-20",24.711,24.711,24.711,21],["2022-01-21",24.314,24.314,24.314,17],["2022-01-24",23.795,23.795,23.795,0],["2022-01-25",23.896,23.945,23.685,100],["2022-01-26",23.807,23.807,23.807,46],["2022-01-27",22.673,23.03,22.673,102],["2022-01-28",22.302,22.81,22.302,38],["2022-01-31",22.395,22.515,22.34,57],["2022-02-01",22.596,23,22.495,411],["2022-02-02",22.711,22.82,22.61,135],["2022-02-03",22.375,22.565,22.375,74],["2022-02-04",22.475,22.53,22.475,42],["2022-02-07",23.076,23.08,23.055,11],["2022-02-08",23.195,23.23,23.195,9],["2022-02-09",23.336,23.336,23.336,40],["2022-02-10",23.519,23.519,23.519,182],["2022-02-11",23.366,23.366,23.15,26],["2022-02-14",23.845,23.915,23.83,44],["2022-02-15",23.338,23.338,23.165,41],["2022-02-16",23.601,23.601,23.601,11],["2022-02-17",23.874,23.874,23.874,101],["2022-02-18",23.991,24,23.925,170],["2022-02-22",24.311,24.311,24.21,175],["2022-02-23",24.555,24.555,24.555,20],["2022-02-24",24.686,25.39,24.686,107560],["2022-02-25",23.997,24.525,23.9,13916],["2022-02-28",24.361,24.855,24.28,788],["2022-03-01",25.534,25.565,24.34,409],["2022-03-02",25.183,25.41,25.03,893],["2022-03-03",25.205,25.54,25.14,147],["2022-03-04",25.782,25.835,25.255,838],["2022-03-07",25.713,26.285,25.713,526],["2022-03-08",26.888,27.31,25.645,1151],["2022-03-09",25.757,26.9,25.757,757],["2022-03-10",26.202,26.202,25.59,68],["2022-03-11",26.106,26.2,25.92,91],["2022-03-14",25.244,25.95,25.244,322],["2022-03-15",25.123,25.123,24.885,25],["2022-03-16",24.67,25.07,24.6,71],["2022-03-17",25.584,25.64,25.2,30],["2022-03-18",25.055,25.41,25.05,8],["2022-03-21",25.282,25.37,25.165,6],["2022-03-22",24.885,25.195,24.765,48],["2022-03-23",25.17,25.27,25,26],["2022-03-24",25.9,25.905,25.455,68],["2022-03-25",25.595,25.965,25.595,59],["2022-03-28",25.176,25.21,25.03,22],["2022-03-29",24.716,24.716,24.255,312],["2022-03-30",25.103,25.225,25.015,109],["2022-03-31",25.121,25.121,24.875,26],["2022-04-01",24.642,24.87,24.642,3],["2022-04-04",24.584,24.584,24.435,94],["2022-04-05",24.528,24.635,24.42,88],["2022-04-06",24.455,24.46,24.34,17],["2022-04-07",24.733,24.733,24.46,83],["2022-04-08",24.819,24.925,24.819,13],["2022-04-11",24.978,25.515,24.978,46],["2022-04-12",25.725,25.775,25.22,22],["2022-04-13",26.02,26.025,25.62,120],["2022-04-14",25.69,25.69,25.69,61],["2022-04-18",26.14,26.14,26.14,0],["2022-04-19",25.391,26.035,25.391,30],["2022-04-20",25.27,25.27,25.215,7],["2022-04-21",24.621,25.28,24.621,52],["2022-04-22",24.257,24.725,24.215,17],["2022-04-25",23.668,23.668,23.668,11],["2022-04-26",23.542,23.595,23.542,4],["2022-04-27",23.458,23.458,23.458,37579],["2022-04-28",23.129,23.41,22.895,8170],["2022-04-29",23.04,23.535,22.735,1021],["2022-05-02",22.544,22.83,22.12,273],["2022-05-03",22.621,22.785,22.475,167],["2022-05-04",22.362,23.02,22.315,225],["2022-05-05",22.4,23.245,22.37,768],["2022-05-06",22.325,22.485,22.09,363],["2022-05-09",21.782,22.19,21.665,693],["2022-05-10",21.39,22,21.24,701],["2022-05-11",21.55,21.805,21.31,434],["2022-05-12",20.757,21.575,20.655,196],["2022-05-13",20.984,21.115,20.64,35],["2022-05-16",21.535,21.605,21.085,211],["2022-05-17",21.737,21.737,21.555,197],["2022-05-18",21.533,21.675,21.39,107],["2022-05-19",21.898,21.898,21.425,100],["2022-05-20",21.669,21.669,21.669,23],["2022-05-23",21.723,22.205,21.723,373],["2022-05-24",22.063,22.065,22.035,101],["2022-05-25",21.86,21.97,21.83,97],["2022-05-26",21.941,21.941,21.941,206],["2022-05-27",22.06,22.395,22.01,105],["2022-05-31",21.651,21.675,21.6,46],["2022-06-01",21.884,21.884,21.485,30],["2022-06-02",22.254,22.325,21.825,23],["2022-06-03",21.89,22.41,21.89,33],["2022-06-06",22.074,22.074,22.074,3],["2022-06-07",22.159,22.159,22.025,3],["2022-06-08",22.074,22.09,21.99,33],["2022-06-09",21.797,22.065,21.725,17],["2022-06-10",21.913,21.92,21.7,13],["2022-06-13",21.236,21.65,21.055,61],["2022-06-14",20.936,21.055,20.905,21],["2022-06-15",21.402,21.465,20.985,27],["2022-06-16",21.867,21.925,21.38,38],["2022-06-17",21.573,21.88,21.573,17],["2022-06-21",21.754,21.8,21.745,7],["2022-06-22",21.407,21.595,21.395,12],["2022-06-23",21.032,21.38,21.032,7],["2022-06-24",21.116,21.175,20.95,41],["2022-06-27",21.159,21.33,21.15,15],["2022-06-28",20.797,21.185,20.797,42010],["2022-06-29",20.668,20.995,20.545,5690],["2022-06-30",20.282,20.705,20.145,643],["2022-07-01",19.597,20.185,19.265,630],["2022-07-05",19.052,20.07,19.04,205],["2022-07-06",19.085,19.195,18.84,159],["2022-07-07",19.122,19.36,19.095,103],["2022-07-08",19.167,19.22,19,99],["2022-07-11",19.067,19.165,19.04,33],["2022-07-12",18.899,18.899,18.77,214],["2022-07-13",19.138,19.175,18.785,261],["2022-07-14",18.169,19.1,18,382],["2022-07-15",18.548,18.555,18.225,218],["2022-07-18",18.791,18.825,18.59,15],["2022-07-19",18.67,18.71,18.52,101],["2022-07-20",18.639,18.94,18.605,305],["2022-07-21",18.687,18.72,18.11,144],["2022-07-22",18.585,18.75,18.49,125],["2022-07-25",18.294,18.6,18.185,399],["2022-07-26",18.487,18.565,18.325,148],["2022-07-27",18.553,18.553,18.485,239],["2022-07-28",19.827,19.94,19.02,181],["2022-07-29",20.156,20.29,19.99,13],["2022-08-01",20.322,20.4,20.185,37],["2022-08-02",20.105,20.395,19.945,22],["2022-08-03",19.865,20.02,19.785,67],["2022-08-04",20.099,20.105,19.96,27],["2022-08-05",19.819,20.135,19.819,10],["2022-08-08",20.592,20.592,20.592,0],["2022-08-09",20.458,20.655,20.458,28],["2022-08-10",20.718,20.72,20.52,18],["2022-08-11",20.326,20.47,20.326,10],["2022-08-12",20.677,20.677,20.677,7],["2022-08-15",20.251,20.251,20.251,12],["2022-08-16",20.065,20.1,19.95,21],["2022-08-17",19.711,20.09,19.65,12],["2022-08-18",19.448,19.725,19.445,7],["2022-08-19",19.058,19.13,19.058,9],["2022-08-22",18.873,18.915,18.8,42],["2022-08-23",19.012,19.1,18.705,64],["2022-08-24",18.895,19.04,18.82,29],["2022-08-25",19.111,19.111,19.035,2],["2022-08-26",18.74,19.305,18.74,2],["2022-08-29",18.555,18.555,18.52,33392],["2022-08-30",18.159,18.585,18.12,5841],["2022-08-31",17.762,18.24,17.705,618],["2022-09-01",17.551,17.715,17.32,230],["2022-09-02",17.776,18,17.53,289],["2022-09-06",17.795,18.105,17.79,100],["2022-09-07",18.137,18.24,18.137,60],["2022-09-08",18.33,18.455,18.235,177],["2022-09-09",18.658,18.67,18.355,46],["2022-09-12",19.755,19.89,19.315,183],["2022-09-13",19.39,19.75,19.205,28],["2022-09-14",19.471,19.53,19.185,47],["2022-09-15",19.175,19.52,19.025,62],["2022-09-16",19.296,19.505,18.735,56],["2022-09-19",19.273,19.273,19.273,2],["2022-09-20",19.102,19.5,19.102,39],["2022-09-21",19.411,19.585,19.33,136],["2022-09-22",19.548,19.595,19.335,278],["2022-09-23",18.841,19.51,18.78,36],["2022-09-26",18.406,18.85,18.406,94],["2022-09-27",18.257,18.525,18.257,36],["2022-09-28",18.796,18.796,18.47,77],["2022-09-29",18.611,18.765,18.525,174],["2022-09-30",18.96,18.97,18.825,10],["2022-10-03",20.519,20.705,20.17,49],["2022-10-04",21.037,21.115,20.82,142],["2022-10-05",20.479,20.795,20.13,41],["2022-10-06",20.595,20.66,20.42,45],["2022-10-07",20.192,20.725,20.17,48],["2022-10-10",19.556,19.83,19.52,43],["2022-10-11",19.427,19.52,19.06,63],["2022-10-12",18.878,19.11,18.785,30],["2022-10-13",18.858,18.955,18.775,13],["2022-10-14",18.015,18.93,18.015,62],["2022-10-17",18.674,18.674,18.625,119],["2022-10-18",18.571,18.825,18.525,38],["2022-10-19",18.336,18.685,18.295,45],["2022-10-20",18.666,18.845,18.375,79],["2022-10-21",19.043,19.315,18.29,24],["2022-10-24",19.174,19.19,19.174,8],["2022-10-25",19.339,19.35,18.91,13],["2022-10-26",19.48,19.585,19.465,40],["2022-10-27",19.478,19.635,19.45,42],["2022-10-28",19.147,19.52,19.025,26],["2022-10-31",19.125,19.2,18.97,8],["2022-11-01",19.673,19.69,19.125,18],["2022-11-02",19.6,19.865,19.575,21],["2022-11-03",19.436,19.436,18.96,20],["2022-11-04",20.79,20.935,19.95,51],["2022-11-07",20.898,21,20.45,127],["2022-11-08",21.477,21.625,20.68,27],["2022-11-09",21.298,21.59,21.065,59],["2022-11-10",21.677,21.78,21.05,108],["2022-11-11",21.646,21.646,21.515,71],["2022-11-14",22.092,22.1,21.855,13],["2022-11-15",21.499,22.055,21.45,32],["2022-11-16",21.504,21.945,21.504,15],["2022-11-17",20.955,20.955,20.955,20],["2022-11-18",20.976,20.976,20.976,30],["2022-11-21",20.849,20.849,20.64,58],["2022-11-22",21.034,21.095,20.955,70],["2022-11-23",21.357,21.59,21.085,34],["2022-11-25",21.425,21.445,21.355,15],["2022-11-28",20.91,20.91,20.91,59036],["2022-11-29",21.204,21.4,20.845,6934],["2022-11-30",21.55,22.145,21.165,693],["2022-12-01",22.637,22.76,22.07,1001],["2022-12-02",23.038,23.22,22.38,578],["2022-12-05",22.199,23.46,22.185,319],["2022-12-06",22.123,22.48,22,79],["2022-12-07",22.71,22.775,22.5,133],["2022-12-08",23.063,23.063,22.575,378],["2022-12-09",23.535,23.705,23.12,132],["2022-12-12",23.22,23.515,23.22,18],["2022-12-13",23.801,24.155,23.325,83],["2022-12-14",23.946,24.08,23.5,259],["2022-12-15",23.128,23.945,23.04,128],["2022-12-16",23.151,23.215,23.055,34],["2022-12-19",23.029,23.029,22.945,8],["2022-12-20",24.094,24.17,23.085,22],["2022-12-21",24.035,24.085,24.02,48],["2022-12-22",23.476,24.05,23.455,37],["2022-12-23",23.764,23.88,23.61,31],["2022-12-27",24.04,24.14,24.04,133],["2022-12-28",23.663,24.095,23.585,372],["2022-12-29",24.078,24.078,23.58,274],["2022-12-30",23.862,24.155,23.862,28],["2023-01-03",24.059,24.53,23.98,148],["2023-01-04",23.792,24.105,23.75,24],["2023-01-05",23.258,23.5,23.145,8],["2023-01-06",23.822,23.822,23.29,6],["2023-01-09",23.712,23.712,23.712,2],["2023-01-10",23.507,23.507,23.425,4],["2023-01-11",23.327,23.805,23.185,9],["2023-01-12",23.863,23.863,23.805,33],["2023-01-13",24.231,24.231,23.5,30],["2023-01-17",23.944,24.315,23.944,118],["2023-01-18",23.53,24.26,23.53,19],["2023-01-19",23.754,23.754,23.754,18],["2023-01-20",23.83,23.83,23.83,0],["2023-01-23",23.452,23.452,22.85,8],["2023-01-24",23.649,23.705,23.25,7],["2023-01-25",23.839,23.945,23.62,21],["2023-01-26",23.93,24.185,23.78,11],["2023-01-27",23.527,23.527,23.527,184],["2023-01-30",23.645,23.79,23.645,45],["2023-01-31",23.748,23.748,23.055,28],["2023-02-01",23.521,23.835,23.51,12],["2023-02-02",23.534,24.46,23.534,97],["2023-02-03",22.334,22.5,22.334,4],["2023-02-06",22.177,22.24,22.177,542],["2023-02-07",22.117,22.117,22.117,0],["2023-02-08",22.367,22.367,22.165,9],["2023-02-09",22.097,22.097,21.945,21],["2023-02-10",22.034,22.11,21.99,25],["2023-02-13",21.818,21.975,21.78,54],["2023-02-14",21.842,21.99,21.842,4],["2023-02-15",21.546,21.845,21.546,11],["2023-02-16",21.684,21.685,21.545,26],["2023-02-17",21.694,21.725,21.694,4],["2023-02-21",21.869,21.97,21.855,8],["2023-02-22",21.661,21.885,21.661,6],["2023-02-23",21.299,21.57,21.299,25],["2023-02-24",20.806,21.33,20.806,53878],["2023-02-27",20.67,20.82,20.515,7500],["2023-02-28",20.961,21.01,20.475,513],["2023-03-01",20.959,21.15,20.88,577],["2023-03-02",20.766,20.915,20.735,109],["2023-03-03",21.093,21.22,20.925,172],["2023-03-06",20.984,21.22,20.98,120],["2023-03-07",20.054,20.985,19.99,57],["2023-03-08",20.005,20.14,19.83,82],["2023-03-09",20.025,20.03,20.01,7],["2023-03-10",20.375,20.375,20.375,48],["2023-03-13",21.793,21.793,20.69,15],["2023-03-14",21.929,21.929,21.5,60],["2023-03-15",21.774,22.08,21.6,15],["2023-03-16",21.588,21.86,21.58,53],["2023-03-17",22.351,22.351,21.75,58],["2023-03-20",22.533,22.72,22.415,9],["2023-03-21",22.324,22.6,22.205,58],["2023-03-22",22.675,23.065,22.65,22],["2023-03-23",23.144,23.144,23.144,0],["2023-03-24",23.247,23.247,23.247,15],["2023-03-27",23.054,23.054,23.054,0],["2023-03-28",23.324,23.324,23.095,36],["2023-03-29",23.376,23.376,23.376,188],["2023-03-30",23.902,23.985,23.605,93],["2023-03-31",24.076,24.165,23.87,34],["2023-04-03",23.941,24.07,23.695,26],["2023-04-04",25.022,25.085,24.415,24],["2023-04-05",24.963,25.145,24.79,74],["2023-04-06",25.025,25.03,24.67,0],["2023-04-10",24.846,24.85,24.846,8],["2023-04-11",25.131,25.16,24.96,16],["2023-04-12",25.404,25.585,25.165,14],["2023-04-13",25.874,25.95,25.54,12],["2023-04-14",25.424,25.9,25.34,28],["2023-04-17",25.053,25.053,25.053,0],["2023-04-18",25.248,25.3,25.16,44],["2023-04-19",25.366,25.366,24.805,33],["2023-04-20",25.368,25.368,25.225,2],["2023-04-21",25.053,25.18,25.053,19],["2023-04-24",25.306,25.306,25.025,2],["2023-04-25",24.877,25.195,24.75,4],["2023-04-26",24.871,25.13,24.871,64251],["2023-04-27",24.983,25.21,24.565,8978],["2023-04-28",24.999,25.11,24.785,1039],["2023-05-01",25.009,25.96,25.009,452],["2023-05-02",25.404,25.52,24.6,127],["2023-05-03",25.476,25.595,25.19,256],["2023-05-04",26.035,26.08,25.58,110],["2023-05-05",25.743,26.2,25.265,113],["2023-05-08",25.636,25.72,25.636,175],["2023-05-09",25.698,25.715,25.445,130],["2023-05-10",25.461,25.975,25.37,92],["2023-05-11",24.255,25.215,24.17,298],["2023-05-12",23.992,24.21,23.78,26],["2023-05-15",24.127,24.14,23.915,96],["2023-05-16",23.737,24.025,23.737,9],["2023-05-17",23.752,23.815,23.58,20],["2023-05-18",23.495,23.58,23.375,123],["2023-05-19",23.92,23.95,23.92,64],["2023-05-22",23.715,23.715,23.675,27],["2023-05-23",23.474,23.63,23.15,176],["2023-05-24",23.115,23.48,23.065,13],["2023-05-25",22.786,22.985,22.786,23],["2023-05-26",23.24,23.24,23.115,282],["2023-05-30",23.125,23.37,22.93,687],["2023-05-31",23.474,23.58,23.33,13],["2023-06-01",23.875,23.875,23.875,92],["2023-06-02",23.643,23.84,23.643,6],["2023-06-05",23.534,23.534,23.534,0],["2023-06-06",23.574,23.574,23.574,62],["2023-06-07",23.439,23.439,23.439,0],["2023-06-08",24.264,24.264,23.52,4],["2023-06-09",24.334,24.39,24.334,3],["2023-06-12",23.985,24.285,23.985,1],["2023-06-13",23.756,23.756,23.756,0],["2023-06-14",24.044,24.044,24.044,0],["2023-06-15",23.891,23.891,23.891,1],["2023-06-16",24.076,24.076,24.076,0],["2023-06-20",23.193,23.193,23.193,0],["2023-06-21",22.774,22.774,22.774,0],["2023-06-22",22.436,22.436,22.436,3],["2023-06-23",22.328,22.328,22.328,0],["2023-06-26",22.805,22.85,22.805,6],["2023-06-27",22.939,22.939,22.939,1],["2023-06-28",22.868,22.868,22.865,34711],["2023-06-29",22.591,22.905,22.3,6994],["2023-06-30",22.81,22.81,22.345,544],["2023-07-03",22.896,23.005,22.705,305],["2023-07-05",23.197,23.315,22.92,236],["2023-07-06",22.686,23.24,22.686,81],["2023-07-07",23.092,23.11,22.86,44],["2023-07-10",23.151,23.151,22.76,126],["2023-07-11",23.086,23.305,23.086,371],["2023-07-12",24.119,24.119,23.14,145],["2023-07-13",24.768,24.815,24.3,138],["2023-07-14",25.014,25.014,24.8,54],["2023-07-17",24.844,24.92,24.84,16],["2023-07-18",25.084,25.1,24.965,657],["2023-07-19",25.219,25.25,25.045,7],["2023-07-20",24.805,25.28,24.805,215],["2023-07-21",24.698,24.698,24.698,0],["2023-07-24",24.436,24.436,24.436,10],["2023-07-25",24.68,24.735,24.545,65],["2023-07-26",24.825,24.825,24.605,15],["2023-07-27",24.236,24.236,24.236,96],["2023-07-28",24.37,24.37,24.215,78],["2023-07-31",24.854,24.854,24.21,169],["2023-08-01",24.208,24.58,24.185,11],["2023-08-02",23.754,24.15,23.754,8],["2023-08-03",23.586,23.61,23.43,56],["2023-08-04",23.617,23.625,23.375,62],["2023-08-07",23.142,23.475,23.07,50],["2023-08-08",22.717,22.965,22.717,5],["2023-08-09",22.65,22.65,22.65,5],["2023-08-10",22.746,22.746,22.746,5],["2023-08-11",22.674,22.674,22.674,5],["2023-08-14",22.644,22.644,22.405,21],["2023-08-15",22.595,22.595,22.455,11],["2023-08-16",22.48,22.655,22.48,7],["2023-08-17",22.67,22.955,22.6,27],["2023-08-18",22.695,22.695,22.695,0],["2023-08-21",23.304,23.304,22.785,3],["2023-08-22",23.42,23.42,23.345,2],["2023-08-23",24.363,24.363,24.363,2],["2023-08-24",24.211,24.31,24.211,6],["2023-08-25",24.22,24.22,24.08,11],["2023-08-28",24.238,24.238,24.238,11],["2023-08-29",24.777,24.777,24.777,52924],["2023-08-30",24.734,25.06,24.57,7105],["2023-08-31",24.472,24.7,24.45,738],["2023-09-01",24.232,24.84,24.205,229],["2023-09-05",23.558,24.325,23.535,150],["2023-09-06",23.206,23.62,23.135,357],["2023-09-07",22.95,23.125,22.905,97],["2023-09-08",22.892,23.145,22.892,28],["2023-09-11",23.103,23.14,22.925,138],["2023-09-12",23.127,23.127,22.93,59],["2023-09-13",22.912,22.915,22.82,10],["2023-09-14",22.748,22.748,22.58,42],["2023-09-15",23.126,23.185,22.71,34],["2023-09-18",23.232,23.232,23.232,8],["2023-09-19",23.194,23.194,23.194,0],["2023-09-20",23.579,23.579,23.35,1],["2023-09-21",23.444,23.444,23.03,64],["2023-09-22",23.596,23.7,23.596,28],["2023-09-25",23.145,23.61,23.145,66],["2023-09-26",22.95,22.95,22.95,1],["2023-09-27",22.477,22.477,22.477,421],["2023-09-28",22.515,22.615,22.4,120],["2023-09-29",22.236,23.46,22.236,120],["2023-10-02",21.218,22.175,21.218,131],["2023-10-03",21.178,21.178,20.785,34],["2023-10-04",20.956,21.185,20.76,30],["2023-10-05",20.848,21.075,20.848,117],["2023-10-06",21.54,21.54,20.925,15],["2023-10-09",21.741,21.741,21.741,0],["2023-10-10",21.776,21.86,21.715,12],["2023-10-11",21.957,21.957,21.957,3],["2023-10-12",21.792,22.195,21.792,20],["2023-10-13",22.727,22.727,22.475,13],["2023-10-16",22.61,22.61,22.605,2],["2023-10-17",22.863,22.863,22.65,22],["2023-10-18",22.944,22.944,22.765,8],["2023-10-19",22.887,22.887,22.77,9],["2023-10-20",23.351,23.63,23.351,7],["2023-10-23",23.072,23.24,23.072,5],["2023-10-24",22.98,22.98,22.85,2],["2023-10-25",22.877,22.877,22.58,6],["2023-10-26",22.787,22.99,22.787,14],["2023-10-27",22.77,22.77,22.77,68],["2023-10-30",23.282,23.565,23.095,208],["2023-10-31",22.841,23.305,22.841,85],["2023-11-01",22.685,23.01,22.64,68],["2023-11-02",22.751,22.751,22.751,31],["2023-11-03",23.201,23.201,23.201,16],["2023-11-06",23.149,23.149,23.149,5],["2023-11-07",22.508,22.775,22.505,42],["2023-11-08",22.647,22.74,22.33,95],["2023-11-09",22.831,22.925,22.505,73],["2023-11-10",22.215,22.62,22.215,33],["2023-11-13",22.299,22.299,22.01,4],["2023-11-14",23.079,23.165,22.26,282],["2023-11-15",23.485,23.485,23.485,0],["2023-11-16",23.892,23.895,23.575,7],["2023-11-17",23.809,24.155,23.809,37],["2023-11-20",23.579,23.579,23.46,2],["2023-11-21",23.843,23.843,23.765,11],["2023-11-22",23.672,23.672,23.672,37],["2023-11-24",24.329,24.329,24.26,4],["2023-11-27",24.672,24.85,24.672,14],["2023-11-28",24.93,24.93,24.93,59633],["2023-11-29",25.072,25.305,24.85,5716],["2023-11-30",25.293,25.325,24.965,882],["2023-12-01",25.499,25.565,25.155,491],["2023-12-04",24.555,25.935,24.45,194],["2023-12-05",24.201,24.655,24,369],["2023-12-06",23.889,24.355,23.889,76],["2023-12-07",23.732,23.935,23.732,107],["2023-12-08",22.971,23.815,22.97,164],["2023-12-11",22.773,23.05,22.755,54],["2023-12-12",22.728,22.785,22.728,3],["2023-12-13",22.639,23.665,22.525,89],["2023-12-14",24.096,24.205,23.765,125],["2023-12-15",23.87,24.01,23.87,4],["2023-12-18",23.831,23.831,23.82,76],["2023-12-19",24.04,24.065,23.96,32],["2023-12-20",24.347,24.385,23.965,928],["2023-12-21",24.307,24.37,24.307,89],["2023-12-22",24.29,24.575,24.165,81],["2023-12-26",24.144,24.285,24.09,227],["2023-12-27",24.375,24.375,24.15,540],["2023-12-28",24.134,24.42,24,203],["2023-12-29",23.853,23.885,23.555,20],["2024-01-02",23.733,24.07,23.733,20],["2024-01-03",22.946,23.265,22.93,458],["2024-01-04",22.989,23.045,22.705,24],["2024-01-05",23.122,23.122,22.865,5],["2024-01-08",23.12,23.12,22.835,53],["2024-01-09",22.904,23.14,22.904,19],["2024-01-10",22.884,23,22.8,10],["2024-01-11",22.537,23.085,22.535,109],["2024-01-12",23.162,23.38,22.825,44],["2024-01-16",22.933,22.933,22.933,0],["2024-01-17",22.516,22.91,22.51,17],["2024-01-18",22.667,22.667,22.59,5],["2024-01-19",22.571,22.571,22.515,2],["2024-01-22",22.163,22.163,21.925,28],["2024-01-23",22.334,22.334,22.334,0],["2024-01-24",22.755,22.91,22.755,46],["2024-01-25",22.808,22.87,22.808,48],["2024-01-26",22.755,22.84,22.755,111],["2024-01-29",23.138,23.205,23.095,333],["2024-01-30",23.107,23.275,23.065,78],["2024-01-31",23.051,23.051,23.051,0],["2024-02-01",23.13,23.13,22.55,12],["2024-02-02",22.701,23.155,22.555,20],["2024-02-05",22.335,22.49,22.285,36],["2024-02-06",22.393,22.455,22.335,405],["2024-02-07",22.278,22.405,22.278,69],["2024-02-08",22.565,22.565,22.3,154],["2024-02-09",22.528,22.565,22.405,7],["2024-02-12",22.709,22.725,22.65,8],["2024-02-13",22.096,22.096,22.096,0],["2024-02-14",22.331,22.331,22.005,8],["2024-02-15",22.912,22.92,22.61,6],["2024-02-16",23.439,23.439,23.439,0],["2024-02-20",23.106,23.15,23.106,6],["2024-02-21",22.851,23.195,22.851,8],["2024-02-22",22.765,22.765,22.765,0],["2024-02-23",22.969,22.969,22.969,39],["2024-02-26",22.517,22.595,22.517,10],["2024-02-27",22.523,22.523,22.523,38667],["2024-02-28",22.41,22.5,22.245,5854],["2024-02-29",22.666,22.775,22.295,517],["2024-03-01",23.15,23.25,22.57,964],["2024-03-04",23.779,23.93,23.07,996],["2024-03-05",23.763,24.2,23.665,559],["2024-03-06",24.272,24.272,23.595,129],["2024-03-07",24.37,24.515,24.14,187],["2024-03-08",24.339,24.505,24.3,115],["2024-03-11",24.512,24.512,24.37,172],["2024-03-12",24.194,24.505,24.194,42],["2024-03-13",24.959,24.959,24.215,37],["2024-03-14",24.874,24.98,24.874,20],["2024-03-15",25.2,25.42,24.825,48],["2024-03-18",25.091,25.245,25.091,26],["2024-03-19",24.964,25.17,24.945,20],["2024-03-20",24.933,24.933,24.933,75],["2024-03-21",24.849,25.735,24.849,69],["2024-03-22",24.692,24.75,24.66,20],["2024-03-25",24.745,24.845,24.72,69],["2024-03-26",24.483,24.65,24.483,663],["2024-03-27",24.625,24.625,24.425,215],["2024-03-28",24.797,24.91,24.685,20],["2024-04-01",24.954,25.345,24.81,44],["2024-04-02",25.804,25.855,25.27,59],["2024-04-03",26.945,27.065,26.21,104],["2024-04-04",27.14,27.27,26.79,23],["2024-04-05",27.4,27.41,26.49,39],["2024-04-08",27.712,27.93,27.712,6],["2024-04-09",27.891,28.12,27.891,66],["2024-04-10",27.961,27.985,27.765,5],["2024-04-11",28.176,28.515,28,536],["2024-04-12",28.255,29.805,28.255,354],["2024-04-15",28.651,28.651,27.77,61],["2024-04-16",28.318,28.355,28.235,76],["2024-04-17",28.346,28.51,28.31,9],["2024-04-18",28.329,28.329,28.329,0],["2024-04-19",28.808,28.808,28.215,15],["2024-04-22",27.213,27.213,27.213,0],["2024-04-23",27.331,27.41,27.135,15],["2024-04-24",27.324,27.324,27.13,4],["2024-04-25",27.342,27.342,27.342,29],["2024-04-26",27.241,27.241,27.241,68254],["2024-04-29",27.373,27.44,26.96,11787],["2024-04-30",26.391,27.165,26.3,1881],["2024-05-01",26.489,26.945,26.285,387],["2024-05-02",26.583,26.795,26.035,277],["2024-05-03",26.445,26.785,26.16,194],["2024-05-06",27.369,27.39,26.95,48],["2024-05-07",27.303,27.445,27.28,74],["2024-05-08",27.361,27.42,27.265,123],["2024-05-09",28.132,28.2,27.6,333],["2024-05-10",28.275,28.595,28.23,75],["2024-05-13",28.221,28.345,28.035,253],["2024-05-14",28.485,28.61,28.11,212],["2024-05-15",29.514,29.514,28.61,31],["2024-05-16",29.665,29.88,29.5,29],["2024-05-17",31.047,31.605,29.76,118],["2024-05-20",32.205,32.205,30.995,83],["2024-05-21",31.868,32.5,31.405,55],["2024-05-22",31.295,32.03,31.16,31],["2024-05-23",30.284,30.71,30.13,104],["2024-05-24",30.33,30.37,30.33,10],["2024-05-28",31.971,32.115,31.505,45],["2024-05-29",32.203,32.203,32.203,932],["2024-05-30",31.388,32.05,31.11,257],["2024-05-31",30.297,30.49,30.297,44],["2024-06-03",30.641,30.641,29.85,209],["2024-06-04",29.488,29.995,29.47,39],["2024-06-05",29.948,29.97,29.55,16],["2024-06-06",31.247,31.32,30.56,282],["2024-06-07",29.335,31.525,29.3,10],["2024-06-10",29.769,29.769,29.48,32],["2024-06-11",29.133,29.505,29.133,3],["2024-06-12",30.176,30.176,29.75,8],["2024-06-13",28.99,29.325,28.815,21],["2024-06-14",29.402,29.54,29.385,16],["2024-06-17",29.325,29.325,29.325,0],["2024-06-18",29.505,29.505,28.955,66],["2024-06-20",30.776,30.776,29.5,20],["2024-06-21",29.573,30.51,29.573,20],["2024-06-24",29.489,29.5,29.489,5],["2024-06-25",28.837,29.5,28.837,5],["2024-06-26",28.909,28.909,28.909,52023],["2024-06-27",28.918,29.225,28.665,14649],["2024-06-28",29.237,29.58,28.82,538],["2024-07-01",29.3,29.44,29,664],["2024-07-02",29.353,29.62,29.225,153],["2024-07-03",30.548,30.55,29.54,261],["2024-07-05",31.388,31.47,30.165,451],["2024-07-08",30.618,31.2,30.618,171],["2024-07-09",30.772,30.772,30.772,6],["2024-07-10",30.727,30.77,30.727,121],["2024-07-11",31.394,31.705,30.905,257],["2024-07-12",30.886,31.365,30.46,41],["2024-07-15",30.672,31.005,30.595,43],["2024-07-16",31.195,31.305,30.78,8],["2024-07-17",30.137,31.285,30.137,69],["2024-07-18",29.995,30.505,29.99,4],["2024-07-19",29.088,29.75,28.9,73],["2024-07-22",29.124,29.17,28.78,27],["2024-07-23",29.132,29.132,28.8,21],["2024-07-24",29.116,29.116,28.985,9],["2024-07-25",27.807,28.7,27.55,157],["2024-07-26",27.86,28.01,27.74,75],["2024-07-29",27.703,28.05,27.703,819],["2024-07-30",28.365,28.365,27.8,320],["2024-07-31",28.778,28.885,28.715,17],["2024-08-01",28.331,28.945,28.331,16],["2024-08-02",28.246,28.93,28.246,101],["2024-08-05",27.076,28.56,26.84,38],["2024-08-06",27.096,27.23,27.096,110],["2024-08-07",26.83,26.915,26.695,7],["2024-08-08",27.5,27.505,27.055,36],["2024-08-09",27.487,27.487,27.487,2],["2024-08-12",27.917,27.925,27.78,11],["2024-08-13",27.695,27.695,27.695,4],["2024-08-14",27.254,27.254,27.254,30],["2024-08-15",28.342,28.342,28.145,41],["2024-08-16",28.778,28.778,28.778,15],["2024-08-19",29.24,29.24,29.24,18],["2024-08-20",29.455,29.955,29.455,15],["2024-08-21",29.476,29.476,29.476,1],["2024-08-22",29.006,29.45,29,4],["2024-08-23",29.786,29.786,29.786,8],["2024-08-26",29.977,30.105,29.905,53],["2024-08-27",29.951,29.985,29.951,78],["2024-08-28",29.176,29.176,29.176,42397],["2024-08-29",29.557,29.655,29.11,7849],["2024-08-30",28.731,29.555,28.71,488],["2024-09-03",27.951,28.565,27.695,292],["2024-09-04",28.167,28.215,27.885,237],["2024-09-05",28.72,28.77,28.195,299],["2024-09-06",27.808,28.585,27.808,72],["2024-09-09",28.291,28.34,28.05,72],["2024-09-10",28.257,28.257,28.205,20],["2024-09-11",28.563,28.68,28.495,18],["2024-09-12",29.743,29.8,28.79,33],["2024-09-13",30.699,30.77,29.98,66],["2024-09-16",30.771,31.015,30.765,116],["2024-09-17",30.619,30.7,30.619,52],["2024-09-18",30.341,30.73,30.3,86],["2024-09-19",31.094,31.094,30.05,26],["2024-09-20",31.176,31.2,31.065,3],["2024-09-23",30.767,30.865,30.63,70],["2024-09-24",32.111,32.111,30.825,35],["2024-09-25",31.698,31.99,31.698,38],["2024-09-26",32.025,32.25,32.025,301],["2024-09-27",31.519,32.14,31.445,120],["2024-09-30",31.164,31.605,31.12,73],["2024-10-01",31.445,31.595,31.31,86],["2024-10-02",31.628,31.7,31.055,24],["2024-10-03",32.189,32.189,31.44,146],["2024-10-04",32.128,32.86,31.61,156],["2024-10-07",31.745,31.745,31.59,1],["2024-10-08",30.355,31.385,30.355,21],["2024-10-09",30.425,30.485,30.425,2],["2024-10-10",31.005,31.005,31.005,4],["2024-10-11",31.52,31.535,31.52,15],["2024-10-14",31.083,31.2,31.083,2],["2024-10-15",31.527,31.527,31.527,0],["2024-10-16",31.76,31.76,31.645,25],["2024-10-17",31.573,31.855,31.573,26],["2024-10-18",33.032,33.68,33.032,33],["2024-10-21",33.869,34.255,33.865,58],["2024-10-22",34.831,34.835,34.425,80],["2024-10-23",33.64,34.555,33.64,6],["2024-10-24",33.611,34.14,33.611,24],["2024-10-25",33.603,33.705,33.25,22],["2024-10-28",33.83,33.83,33.77,3],["2024-10-29",34.269,34.269,34.269,133],["2024-10-30",33.914,34.17,33.54,79],["2024-10-31",32.653,33.525,32.59,37],["2024-11-01",32.542,32.542,32.4,98],["2024-11-04",32.48,32.48,32.48,0],["2024-11-05",32.655,32.655,32.655,6],["2024-11-06",31.221,32.04,31,6],["2024-11-07",31.765,31.765,31.445,222],["2024-11-08",31.359,31.495,31.345,3],["2024-11-11",30.54,31.115,30.5,69],["2024-11-12",30.686,30.686,30.31,5],["2024-11-13",30.59,30.97,30.43,5],["2024-11-14",30.508,30.57,29.735,38],["2024-11-15",30.371,30.371,30.245,2],["2024-11-18",31.163,31.163,31.163,6],["2024-11-19",31.208,31.475,31.15,10],["2024-11-20",30.956,31.18,30.956,7],["2024-11-21",30.912,30.945,30.75,30],["2024-11-22",31.309,31.309,31.26,5],["2024-11-25",30.21,30.815,30.21,12],["2024-11-26",30.388,30.388,30.388,55215],["2024-11-27",30.111,30.75,29.99,19729],["2024-11-29",30.685,30.95,29.655,2230],["2024-12-02",30.449,30.67,30.17,158],["2024-12-03",31.077,31.11,30.87,211],["2024-12-04",31.505,31.505,30.92,504],["2024-12-05",31.134,31.475,31.134,211],["2024-12-06",31.186,31.335,31.08,35],["2024-12-09",32.216,32.515,31.44,642],["2024-12-10",32.363,32.363,32.035,689],["2024-12-11",32.562,32.562,32.205,484],["2024-12-12",31.228,32.77,31.225,108],["2024-12-13",30.655,31,30.56,47],["2024-12-16",30.697,30.815,30.68,36],["2024-12-17",30.573,30.573,30.29,365],["2024-12-18",30.41,30.44,29.88,290],["2024-12-19",29.094,29.615,28.855,81],["2024-12-20",29.66,29.845,29.105,61],["2024-12-23",29.888,29.99,29.888,54],["2024-12-24",29.974,29.974,29.974,66],["2024-12-26",30.047,30.115,29.98,109],["2024-12-27",29.655,29.935,29.605,502],["2024-12-30",29.106,29.72,28.99,200],["2024-12-31",28.94,29.17,28.94,172],["2025-01-02",29.622,29.715,29.26,307],["2025-01-03",29.806,30.08,29.806,91],["2025-01-06",30.342,30.46,29.96,186],["2025-01-07",30.447,30.447,30.447,6],["2025-01-08",30.452,30.65,30.28,46],["2025-01-09",30.791,30.965,30.735,192],["2025-01-10",31.091,31.535,31.09,60],["2025-01-13",30.091,30.275,30.091,2],["2025-01-14",30.132,30.195,30.132,66],["2025-01-15",31.319,31.35,30.875,21],["2025-01-16",31.523,31.675,31.33,109],["2025-01-17",30.951,31.21,30.951,5],["2025-01-21",31.311,31.311,30.775,215],["2025-01-22",31.239,31.239,30.995,7],["2025-01-23",30.673,30.673,30.4,2],["2025-01-24",31.023,31.075,30.99,112],["2025-01-27",30.254,30.254,30.254,111],["2025-01-28",30.727,30.727,30.365,132],["2025-01-29",31.238,31.238,31.238,263],["2025-01-30",32.364,32.6,31.47,557],["2025-01-31",32.128,32.76,32.11,162],["2025-02-03",32.392,32.46,31.63,444],["2025-02-04",32.888,32.888,32.115,744],["2025-02-05",32.857,32.857,32.635,42],["2025-02-06",32.518,32.518,32.385,651],["2025-02-07",32.335,32.74,32.11,172],["2025-02-10",32.392,32.392,32.31,456],["2025-02-11",32.231,32.26,31.635,23],["2025-02-12",32.695,32.755,31.965,80],["2025-02-13",32.65,32.88,32.535,119],["2025-02-14",32.801,34.08,32.75,153],["2025-02-18",33.317,33.36,32.76,201],["2025-02-19",32.993,33.56,32.993,21],["2025-02-20",33.444,33.444,33.444,0],["2025-02-21",32.976,33.325,32.976,96],["2025-02-24",32.575,32.855,32.575,115],["2025-02-25",31.801,32.44,31.801,72],["2025-02-26",32.253,32.253,32.253,36515],["2025-02-27",31.801,32.29,31.47,10140],["2025-02-28",31.219,31.645,31.085,1641],["2025-03-03",32.032,32.21,31.375,872],["2025-03-04",32.108,32.29,31.77,762],["2025-03-05",32.858,33,32.17,912],["2025-03-06",33.063,33.063,32.63,370],["2025-03-07",32.548,32.93,32.405,926],["2025-03-10",32.275,32.765,32.105,300],["2025-03-11",32.888,33.135,32.27,243],["2025-03-12",33.484,33.5,33.19,689],["2025-03-13",34.051,34.405,33.35,345],["2025-03-14",34.187,34.555,34.055,191],["2025-03-17",34.074,34.115,33.965,333],["2025-03-18",34.579,34.579,34.405,15],["2025-03-19",33.975,34.395,33.975,193],["2025-03-20",33.786,33.81,33.69,257],["2025-03-21",33.29,33.29,33.29,189],["2025-03-24",33.265,33.48,33.265,88],["2025-03-25",34.002,34.09,33.46,14],["2025-03-26",34.033,34.305,33.995,134],["2025-03-27",34.897,34.897,34.897,1017],["2025-03-28",34.644,35.265,34.56,316],["2025-03-31",34.457,35,34.4,97],["2025-04-01",34.158,34.665,34.158,97],["2025-04-02",34.499,34.855,34.499,558],["2025-04-03",31.844,34.135,31.625,63],["2025-04-04",29.116,31.5,29.116,61],["2025-04-07",29.51,30.46,28.31,310],["2025-04-08",29.592,30.32,29.592,64],["2025-04-09",30.323,30.323,29.255,137],["2025-04-10",30.671,31.05,30.671,4],["2025-04-11",31.824,31.824,31.115,24],["2025-04-14",32.092,32.092,31.8,17],["2025-04-15",32.227,32.227,32.227,45],["2025-04-16",32.926,33.025,32.755,97],["2025-04-17",32.42,32.58,32.09,168],["2025-04-21",32.496,32.785,32.496,56],["2025-04-22",32.88,32.88,32.88,1],["2025-04-23",33.518,33.55,33.518,52],["2025-04-24",33.482,33.482,33.325,93],["2025-04-25",32.989,32.989,32.989,93],["2025-04-28",32.99,32.99,32.99,38963],["2025-04-29",33.275,33.515,32.82,9484],["2025-04-30",32.531,32.99,32.135,622],["2025-05-01",32.189,32.555,31.685,556],["2025-05-02",31.989,32.675,31.91,74],["2025-05-05",32.205,32.48,31.915,224],["2025-05-06",33.113,33.19,32.65,227],["2025-05-07",32.531,32.805,32.195,253],["2025-05-08",32.378,32.445,32.275,526],["2025-05-09",32.676,32.73,32.676,7],["2025-05-12",32.388,32.865,31.93,90],["2025-05-13",32.868,33.205,32.805,28],["2025-05-14",32.226,32.255,32.085,57],["2025-05-15",32.481,32.481,32.481,2],["2025-05-16",32.158,32.24,31.91,100],["2025-05-19",32.313,32.57,32.21,217],["2025-05-20",32.98,33.065,32.07,35],["2025-05-21",33.463,33.575,33.045,217],["2025-05-22",33.047,33.575,32.84,16],["2025-05-23",33.442,33.535,33.1,44],["2025-05-27",33.146,33.23,32.945,203],["2025-05-28",33,33.145,32.955,656],["2025-05-29",33.283,33.44,32.66,686],["2025-05-30",32.892,32.975,32.892,380],["2025-06-02",34.563,34.79,33.45,188],["2025-06-03",34.503,34.503,34.315,14],["2025-06-04",34.519,34.519,34.39,164],["2025-06-05",35.689,36.025,35.3,55],["2025-06-06",36.025,36.355,35.635,367],["2025-06-09",36.688,36.688,36.688,28],["2025-06-10",36.542,36.542,36.45,133],["2025-06-11",36.166,36.27,36.09,33],["2025-06-12",36.213,36.213,35.76,51],["2025-06-13",36.281,36.315,36.2,90],["2025-06-16",36.379,36.379,36.25,6],["2025-06-17",37.09,37.255,36.81,60],["2025-06-18",36.866,37.175,36.866,0],["2025-06-20",35.976,35.976,35.775,2],["2025-06-23",36.153,36.165,36.153,7],["2025-06-24",35.701,35.83,35.6,10],["2025-06-25",36.085,36.085,36.085,2],["2025-06-26",36.586,36.586,36.31,43116],["2025-06-27",36.037,36.64,35.635,7734],["2025-06-30",35.852,36.12,35.27,191],["2025-07-01",36.082,36.5,35.845,74],["2025-07-02",36.426,36.45,35.98,512],["2025-07-03",36.784,36.94,36.35,0],["2025-07-04",36.775,36.775,36.775,0],["2025-07-07",36.615,37.09,36.125,362],["2025-07-08",36.472,36.685,36.26,463],["2025-07-09",36.351,36.385,36.27,34],["2025-07-10",37.038,37.41,36.64,746],["2025-07-11",38.676,38.93,37.45,687],["2025-07-14",38.462,39.14,38.36,103],["2025-07-15",37.834,38.33,37.675,183],["2025-07-16",37.853,38.055,37.79,218],["2025-07-17",38.056,38.195,37.84,147],["2025-07-18",38.223,38.515,38.223,52],["2025-07-21",39.101,39.125,38.995,73],["2025-07-22",39.32,39.355,38.915,67],["2025-07-23",39.278,39.41,39.22,51],["2025-07-24",39.021,39.13,38.84,59],["2025-07-25",38.167,38.93,38.04,7],["2025-07-28",38.026,38.19,38.02,154],["2025-07-29",38.084,38.13,38.06,1109],["2025-07-30",37.566,38.165,36.775,352],["2025-07-31",36.552,36.84,36.552,89],["2025-08-01",36.787,36.787,36.345,95],["2025-08-04",37.192,37.3,37.145,488],["2025-08-05",37.687,37.687,37.605,3],["2025-08-06",37.766,37.766,37.76,6],["2025-08-07",38.158,38.375,38.158,130],["2025-08-08",38.417,38.62,38.39,54],["2025-08-11",37.662,38.04,37.662,35],["2025-08-12",37.899,37.899,37.555,19],["2025-08-13",38.499,38.505,38.45,8],["2025-08-14",37.982,37.982,37.982,5],["2025-08-15",37.894,37.894,37.88,2],["2025-08-18",37.951,37.951,37.951,3],["2025-08-19",37.261,37.305,37.205,10],["2025-08-20",37.705,37.745,37.705,2],["2025-08-21",38.027,38.027,38.027,28],["2025-08-22",39.003,39.003,39.003,2],["2025-08-25",38.677,38.79,38.51,344],["2025-08-26",38.582,38.582,38.525,78],["2025-08-27",38.689,38.689,38.689,38378],["2025-08-28",39.19,39.335,38.68,5603],["2025-08-29",40.2,40.305,38.905,0],["2025-09-02",41.071,41.34,40.185,820],["2025-09-03",41.542,41.715,41.015,409],["2025-09-04",40.911,41.055,40.8,249],["2025-09-05",41.074,41.535,40.87,835],["2025-09-08",41.426,41.78,41.15,531],["2025-09-09",40.878,41.57,40.878,359],["2025-09-10",41.133,41.133,41.133,350],["2025-09-11",41.697,41.74,41.35,538],["2025-09-12",42.387,42.387,41.6,18],["2025-09-15",42.517,42.58,42.21,48],["2025-09-16",42.471,42.471,42.435,894],["2025-09-17",41.722,41.935,41.722,311],["2025-09-18",41.707,41.71,41.495,156],["2025-09-19",42.536,42.865,41.815,625],["2025-09-22",43.799,43.92,43.3,179],["2025-09-23",44.192,44.3,43.7,400],["2025-09-24",43.777,44.185,43.7,174],["2025-09-25",44.697,45,43.785,199],["2025-09-26",46.221,46.221,44.87,556],["2025-09-29",46.612,46.875,46.09,622],["2025-09-30",46.253,46.96,45.965,338],["2025-10-01",47.29,47.51,46.79,125],["2025-10-02",46,47.245,45.385,509],["2025-10-03",47.597,47.597,47.597,53],["2025-10-06",48.082,48.082,47.895,60],["2025-10-07",47.179,47.85,47.03,708],["2025-10-08",48.656,48.656,47.89,149],["2025-10-09",46.85,49.49,46.735,1568],["2025-10-10",46.938,48.29,46.93,453],["2025-10-13",50.13,50.495,49.34,453],["2025-10-14",50.314,51.985,48.535,249],["2025-10-15",51.073,51.575,50.845,102],["2025-10-16",53.023,53.105,51.785,356],["2025-10-17",49.864,53.34,49.645,400],["2025-10-20",51.119,51.43,50.14,652],["2025-10-21",47.45,50.805,47.415,329],["2025-10-22",47.461,48.115,47.22,347],["2025-10-23",48.482,48.91,48.46,507],["2025-10-24",48.377,48.43,47.425,270],["2025-10-27",46.562,47.81,45.845,161],["2025-10-28",47.125,47.125,46.325,59],["2025-10-29",47.721,47.721,47.721,545],["2025-10-30",48.428,48.61,47.135,370],["2025-10-31",47.994,48.68,47.994,484],["2025-11-03",47.888,48.35,47.825,0],["2025-11-04",47.13,47.13,46.805,115],["2025-11-05",47.863,47.88,47.56,23],["2025-11-06",47.794,47.794,47.794,86],["2025-11-07",48.017,48.04,48.015,23],["2025-11-10",50.177,50.177,49.5,91],["2025-11-11",50.618,50.855,50.43,106],["2025-11-12",53.332,53.5,51.25,20],["2025-11-13",53.074,54.2,52.66,264],["2025-11-14",50.59,53.1,50.245,73],["2025-11-17",50.625,50.75,49.665,71],["2025-11-18",50.45,50.92,49.235,384],["2025-11-19",50.79,51.75,50.425,72],["2025-11-20",50.247,50.35,50.005,10],["2025-11-21",49.873,49.945,48.125,22],["2025-11-24",50.295,50.295,49.595,35],["2025-11-25",50.934,51.13,50.815,49588],["2025-11-26",52.916,53.095,50.96,14378],["2025-11-28",56.446,56.455,52.55,2541],["2025-12-01",58.418,58.475,56.14,994],["2025-12-02",57.983,58.46,56.58,392],["2025-12-03",57.921,58.9,57.65,264],["2025-12-04",56.847,58.3,56.3,335],["2025-12-05",58.422,58.47,56.835,284],["2025-12-08",57.779,58.34,57.52,518],["2025-12-09",60.169,60.52,57.615,324],["2025-12-10",60.379,61.53,60.115,462],["2025-12-11",63.929,63.929,61.875,408],["2025-12-12",61.362,63.555,60.665,435],["2025-12-15",62.94,62.95,61.23,387],["2025-12-16",62.7,63,62.54,70],["2025-12-17",66.237,66.475,65.09,233],["2025-12-18",64.592,65.775,64.28,118],["2025-12-19",66.845,66.845,66.485,144],["2025-12-22",67.906,68.865,67.005,130],["2025-12-23",70.485,70.575,69.075,40],["2025-12-24",71.031,71.515,71,35],["2025-12-26",76.486,78.84,73.735,140],["2025-12-29",69.856,79.7,69.856,1608],["2025-12-30",77.374,77.41,70.5,992],["2025-12-31",70.134,74.625,70.134,343],["2026-01-02",70.556,73.59,70.556,602],["2026-01-05",76.164,76.82,73.905,883],["2026-01-06",80.53,80.855,75.93,580],["2026-01-07",77.135,80.9,75.875,2093],["2026-01-08",74.716,76.57,73.165,1447],["2026-01-09",78.884,79.975,76.7,254],["2026-01-12",84.61,85.825,82,575],["2026-01-13",85.877,88.61,84.59,341],["2026-01-14",90.869,93,88.705,470],["2026-01-15",91.876,92.42,86.13,390],["2026-01-16",88.091,90.925,86.195,685],["2026-01-20",94.206,94.99,92.06,543],["2026-01-21",92.21,94.53,91.59,231],["2026-01-22",95.976,95.98,92.48,548],["2026-01-23",100.925,102.925,97.73,283],["2026-01-26",115.08,117.195,103.22,537],["2026-01-27",105.523,110.52,103.1,131],["2026-01-28",113.111,114.575,112.735,1436],["2026-01-29",114.037,121.3,107.97,1261],["2026-01-30",78.29,117.79,76.025,841],["2026-02-02",76.778,84.39,73.36,388],["2026-02-03",83.042,88.195,80,840],["2026-02-04",84.165,90.975,83.625,158],["2026-02-05",76.529,88.44,71.08,422],["2026-02-06",76.735,77.32,68.71,118],["2026-02-09",82.065,82.065,79.98,443],["2026-02-10",80.218,81.675,79.84,112],["2026-02-11",83.754,84.47,80.985,11],["2026-02-12",75.546,82.695,75.546,78],["2026-02-13",77.851,78.47,74.83,63],["2026-02-17",73.447,75.35,72,61],["2026-02-18",77.509,77.509,75.7,18],["2026-02-19",77.565,78.94,76.94,208],["2026-02-20",82.283,84.415,80.46,30],["2026-02-23",86.523,87.915,86.495,41],["2026-02-24",87.457,87.457,86.29,268],["2026-02-25",90.939,90.939,90.939,36156],["2026-02-26",86.998,90.255,84.98,6626],["2026-02-27",92.682,93.88,87.82,1134],["2026-03-02",88.284,95.86,86.22,1338],["2026-03-03",82.923,90.8,79,1600],["2026-03-04",82.633,85.015,82.633,502],["2026-03-05",81.687,84.15,80.955,597],["2026-03-06",83.816,84.335,81.425,282],["2026-03-09",84.032,86.51,79.5,497],["2026-03-10",89.083,89.59,87,106],["2026-03-11",85.065,88.68,84.525,1455],["2026-03-12",84.67,87.16,84.67,284],["2026-03-13",80.914,83.815,79.45,856],["2026-03-16",80.263,80.905,79,91],["2026-03-17",79.53,82.24,78.58,248],["2026-03-18",77.238,77.735,74.8,340],["2026-03-19",70.902,76.105,67,138],["2026-03-20",69.36,71.925,69.36,45],["2026-03-23",69.049,69.51,61.09,271],["2026-03-24",69.274,71.185,68.55,122],["2026-03-25",72.361,73.17,71.225,211],["2026-03-26",67.671,70.105,67.23,31],["2026-03-27",69.545,69.545,67.54,391],["2026-03-30",70.324,70.98,67.82,482],["2026-03-31",74.69,75.17,72.555,98],["2026-04-01",75.867,75.867,73.9,81],["2026-04-02",72.735,73.715,69.835,0],["2026-04-06",72.661,72.661,71.85,1],["2026-04-07",71.826,71.895,70,91],["2026-04-08",75.224,77.45,75.224,34],["2026-04-09",76.277,76.277,73.78,4],["2026-04-10",76.324,76.65,75.305,175],["2026-04-13",75.523,75.523,72.795,13],["2026-04-14",79.391,79.59,76.815,590],["2026-04-15",79.491,80.35,79.3,473],["2026-04-16",78.606,79.175,78.606,504],["2026-04-17",81.738,82.83,81.738,38],["2026-04-20",79.951,79.951,79.505,24],["2026-04-21",76.411,78.95,76.411,34],["2026-04-22",77.893,77.893,76.875,9],["2026-04-23",75.465,76.325,75.465,21],["2026-04-24",76.383,76.383,76.383,31],["2026-04-27",75.003,75.335,74.755,7],["2026-04-28",73.205,73.205,73.205,28613],["2026-04-29",71.569,73.815,70.885,4128],["2026-04-30",73.534,73.85,71.385,498],["2026-05-01",75.951,76.88,73.11,598],["2026-05-04",73.072,75.4,72.5,591],["2026-05-05",73.108,73.945,72.67,194],["2026-05-06",76.811,77.835,73.775,235],["2026-05-07",79.701,82.175,77.87,301],["2026-05-08",80.395,81.6,80.06,14],["2026-05-11",85.485,86.25,85,408],["2026-05-12",85.13,86.91,83.75,418],["2026-05-13",88.888,88.888,86.93,137],["2026-05-14",84.912,87.075,84.9,91],["2026-05-15",77.547,84.38,76.09,75013]].map(r=>({date:r[0],c:r[1],h:r[2],l:r[3],v:r[4]}));
+const CORS=[u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
+async function viaProxy(url){for(const p of CORS){try{const r=await fetch(p(url),{cache:'no-cache'});if(r.ok)return await r.json();}catch(e){}}return null;}
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>x==null?'—':(x>=0?'+':'')+x.toFixed(d);
 
-/* --- Snapshot fallback (used if live fetch fails) ------------------ */
-/* These values are from May 15 2026 10:25 PT — used only if all
-   live fetches fail. UI shows a clear STALE warning in that case. */
-const FALLBACK = {
-  asOf: 'May 15, 2026 · 10:25 PT (snapshot fallback)',
-  silver: { spot: 77.52, prev: 83.62, change: -6.10, changePct: -7.30 },
-  gold:   { spot: 4564, prev: 4651.93, change: -87.93, changePct: -1.83 },
-  dxy:    { spot: 99.05, prev: 98.88, change: 0.17, changePct: 0.16 },
-  copper: { spot: 5.78, prev: 5.82, change: -0.04, changePct: -0.69 },
-  oil:    { spot: 109.20, prev: 102.50, change: 6.70, changePct: 6.54 },
-  vix:    { spot: 23.76, prev: 21.18, change: 2.58, changePct: 12.18 },
-  spx:    { spot: 7444, prev: 7503, change: -59, changePct: -0.79 },
-  sil:    { spot: 42.10, prev: 44.85, change: -2.75, changePct: -6.13 },
-  recentOHLC: [
-    { date: '2026-05-08', o: 78.5, h: 79.4, l: 77.9, c: 79.20, v: 65420 },
-    { date: '2026-05-11', o: 79.30, h: 84.62, l: 79.10, c: 84.05, v: 150780 },
-    { date: '2026-05-12', o: 84.15, h: 86.30, l: 83.92, c: 85.85, v: 120870 },
-    { date: '2026-05-13', o: 85.90, h: 87.40, l: 85.10, c: 86.86, v: 99460 },
-    { date: '2026-05-14', o: 86.50, h: 87.07, l: 83.92, c: 84.30, v: 96900 },
-    { date: '2026-05-15', o: 84.10, h: 84.55, l: 76.18, c: 77.52, v: 187200 },
-  ],
-  series: [
-    76.5, 74.2, 72.8, 71.5, 70.1, 71.9, 73.4, 74.8, 73.1, 71.5,
-    72.8, 75.2, 76.9, 74.5, 72.1, 70.8, 72.5, 74.1, 75.8, 73.4,
-    71.9, 73.5, 75.1, 76.8, 78.2, 76.5, 74.8, 73.2, 75.5, 77.1,
-    78.5, 76.9, 75.2, 73.8, 75.5, 77.8, 79.1, 78.4, 76.9, 77.5,
-    78.8, 79.4, 80.1, 78.7, 79.2, 78.9,
-    84.05, 85.85, 86.86, 84.30, 81.945, 77.52
-  ],
-  cot: { largeSpecNet: 22000, grossLong: 32500, grossShort: 10200, interpretation: 'liquidity vacuum' },
-};
-
-let LIVE_DATA = JSON.parse(JSON.stringify(FALLBACK));  // start with fallback, upgrade with live
-LIVE_DATA.dataSource = 'snapshot';
-
-/* --- Live data fetching: same-origin JSON --------------------------
-   The dashboard reads data/latest.json which is refreshed every 30
-   minutes by the GitHub Actions workflow (scripts/fetch-data.js).
-   Same origin = no CORS issues. If the file isn't there yet, falls
-   back to the snapshot embedded above.
------------------------------------------------------------------- */
-
-function setBannerState(state, message){
-  const banner = document.querySelector('.live-banner');
-  banner.classList.remove('stale','error','loading');
-  if (state === 'loading') banner.classList.add('loading');
-  if (state === 'stale') banner.classList.add('stale');
-  if (state === 'error') banner.classList.add('error');
-  document.getElementById('liveStatus').textContent = message;
+// ---- compute regime from embedded history + live spot ----
+function computeRegime(liveSpot){
+  const closes=SV.map(b=>b.c); const n=closes.length;
+  // splice live spot as latest if available
+  const series = liveSpot? closes.concat([liveSpot]) : closes.slice();
+  const N=series.length;
+  // realized vol 20d
+  const rets=[];for(let i=N-20;i<N;i++)if(i>0)rets.push(Math.log(series[i]/series[i-1]));
+  const m=rets.reduce((a,b)=>a+b,0)/rets.length;
+  const rv=Math.sqrt(rets.reduce((a,b)=>a+(b-m)**2,0)/rets.length*252)*100;
+  // bollinger bandwidth percentile (compression)
+  function bw(arr,i,w=20){if(i<w)return null;const s=arr.slice(i-w+1,i+1);const mu=s.reduce((a,b)=>a+b,0)/w;const sd=Math.sqrt(s.reduce((a,b)=>a+(b-mu)**2,0)/w);return 2*2*sd/mu;}
+  const bwSeries=[];for(let i=0;i<N;i++)bwSeries.push(bw(series,i));
+  const curBw=bwSeries[N-1];
+  const win=bwSeries.slice(Math.max(0,N-120),N).filter(v=>v!=null);
+  const pctl=win.length?win.filter(v=>v<=curBw).length/win.length:0.5;
+  const compression=Math.round((1-pctl)*100); // high = compressed
+  // 52d range position
+  const lo=Math.min(...series.slice(-52)), hi=Math.max(...series.slice(-52));
+  const rangePos=Math.round((series[N-1]-lo)/((hi-lo)||1)*100);
+  return {rv,compression,rangePos,curSpot:series[N-1]};
 }
 
-function timeAgo(isoString){
-  const then = new Date(isoString);
-  const now = new Date();
-  const diffSec = Math.floor((now - then) / 1000);
-  if (diffSec < 60) return `${diffSec}s ago`;
-  if (diffSec < 3600) return `${Math.floor(diffSec/60)}m ago`;
-  if (diffSec < 86400) return `${Math.floor(diffSec/3600)}h ago`;
-  return `${Math.floor(diffSec/86400)}d ago`;
+function setVerdict(reg){
+  $('rvol').textContent=reg.rv.toFixed(1)+'%';
+  $('comp').textContent=reg.compression+'% / 100';
+  $('compbar').style.width=reg.compression+'%';
+  $('rangepos').textContent=reg.rangePos+'% of 52d range';
+  // honest verdict logic — never fakes direction
+  let v,why,cls;
+  if(reg.compression>=70){ v='COILED'; why='compression high · apex near · direction unknowable (77% chop base rate)'; cls='warn'; }
+  else if(reg.rv>45){ v='VOLATILE'; why='realized vol elevated · regime in motion · size down'; cls='bear'; }
+  else { v='STAND ASIDE'; why='no compression edge · no directional signal survives out-of-sample'; cls='dim'; }
+  $('verdict').textContent=v; $('verdict').className='verdict-big '+(cls==='warn'?'warn':cls==='bear'?'bear':'dim');
+  $('verdictwhy').textContent=why;
 }
 
-// Current ticker state — defaults to silver, can be changed via UI or URL
-let CURRENT_TICKER = 'SI=F';
-
-function getTickerFilename(ticker) {
-  return ticker.replace(/[=^]/g, '_') + '.json';
+function drawSpark(){
+  const c=$('spark'),ctx=c.getContext('2d');const W=c.width=c.offsetWidth*2,H=c.height=240;ctx.scale(1,1);
+  const data=SV.slice(-120).map(b=>b.c);const lo=Math.min(...data),hi=Math.max(...data);
+  ctx.strokeStyle='#7fd4c8';ctx.lineWidth=3;ctx.beginPath();
+  data.forEach((v,i)=>{const x=i/(data.length-1)*W;const y=H-(v-lo)/((hi-lo)||1)*(H-20)-10;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.stroke();
+  ctx.fillStyle='rgba(127,212,200,0.08)';ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();
 }
 
-function getTickerFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('ticker') || null;
+async function fetchLiveSilver(){
+  const u='https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=10d';
+  const j=await viaProxy(u);const res=j?.chart?.result?.[0];if(!res)return null;
+  const closes=(res.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);
+  const meta=res.meta;const spot=meta?.regularMarketPrice??(closes.length?closes[closes.length-1]:null);
+  const prev=closes.length>=2?closes[closes.length-2]:(meta?.chartPreviousClose??spot);
+  return{spot,prev,changePct:prev?((spot-prev)/prev*100):0};
 }
 
-async function loadTickerIndex(){
-  try {
-    const resp = await fetch('data/index.json?t=' + Date.now(), { cache: 'no-cache' });
-    if (!resp.ok) return null;
-    return await resp.json();
-  } catch (e) {
-    return null;
-  }
-}
-
-function populateTickerDropdown(indexData) {
-  const select = document.getElementById('tickerSelect');
-  if (!select) return;
-  if (!indexData?.tickers?.length) {
-    select.innerHTML = '<option value="SI=F">SI=F · Silver</option>';
-    return;
-  }
-  select.innerHTML = indexData.tickers.map(t =>
-    `<option value="${t.ticker}" ${t.ticker === CURRENT_TICKER ? 'selected' : ''}>${t.ticker} · ${t.name}</option>`
-  ).join('');
-}
-
-async function fetchLiveData(){
-  setBannerState('loading', `loading ${CURRENT_TICKER}…`);
-
-  // Try new multi-ticker file first; fall back to legacy latest.json (silver)
-  const candidates = [
-    `data/${getTickerFilename(CURRENT_TICKER)}`,
-    CURRENT_TICKER === 'SI=F' ? 'data/latest.json' : null,
-  ].filter(Boolean);
-
-  let data = null;
-  let usedFile = null;
-  for (const url of candidates) {
-    try {
-      const resp = await fetch(url + '?t=' + Date.now(), { cache: 'no-cache' });
-      if (resp.ok) {
-        data = await resp.json();
-        usedFile = url;
-        break;
-      }
-    } catch (e) {}
-  }
-
-  if (!data) {
-    LIVE_DATA.dataSource = 'snapshot';
-    setBannerState('error', `no data file for ${CURRENT_TICKER} · using embedded snapshot`);
-    return false;
-  }
-
-  try {
-    // Detect which format the file uses
-    const isNewFormat = !!data.asset;  // multi-ticker format has .asset
-    const isLegacyFormat = !!data.silver;  // legacy silver format has .silver
-
-    if (isNewFormat) {
-      // === Multi-ticker format ===
-      LIVE_DATA.asset = data.asset;
-      LIVE_DATA.sector = data.sector;
-      LIVE_DATA.sectorName = data.sectorName;
-      LIVE_DATA.spotAlt = data.spotAlt;
-      LIVE_DATA.display = data.display;
-      LIVE_DATA.config = data.config;
-      LIVE_DATA.macro = data.macro || {};
-
-      // For backward compat with computeAll which expects these names
-      LIVE_DATA.silver = data.asset;
-      LIVE_DATA.silverDisplay = data.display;
-      LIVE_DATA.silverSpot = data.spotAlt;
-      LIVE_DATA.silverETF = data.sector;
-      LIVE_DATA.sil = data.sector;
-      LIVE_DATA.gold = data.macro?.gold || null;
-      LIVE_DATA.dxy = data.macro?.dxy;
-      LIVE_DATA.oil = data.macro?.oil;
-      LIVE_DATA.vix = data.macro?.vix;
-      LIVE_DATA.spx = data.macro?.spx;
-      // copper not in macro; null gracefully
-      LIVE_DATA.copper = data.macro?.copper || null;
-    } else if (isLegacyFormat) {
-      // === Legacy silver format ===
-      if (data.silver) LIVE_DATA.silver = data.silver;
-      if (data.silverSpot) LIVE_DATA.silverSpot = data.silverSpot;
-      if (data.silverETF) LIVE_DATA.silverETF = data.silverETF;
-      if (data.silverDisplay) LIVE_DATA.silverDisplay = data.silverDisplay;
-      if (data.gold)   LIVE_DATA.gold   = data.gold;
-      if (data.dxy)    LIVE_DATA.dxy    = data.dxy;
-      if (data.copper) LIVE_DATA.copper = data.copper;
-      if (data.oil)    LIVE_DATA.oil    = data.oil;
-      if (data.vix)    LIVE_DATA.vix    = data.vix;
-      if (data.spx)    LIVE_DATA.spx    = data.spx;
-      if (data.sil)    LIVE_DATA.sil    = data.sil;
-      LIVE_DATA.asset = data.silver;
-      LIVE_DATA.display = data.silverDisplay;
-      LIVE_DATA.sector = data.sil;
-      LIVE_DATA.sectorName = 'SIL';
-      LIVE_DATA.config = { name: 'Silver', assetClass: 'commodity', sectorETF: 'SIL', typicalVolAnnual: 0.32 };
-    }
-
-    if (data.series && data.series.length >= 30) LIVE_DATA.series = data.series;
-    if (data.recentOHLC && data.recentOHLC.length >= 5) LIVE_DATA.recentOHLC = data.recentOHLC;
-
-    LIVE_DATA.fetchedAt = data.fetchedAt;
-    LIVE_DATA.fetchLog = data.log || [];
-    LIVE_DATA.sources = data.sources || {};
-    LIVE_DATA.healthyCount = data.healthyCount ?? 0;
-    LIVE_DATA.totalCount = data.totalCount ?? 11;  // updated for new silver sources
-
-    const ago = timeAgo(data.fetchedAt);
-    const ageMin = (Date.now() - new Date(data.fetchedAt).getTime()) / 60000;
-
-    // Determine status based on data age and health
-    const isSeedData = data.healthyCount === 0 ||
-      (data.sources && Object.values(data.sources).every(s => s === 'snapshot'));
-
-    if (isSeedData) {
-      LIVE_DATA.dataSource = 'snapshot';
-      setBannerState('error', 'using seed data · GitHub Action hasn\'t run yet');
-      // Show setup hint if user hasn't dismissed it
-      if (!localStorage.getItem('kelly-hint-dismissed')) {
-        document.getElementById('setupHint').classList.add('show');
-      }
-    } else {
-      // Hide hint once we have live data
-      document.getElementById('setupHint').classList.remove('show');
-      if (ageMin > 90) {
-        // Data older than 90 minutes — workflow may have stopped
-        LIVE_DATA.dataSource = 'stale';
-        setBannerState('stale', `data is ${ago} · GitHub Action may be paused`);
-      } else if (data.healthyCount < data.totalCount) {
-        LIVE_DATA.dataSource = 'partial';
-        setBannerState('stale', `live · ${ago} · ${data.healthyCount}/${data.totalCount} sources`);
-      } else {
-        LIVE_DATA.dataSource = 'live';
-        setBannerState('ok', `LIVE · updated ${ago} · all ${data.totalCount} sources healthy`);
-      }
-    }
-    return true;
-  } catch(e) {
-    LIVE_DATA.dataSource = 'snapshot';
-    setBannerState('error', 'no data file found · using embedded snapshot');
-    return false;
-  }
-}
-
-/* --- Live quote refresh (browser-side, bypasses stale GitHub Action) ---
-   The committed JSON files can go stale if the scheduled GitHub Action
-   pauses (free-tier cron is unreliable). This layer fetches CURRENT quotes
-   directly in the browser so the dashboard is never more stale than the
-   moment you loaded it. Yahoo blocks direct browser calls (CORS), so we
-   route through public CORS proxies with fallbacks. If all fail, we keep
-   the committed-file values and flag the data as snapshot-age. */
-
-const CORS_PROXIES = [
-  u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://thingproxy.freeboard.io/fetch/${u}`,
-];
-
-async function fetchQuoteLive(symbol){
-  // Yahoo chart endpoint returns current price + previous close in meta.
-  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
-  for (const proxy of CORS_PROXIES){
-    try {
-      const resp = await fetch(proxy(yahooUrl), { cache: 'no-cache' });
-      if (!resp.ok) continue;
-      const j = await resp.json();
-      const meta = j?.chart?.result?.[0]?.meta;
-      if (!meta || meta.regularMarketPrice == null) continue;
-      const spot = meta.regularMarketPrice;
-      const prev = meta.chartPreviousClose ?? meta.previousClose ?? spot;
-      return {
-        spot,
-        prev,
-        change: spot - prev,
-        changePct: prev ? ((spot - prev) / prev) * 100 : 0,
-      };
-    } catch(e){ /* try next proxy */ }
-  }
-  return null;  // all proxies failed
-}
-
-async function refreshLiveQuotes(){
-  // Map the symbols we care about for the current ticker's signal set.
-  const cfg = LIVE_DATA.config || {};
-  const sectorETF = cfg.sectorETF || (CURRENT_TICKER === 'SI=F' ? 'SIL' : null);
-  const jobs = [];
-
-  // Primary asset — use the futures symbol itself
-  jobs.push(['asset', CURRENT_TICKER]);
-  // Sector ETF (miners for silver) — THIS is what drives the smart-money signal
-  if (sectorETF) jobs.push(['sector', sectorETF]);
-  // Macro complex
-  jobs.push(['gold', 'GC=F']);
-  jobs.push(['dxy', 'DX-Y.NYB']);
-  jobs.push(['oil', 'CL=F']);
-  jobs.push(['vix', '^VIX']);
-  jobs.push(['spx', '^GSPC']);
-  jobs.push(['copper', 'HG=F']);
-
-  const results = await Promise.allSettled(
-    jobs.map(async ([key, sym]) => [key, await fetchQuoteLive(sym)])
-  );
-
-  let liveCount = 0;
-  let assetLive = null;
-  for (const r of results){
-    if (r.status !== 'fulfilled') continue;
-    const [key, quote] = r.value;
-    if (!quote) continue;
-    liveCount++;
-    if (key === 'asset'){
-      assetLive = quote;
-      // Update both the raw asset and display spot
-      LIVE_DATA.asset = { ...(LIVE_DATA.asset||{}), ...quote };
-      LIVE_DATA.silver = LIVE_DATA.asset;
-      LIVE_DATA.display = { ...(LIVE_DATA.display||{}), ...quote };
-      LIVE_DATA.silverDisplay = LIVE_DATA.display;
-    } else if (key === 'sector'){
-      LIVE_DATA.sector = { ...(LIVE_DATA.sector||{}), ...quote };
-      LIVE_DATA.sil = LIVE_DATA.sector;
-      LIVE_DATA.silverETF = LIVE_DATA.sector;
-    } else {
-      // macro keys
-      LIVE_DATA[key] = { ...(LIVE_DATA[key]||{}), ...quote };
-      if (LIVE_DATA.macro) LIVE_DATA.macro[key] = LIVE_DATA[key];
-    }
-  }
-
-  if (liveCount > 0){
-    LIVE_DATA.liveRefreshAt = new Date().toISOString();
-    LIVE_DATA.liveRefreshCount = liveCount;
-    LIVE_DATA.dataSource = 'live-browser';
-    const px = assetLive ? `$${assetLive.spot.toFixed(2)} (${assetLive.changePct>=0?'+':''}${assetLive.changePct.toFixed(2)}%)` : '';
-    setBannerState('ok', `LIVE (browser) · ${liveCount} quotes refreshed now · ${px}`);
-  }
-  return liveCount;
-}
-
-/* --- Compute v3 signals ------------------------------------------- */
-function computeAll(){
-  const d = LIVE_DATA;
-  const N = d.series.length;
-  // Prefer validated spot price (silverDisplay), fall back to raw silver fetch
-  const PRICE = (d.silverDisplay && d.silverDisplay.spot) ? d.silverDisplay.spot : d.silver.spot;
-  const ohlc = d.recentOHLC;
-
-  // === Returns ===
-  const rets = [];
-  for(let i=1;i<N;i++) rets.push(Math.log(d.series[i]/d.series[i-1]));
-  const recent20 = rets.slice(-20);
-  const m20 = recent20.reduce((a,b)=>a+b,0)/recent20.length;
-  const var20 = recent20.reduce((a,b)=>a+(b-m20)**2,0)/recent20.length;
-  const vol20Ann = Math.sqrt(var20*252);
-
-  // === RSI(14) ===
-  function rsi(period){
-    let g=0,l=0;
-    for(let i=1;i<=period;i++){
-      const c = d.series[N-i] - d.series[N-i-1];
-      if(c>0) g+=c; else l-=c;
-    }
-    if(l===0) return 100;
-    return 100 - 100/(1 + (g/period)/(l/period));
-  }
-  const rsi14 = rsi(14);
-
-  // === Distance from 50-bar MA ===
-  let s=0; for(let k=0;k<Math.min(50,N-1);k++) s += d.series[N-1-k];
-  const ma50 = s/Math.min(50,N-1);
-  const distMA = (PRICE - ma50)/ma50;
-
-  // === Robust Bollinger (median + MAD) ===
-  const slice = d.series.slice(N-Math.min(40,N-1)-1, N-1);
-  const sorted = [...slice].sort((a,b)=>a-b);
-  const median = sorted[Math.floor(sorted.length/2)];
-  const mad = sorted.map(v=>Math.abs(v-median)).sort((a,b)=>a-b)[Math.floor(sorted.length/2)];
-  const robustZ = (PRICE - median)/(mad * 1.4826);
-
-  // === Dynamic equilibrium / relative-value signal ===
-  // For silver: gold/silver ratio (classic precious-metals relative value).
-  // For other assets: ratio of asset to its sector ETF (relative-value of
-  //   the name vs its peer group). Either way, signal is: am I cheap or
-  //   expensive vs my reference, relative to the rolling median ratio?
-  let gsRatio = 0, gsEq = 1, gsZ = 0, hasRelValSignal = false;
-  if (d.gold && d.gold.spot && d.config?.assetClass === 'commodity') {
-    // Classic commodities relative-value: gold/asset ratio
-    gsRatio = d.gold.spot / PRICE;
-    const gsHist = [];
-    for(let i=Math.max(0,N-30); i<N; i++){
-      const goldEst = 4400 + (i-25)*8;  // smooth approximation
-      gsHist.push(goldEst/d.series[i]);
-    }
-    const gsSorted = [...gsHist].sort((a,b)=>a-b);
-    gsEq = gsSorted[Math.floor(gsSorted.length/2)] || 1;
-    gsZ = (gsRatio - gsEq)/(gsEq*0.06);
-    hasRelValSignal = true;
-  } else if (d.sector && d.sector.spot) {
-    // Stocks/index: ratio of asset to sector ETF
-    gsRatio = PRICE / d.sector.spot;
-    // Without sector history, use current ratio as approximate equilibrium
-    // (this will be refined as the dashboard accumulates history)
-    gsEq = gsRatio;  // neutral by default
-    gsZ = 0;
-    hasRelValSignal = true;
-  }
-
-  // === NEGATIVE-SPACE SIGNALS ===
-
-  // (1) Gamma proxy: intraday range vs close-to-close
-  // Average over last 5 sessions
-  function gammaProxy(){
-    let intradayRanges = 0, ccMoves = 0;
-    for(let i=1;i<ohlc.length;i++){
-      intradayRanges += (ohlc[i].h - ohlc[i].l)/ohlc[i-1].c;
-      ccMoves += Math.abs(ohlc[i].c - ohlc[i-1].c)/ohlc[i-1].c;
-    }
-    const ratio = intradayRanges/(ccMoves || 1e-6);
-    // ratio > 3 → short gamma pinning; ratio < 1.5 → long gamma amplifying
-    return { ratio, intradayAvg: intradayRanges/(ohlc.length-1), ccAvg: ccMoves/(ohlc.length-1) };
-  }
-  const gamma = gammaProxy();
-
-  // (2) Skew proxy: down-vol minus up-vol
-  function skewProxy(){
-    const lookback = 20;
-    let downSq=0, upSq=0, dCnt=0, uCnt=0;
-    for(let i=Math.max(0,rets.length-lookback);i<rets.length;i++){
-      if(rets[i]<0){ downSq += rets[i]*rets[i]; dCnt++; }
-      else if(rets[i]>0){ upSq += rets[i]*rets[i]; uCnt++; }
-    }
-    const downVol = dCnt>0 ? Math.sqrt(downSq/dCnt) : 0;
-    const upVol = uCnt>0 ? Math.sqrt(upSq/uCnt) : 0;
-    const asymmetry = downVol - upVol;
-    // Normalized
-    return { downVol, upVol, asymmetry, ratio: downVol/(upVol||1e-6) };
-  }
-  const skew = skewProxy();
-
-  // (3) Dark-pool proxy: Kyle's lambda — price impact per unit volume
-  function darkPoolProxy(){
-    // Compute |return|/volume for last 5 sessions and look for anomalies
-    const impacts = [];
-    for(let i=1;i<ohlc.length;i++){
-      const r = Math.abs(Math.log(ohlc[i].c/ohlc[i-1].c));
-      const v = ohlc[i].v;
-      impacts.push({date: ohlc[i].date, impact: r/v*1e6, ret: r, vol: v});  // scaled
-    }
-    // Average impact
-    const avgImpact = impacts.reduce((a,b)=>a+b.impact,0)/impacts.length;
-    // Today's impact
-    const todayImpact = impacts[impacts.length-1].impact;
-    // If today's impact >> average → dark flow visible via abnormal price/volume
-    const anomaly = todayImpact/avgImpact;
-    return { impacts, avgImpact, todayImpact, anomaly };
-  }
-  const darkPool = darkPoolProxy();
-
-  // (4) Crowdedness velocity — rate of change of RSI, distance, ROC
-  function velocity(){
-    // RSI 5 sessions ago
-    function rsiAt(idxOffset, period=14){
-      let g=0,l=0;
-      for(let i=1;i<=period;i++){
-        const c = d.series[N-i-idxOffset] - d.series[N-i-1-idxOffset];
-        if(c>0) g+=c; else l-=c;
-      }
-      if(l===0) return 100;
-      return 100 - 100/(1 + (g/period)/(l/period));
-    }
-    const rsiNow = rsi14;
-    const rsi5ago = rsiAt(5);
-    const rsi10ago = rsiAt(10);
-    const rsiVel = (rsiNow - rsi5ago);  // first derivative
-    const rsiAccel = (rsiNow - 2*rsi5ago + rsi10ago);  // second derivative
-    // 5-day return rate of change
-    const ret5 = Math.log(d.series[N-1]/d.series[N-6]);
-    const ret5_5ago = Math.log(d.series[N-6]/d.series[N-11]);
-    const retAccel = ret5 - ret5_5ago;
-    return { rsiNow, rsi5ago, rsiVel, rsiAccel, ret5, retAccel };
-  }
-  const vel = velocity();
-
-  // (5) Absorption — high-low/close-close ratio
-  function absorption(){
-    // For today (May 15)
-    const today = ohlc[ohlc.length-1];
-    const prev = ohlc[ohlc.length-2];
-    const hl = today.h - today.l;
-    const cc = Math.abs(today.c - prev.c);
-    const absorptionRatio = hl/(cc||1e-6);
-    // Where in the range did we close? Lower half = sellers absorbed
-    const closeInRange = (today.c - today.l)/(today.h - today.l || 1e-6);
-    // For today: low $76.18, high $84.55, close $77.52 → closed near low
-    return { hl, cc, ratio: absorptionRatio, closeInRange };
-  }
-  const absorp = absorption();
-
-  // (6) Smart-money divergence — asset vs its sector ETF
-  // For silver: miners vs spot. For stocks: stock vs sector ETF (XLK, XLF, etc).
-  // Universal idea: if the sector outperforms its expected beta to the asset,
-  // institutional allocators are accumulating the theme. If it underperforms,
-  // they're distributing.
-  function sectorDivergence(){
-    const assetReturn = (d.silverDisplay?.changePct ?? d.silver?.changePct ?? 0) / 100;
-    const sectorReturn = (d.sil?.changePct ?? d.sector?.changePct ?? 0) / 100;
-    // Beta-adjusted divergence: assume sector has ~1.5x beta to underlying theme
-    // For pure stock-vs-sector, beta is closer to 1.0
-    const isCommodity = (d.config?.assetClass === 'commodity');
-    const expectedBeta = isCommodity ? 1.5 : 1.0;
-    const expected = assetReturn * expectedBeta;
-    const div = sectorReturn - expected;
-    return {
-      assetReturn,
-      sectorReturn,
-      expected,
-      divergence: div,
-      sectorName: d.sectorName || d.config?.sectorETF || 'sector',
-    };
-  }
-  const miner = sectorDivergence();
-
-  // (7) Cross-asset stress index
-  function crossAssetStress(){
-    // VIX spiking (+12%), bonds/stocks both down, metals down, oil up
-    const vixStress = (d.vix.spot - 18)/10;  // 0 at VIX 18, 1 at 28
-    const oilStress = d.oil.changePct/5;  // big oil spike = stress
-    const equityStress = -d.spx.changePct/2;  // equity down = stress
-    const dxyStress = d.dxy.changePct;
-    const stress = Math.max(0, Math.min(1, vixStress*0.3 + oilStress*0.25 + equityStress*0.3 + dxyStress*0.15));
-    return { stress, vixStress, oilStress, equityStress, dxyStress };
-  }
-  const stress = crossAssetStress();
-
-  // ===================================================================
-  // FRACTAL ANALYSIS — Hurst, multifractal spectrum, regime detection
-  // ===================================================================
-  // Rescaled-range (R/S) method for Hurst exponent with Anis-Lloyd-Peters
-  // small-sample bias correction. Raw R/S overestimates H by 0.2+ for short
-  // series; the correction subtracts the expected R/S value of a true
-  // random walk of the same length.
-  //
-  // Hurst H satisfies: log(R/S - E[R/S]_rw) = H * log(n) + const for n big.
-  // Practical formula: corrected_RS(n) = RS(n) - E[RS(n)]
-  // where E[RS(n)] = ((n-0.5)/n) * sum_{k=1}^{n-1} sqrt((n-k)/k) / sqrt(n*pi/2)
-
-  function expectedRS(n) {
-    // Anis-Lloyd-Peters expected R/S for a random walk
-    let sum = 0;
-    for (let k = 1; k <= n - 1; k++) sum += Math.sqrt((n - k) / k);
-    return ((n - 0.5) / n) * sum / Math.sqrt(n * Math.PI / 2);
-  }
-
-  function hurstRS(series, ns) {
-    if (series.length < Math.max(...ns) * 2) return null;
-    const logRS = [];
-    const logN = [];
-    for (const n of ns) {
-      const chunks = Math.floor(series.length / n);
-      if (chunks < 2) continue;
-      let totalRS = 0, validChunks = 0;
-      for (let c = 0; c < chunks; c++) {
-        const chunk = series.slice(c * n, (c + 1) * n);
-        const rets = [];
-        for (let i = 1; i < chunk.length; i++) {
-          rets.push(Math.log(chunk[i] / chunk[i - 1]));
-        }
-        if (rets.length < 4) continue;
-        const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
-        let cumDev = 0, maxCD = -Infinity, minCD = Infinity;
-        for (const r of rets) {
-          cumDev += (r - mean);
-          if (cumDev > maxCD) maxCD = cumDev;
-          if (cumDev < minCD) minCD = cumDev;
-        }
-        const range = maxCD - minCD;
-        const variance = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / rets.length;
-        const stdev = Math.sqrt(variance);
-        if (stdev > 1e-10 && range > 0) {
-          totalRS += range / stdev;
-          validChunks++;
-        }
-      }
-      if (validChunks > 0) {
-        const avgRS = totalRS / validChunks;
-        // Anis-Lloyd-Peters: normalize observed R/S by expected R/S of a
-        // random walk. For a true random walk this ratio scales as n^0.5,
-        // so the log-log slope of avgRS / E[RS] vs n gives H - 0.5,
-        // and we add 0.5 back at the end.
-        const expected = expectedRS(n);
-        const normalized = avgRS / expected;
-        if (normalized > 0) {
-          logRS.push(Math.log(normalized));
-          logN.push(Math.log(n));
-        }
-      }
-    }
-    if (logN.length < 2) return null;
-    const lnMean = logN.reduce((a, b) => a + b, 0) / logN.length;
-    const lrMean = logRS.reduce((a, b) => a + b, 0) / logRS.length;
-    let num = 0, den = 0;
-    for (let i = 0; i < logN.length; i++) {
-      num += (logN[i] - lnMean) * (logRS[i] - lrMean);
-      den += (logN[i] - lnMean) ** 2;
-    }
-    // Slope of log(R/S / E[R/S]) vs log(n) is H - 0.5
-    // Empirical calibration: for short series (<300 bars), the ALP-corrected
-    // estimator still has a -0.06 bias. Adding the calibration centers
-    // random-walk results at 0.50.
-    const rawH = den > 0 ? num / den + 0.5 : null;
-    return rawH !== null ? rawH + 0.06 : null;
-  }
-
-  // Compute Hurst at multiple window sizes for regime info
-  function multiscaleHurst() {
-    const longSeries = d.series.slice(-Math.min(60, d.series.length));
-    const mediumSeries = d.series.slice(-Math.min(30, d.series.length));
-    const shortSeries = d.series.slice(-Math.min(15, d.series.length));
-
-    const hLong = hurstRS(longSeries, [4, 6, 8, 10, 12]) || 0.5;
-    const hMed = hurstRS(mediumSeries, [4, 6, 8, 10]) || 0.5;
-    const hShort = hurstRS(shortSeries, [3, 4, 5, 6]) || 0.5;
-
-    return { hShort, hMed, hLong };
-  }
-
-  // Multifractal spectrum width (proxy via q-order moments).
-  // Real multifractal analysis: compute the q-th order partition function
-  // Z(q,n) = sum |returns|^q over windows of size n.
-  // The scaling τ(q) = log Z / log n, gives spectrum α(q), f(α).
-  // Width of α range = multifractal complexity. Widens before regime breaks.
-  // For this simpler implementation: compare scaling at q=2 vs q=4.
-  function multifractalWidth(series) {
-    if (series.length < 32) return 0;
-    const rets = [];
-    for (let i = 1; i < series.length; i++) rets.push(Math.log(series[i] / series[i - 1]));
-    const sizes = [4, 8, 16];
-    const qs = [2, 4];
-    const slopes = {};
-    for (const q of qs) {
-      const logZs = [];
-      const logSizes = [];
-      for (const n of sizes) {
-        const chunks = Math.floor(rets.length / n);
-        if (chunks < 2) continue;
-        let Z = 0;
-        for (let c = 0; c < chunks; c++) {
-          let sumAbs = 0;
-          for (let i = c * n; i < (c + 1) * n; i++) sumAbs += Math.abs(rets[i]);
-          Z += Math.pow(sumAbs, q);
-        }
-        logZs.push(Math.log(Z / chunks));
-        logSizes.push(Math.log(n));
-      }
-      if (logSizes.length < 2) continue;
-      const sMean = logSizes.reduce((a, b) => a + b, 0) / logSizes.length;
-      const zMean = logZs.reduce((a, b) => a + b, 0) / logZs.length;
-      let num = 0, den = 0;
-      for (let i = 0; i < logSizes.length; i++) {
-        num += (logSizes[i] - sMean) * (logZs[i] - zMean);
-        den += (logSizes[i] - sMean) ** 2;
-      }
-      slopes[q] = den > 0 ? num / den : 0;
-    }
-    // τ(q) = q*H - 1 in monofractal case. Width = |α(q1) - α(q2)|
-    // where α(q) = dτ/dq. We approximate with discrete differences.
-    if (!slopes[2] || !slopes[4]) return 0;
-    const alpha2 = slopes[2] / 2;
-    const alpha4 = slopes[4] / 4;
-    const width = Math.abs(alpha2 - alpha4);
-    return width;
-  }
-
-  const fractal = {
-    ...multiscaleHurst(),
-    mfWidth: multifractalWidth(d.series.slice(-60)),
-  };
-  fractal.hAvg = (fractal.hShort + fractal.hMed + fractal.hLong) / 3;
-  // Fractal dimension D = 2 - H
-  fractal.dimension = 2 - fractal.hAvg;
-  // Persistence regime
-  fractal.regime = fractal.hAvg > 0.58 ? 'persistent' :
-                   fractal.hAvg > 0.52 ? 'mildly persistent' :
-                   fractal.hAvg > 0.48 ? 'random walk' :
-                   fractal.hAvg > 0.42 ? 'mildly anti-persistent' :
-                   'mean-reverting';
-  // Scale divergence: when short-term H >> long-term H, regime shift in progress
-  fractal.scaleDivergence = fractal.hShort - fractal.hLong;
-
-  // === V2 signals (for completeness) ===
-  // Mean reversion (8d)
-  let mr_s=0;
-  for(let k=0;k<8;k++) mr_s += Math.log(d.series[N-1-k]);
-  const mr_m = mr_s/8;
-  let mr_v=0; for(let k=0;k<8;k++){ const d_=Math.log(d.series[N-1-k])-mr_m; mr_v+=d_*d_; }
-  const mrZ = (Math.log(PRICE)-mr_m)/Math.sqrt(mr_v/8);
-
-  // Momentum (10/40)
-  let f=0,sl=0;
-  for(let k=0;k<10;k++) f += d.series[N-1-k];
-  for(let k=0;k<40;k++) sl += d.series[N-1-k];
-  const momRaw = (f/10-sl/40)/(sl/40)*40;
-
-  // === CROWDEDNESS COMPOSITE ===
-  const rsiContrib = Math.max(0, (rsi14-65)/30);
-  const distContrib = Math.max(0, (distMA-0.05)/0.25);
-  const fiveDay = Math.log(PRICE/d.series[N-6]);
-  const rocContrib = Math.max(0, (fiveDay+0.10)/0.20);  // include downside acceleration
-  const oiVacuum = 0.7;
-  // NEW: velocity adds to crowdedness if positive and accelerating
-  const velContrib = Math.max(0, vel.rsiVel/30);
-  // NEW: stress adds to systemic risk
-  const stressContrib = stress.stress;
-
-  const crowd = Math.min(1,
-    rsiContrib*0.20 +
-    distContrib*0.20 +
-    rocContrib*0.10 +
-    oiVacuum*0.15 +
-    velContrib*0.15 +
-    stressContrib*0.20
-  );
-
-  // === MAP NEGATIVE-SPACE SIGNALS TO [-1, 1] ===
-  // Gamma: high ratio (>3) → short gamma, expect violent moves
-  // After today's crash, the pin broke. Signal now neutral.
-  const gammaSig = gamma.ratio > 3 ? -0.3 : gamma.ratio < 1.5 ? 0.3 : 0;
-
-  // Skew: high asymmetry (downVol >> upVol) → bears in control / over-hedged
-  // If asymmetry compresses, hedges have been bought out (next move down has no buyers)
-  const skewSig = -Math.tanh(skew.asymmetry*100);  // negative when downVol high
-
-  // Dark pool: anomaly > 1 → hidden flow, direction depends on price action
-  const darkPoolSig = darkPool.anomaly > 1.5 ?
-    (rets[rets.length-1] < 0 ? -0.5 : 0.5) :  // direction of today's move
-    0;
-
-  // Velocity: if RSI was rising fast, that was crowdedness building
-  // Now that RSI has crashed, the move is RESET — neutral going forward
-  const velSig = -Math.tanh(vel.rsiAccel/20);
-
-  // Absorption: close near low after wide range = sellers won → bearish near-term continuation
-  // BUT if extreme (closed at very bottom of huge range), often capitulation = reversal candidate
-  const absorpSig = absorp.ratio > 3 ?
-    (absorp.closeInRange < 0.25 ? 0.4 : -0.4) :  // capitulation if close at low
-    0;
-
-  // Miner divergence: positive = miners outperforming = institutional buying
-  const minerSig = Math.tanh(miner.divergence*30);
-
-  // Cross-asset stress: high stress is bearish for risk assets generally
-  const stressSig = -stress.stress*0.6;
-
-  // === CLASSICAL ===
-  const carryRaw = Math.tanh(gsZ*0.7);
-  const distSig = -Math.tanh(distMA*4);
-  const bollSig = -Math.tanh(robustZ*0.6);
-  const rsiSig = rsi14 >= 90 ? -1.0
-                : rsi14 >= 80 ? -(0.5 + (rsi14-80)*0.05)
-                : rsi14 >= 70 ? -(0.2 + (rsi14-70)*0.03)
-                : rsi14 <= 30 ? (0.2 + (30-rsi14)*0.03)
-                : rsi14 <= 20 ? (0.5 + (20-rsi14)*0.05)
-                : -(rsi14-50)/100;
-  const mrSig = -Math.tanh(mrZ*0.8);
-  const momSig = Math.tanh(momRaw);
-
-  // === SIGNAL DICTIONARY ===
-  const signals = {
-    classical: {
-      'RSI(14)':              { raw: rsiSig,    val: rsi14.toFixed(1), unit: '' },
-      'Distance from MA':     { raw: distSig,   val: (distMA*100).toFixed(1)+'%', unit: '' },
-      'Robust Bollinger':     { raw: bollSig,   val: 'z='+robustZ.toFixed(2), unit: '' },
-      'Mean rev (8d)':        { raw: mrSig,     val: 'z='+mrZ.toFixed(2), unit: '' },
-      'Momentum (10/40)':     { raw: momSig,    val: (momRaw*100/40).toFixed(2)+'%', unit: '' },
-      'Carry (G/S, dynamic)': { raw: carryRaw,  val: gsRatio.toFixed(1), unit: 'vs eq '+gsEq.toFixed(1) },
-    },
-    negSpace: {
-      'Gamma proxy':           { raw: gammaSig,     val: gamma.ratio.toFixed(2), interp: gamma.ratio>3?'short γ · pinning':gamma.ratio<1.5?'long γ · amplifying':'neutral' },
-      'Skew proxy':            { raw: skewSig,      val: skew.asymmetry > 0 ? '+'+(skew.asymmetry*100).toFixed(2)+'pp' : (skew.asymmetry*100).toFixed(2)+'pp', interp: skew.asymmetry>0.005?'downVol >> upVol · puts bid':skew.asymmetry<-0.002?'hedges bought out':'balanced' },
-      'Dark-pool proxy':       { raw: darkPoolSig,  val: darkPool.anomaly.toFixed(2)+'x', interp: darkPool.anomaly>1.5?'hidden flow detected':darkPool.anomaly<0.7?'mostly lit':'normal' },
-      'Velocity':              { raw: velSig,       val: 'Δrsi='+vel.rsiVel.toFixed(1), interp: vel.rsiAccel>5?'accelerating up':vel.rsiAccel<-5?'accelerating down':'stable' },
-      'Absorption':            { raw: absorpSig,    val: absorp.ratio.toFixed(1)+'x', interp: absorp.ratio>3?(absorp.closeInRange<0.25?'capitulation low':'sellers absorbed'):'normal range' },
-      'Miner divergence':      { raw: minerSig,     val: (miner.divergence*100).toFixed(2)+'pp', interp: miner.divergence>0.005?'miners leading':miner.divergence<-0.005?'distribution':'aligned' },
-      'Cross-asset stress':    { raw: stressSig,    val: (stress.stress*100).toFixed(0)+'%', interp: stress.stress>0.5?'risk-off cascade':stress.stress>0.25?'elevated':'calm' },
-    },
-    context: {
-      crowd, crowdComponents: {
-        'RSI extremity':    rsiContrib,
-        'MA extension':     distContrib,
-        'Price velocity':   rocContrib,
-        'OI vacuum (COT)':  oiVacuum,
-        'Crowdedness Δ':    velContrib,
-        'Cross-asset stress': stressContrib,
-      },
-      gsRatio, gsEq, vol20Ann, rsi14, distMA
-    },
-    raw: { gamma, skew, darkPool, vel, absorp, miner, stress }
-  };
-
-  // === REFLEXIVITY + FRACTAL REGIME ADJUSTMENT ===
-  // Crowd dampening on longs, amplification on shorts.
-  // PLUS: Hurst-based regime weighting — when H > 0.55 (trending regime),
-  // momentum-style signals get a boost and mean-reversion signals are
-  // dampened. When H < 0.45 (mean-reverting), the reverse. At H ~ 0.5
-  // (random walk), no adjustment.
-  const allSigs = {...signals.classical, ...signals.negSpace};
-
-  // Classify each signal as momentum-type or reversion-type
-  const signalType = {
-    'RSI(14)':              'reversion',
-    'Distance from MA':     'reversion',
-    'Robust Bollinger':     'reversion',
-    'Mean rev (8d)':        'reversion',
-    'Momentum (10/40)':     'momentum',
-    'Carry (G/S, dynamic)': 'reversion',
-    'Gamma proxy':           'momentum',  // long gamma amplifies trend
-    'Skew proxy':            'reversion',
-    'Dark-pool proxy':       'momentum',  // hidden flow tends to continue
-    'Velocity':              'reversion',  // velocity-fade signal
-    'Absorption':            'reversion',  // absorption marks turns
-    'Miner divergence':      'momentum',
-    'Cross-asset stress':    'momentum',  // stress regimes persist
-  };
-
-  // Hurst regime tilt: at H=0.5 weight = 1 for all.
-  // At H=0.65, momentum weight = 1.3, reversion weight = 0.7
-  // At H=0.35, momentum weight = 0.7, reversion weight = 1.3
-  const hurstTilt = (fractal.hAvg - 0.5) * 2;  // -1 to +1
-  const momWeight = 1 + Math.max(-0.4, Math.min(0.4, hurstTilt));
-  const revWeight = 1 - Math.max(-0.4, Math.min(0.4, hurstTilt));
-
-  Object.keys(allSigs).forEach(k => {
-    const r = allSigs[k].raw;
-    // Step 1: reflexivity dampening (crowd)
-    let adjusted = r > 0 ? r*(1-crowd) : r*(1+crowd*0.3);
-    // Step 2: regime weighting (Hurst)
-    const type = signalType[k];
-    if (type === 'momentum') adjusted *= momWeight;
-    else if (type === 'reversion') adjusted *= revWeight;
-    allSigs[k].adj = adjusted;
-    allSigs[k].type = type;
-  });
-
-  // ===================================================================
-  // PORTFOLIO KELLY — correlation-cluster aware
-  // ===================================================================
-  // Naive approach (replaced): sum signals, divide by sqrt(N) for "diversification".
-  // PROBLEM: that assumes signals are independent. Many of ours aren't.
-  // RSI, distance-from-MA, and robust Bollinger all measure price extension.
-  // Counting them as 3 independent edges triple-counts the same information.
-  //
-  // Correct approach (Markowitz/Kelly): f* = Σ^(-1) μ where Σ is the signal
-  // covariance matrix. We don't have months of signal-error history to estimate
-  // Σ properly, so we use a CORRELATION-CLUSTER PROXY:
-  //   - Group signals into clusters of measuring similar phenomena
-  //   - Within a cluster, average (don't sum) the signals
-  //   - Then aggregate across clusters with sqrt(N_clusters) diversification
-  // This is what quants do with short signal histories: structural priors
-  // about which signals share information.
-
-  const signalClusters = {
-    'price_extension':   ['RSI(14)', 'Distance from MA', 'Robust Bollinger', 'Mean rev (8d)'],
-    'momentum_trend':    ['Momentum (10/40)', 'Velocity'],
-    'flow_microstructure': ['Gamma proxy', 'Dark-pool proxy', 'Absorption'],
-    'positioning':       ['Skew proxy', 'Miner divergence'],
-    'relative_value':    ['Carry (G/S, dynamic)'],
-    'macro_regime':      ['Cross-asset stress'],
-  };
-
-  // Compute cluster-level signals (average within cluster)
-  const clusterSigs = {};
-  for (const [cluster, sigKeys] of Object.entries(signalClusters)) {
-    const vals = sigKeys.map(k => allSigs[k]?.adj).filter(v => isFinite(v));
-    if (vals.length === 0) continue;
-    clusterSigs[cluster] = {
-      value: vals.reduce((a,b) => a+b, 0) / vals.length,
-      count: vals.length,
-      signals: sigKeys,
-    };
-  }
-
-  // Portfolio aggregation across clusters
-  // sqrt(N_clusters) ≈ sqrt(6) = 2.45, vs naive sqrt(13) = 3.6
-  // This means our effective sizing is ~70% of the naive version — more honest
-  const clusterVals = Object.values(clusterSigs).map(c => c.value);
-  const nClusters = clusterVals.length;
-  const portKelly = clusterVals.reduce((a,b)=>a+b, 0) / Math.sqrt(nClusters);
-
-  // Compute consensus and spread across CLUSTERS, not raw signals
-  // This means cluster disagreement is the real spread, not within-cluster noise
-  const consensus = clusterVals.reduce((a,b) => a+b, 0) / nClusters;
-  const variance = clusterVals.reduce((a,b) => a + (b - consensus)**2, 0) / nClusters;
-  const spread = Math.sqrt(variance);
-
-  // Adjusted signal values for downstream display (kept for compat)
-  const adjVals = Object.values(allSigs).map(s=>s.adj);
-
-  // ===================================================================
-  // MULTI-AGENT CONSENSUS FILTER
-  // ===================================================================
-  // Partition signals into 4 independent "agents" — each is an orthogonal
-  // lens on the asset. Each agent computes a directional vote (long/short/
-  // neutral) from its own signals. Consensus across agents acts as a HARD
-  // GATE on Kelly sizing, separate from the continuous spread-based scaling.
-  //
-  // Why: a continuous spread-weighted average can produce a non-zero Kelly
-  // when signals are noisily disagreeing. A discrete vote requires GENUINE
-  // consensus before sizing up — much stricter, much fewer false positives.
-  //
-  // Agents are designed for orthogonality:
-  //   A1 — Technical reversion (RSI, MA distance, Bollinger, MR)
-  //   A2 — Momentum/trend (Momentum, Gamma, Dark-pool, Cross-asset stress)
-  //   A3 — Structure/positioning (Skew, Velocity, Absorption, Carry)
-  //   A4 — Smart-money/divergence (Miner div, plus fractal regime tilt)
-
-  const agents = {
-    'A1 · technical reversion': ['RSI(14)','Distance from MA','Robust Bollinger','Mean rev (8d)'],
-    'A2 · trend & flow':        ['Momentum (10/40)','Gamma proxy','Dark-pool proxy','Cross-asset stress'],
-    'A3 · structure':           ['Skew proxy','Velocity','Absorption','Carry (G/S, dynamic)'],
-    'A4 · smart money':         ['Miner divergence'],
-  };
-
-  const agentVotes = {};
-  for (const [agentName, sigKeys] of Object.entries(agents)) {
-    const agentSigs = sigKeys.map(k => allSigs[k]?.adj ?? 0).filter(v => isFinite(v));
-    if (agentSigs.length === 0) {
-      agentVotes[agentName] = { vote: 0, score: 0, label: 'no data' };
-      continue;
-    }
-    const agentScore = agentSigs.reduce((a,b)=>a+b,0)/agentSigs.length;
-    // A4 (smart money) gets a fractal-regime tilt added: trending regime
-    // and positive miner divergence reinforce each other
-    let score = agentScore;
-    if (agentName.startsWith('A4')) {
-      score += (fractal.hAvg - 0.5) * 0.3;
-    }
-    // Vote thresholds: ±0.20 to count as directional
-    const vote = score > 0.20 ? 1 : score < -0.20 ? -1 : 0;
-    agentVotes[agentName] = { vote, score, label: vote > 0 ? 'LONG' : vote < 0 ? 'SHORT' : 'NEUTRAL' };
-  }
-
-  // Count agent agreement
-  const longVotes = Object.values(agentVotes).filter(a => a.vote > 0).length;
-  const shortVotes = Object.values(agentVotes).filter(a => a.vote < 0).length;
-  const neutralVotes = Object.values(agentVotes).filter(a => a.vote === 0).length;
-  const dominantVote = longVotes > shortVotes ? 1 : shortVotes > longVotes ? -1 : 0;
-  const dominantCount = Math.max(longVotes, shortVotes);
-
-  // Consensus multiplier on Kelly:
-  //   4/4 dominant → full size (1.0×)
-  //   3/4 dominant → 0.60× (some disagreement, still sized)
-  //   2/4 dominant → 0.25× (mild edge, small size)
-  //   ≤1/4         → 0.00× (no consensus, no trade)
-  let consensusMult;
-  if (dominantCount >= 4)      consensusMult = 1.00;
-  else if (dominantCount === 3) consensusMult = 0.60;
-  else if (dominantCount === 2) consensusMult = 0.25;
-  else                          consensusMult = 0.00;
-
-  // Also flag *opposing* agents — when 1+ agents vote against the consensus
-  // direction, that's not a 4/4 even if others agree
-  const opposingVotes = dominantVote > 0 ? shortVotes : longVotes;
-  if (opposingVotes >= 1 && consensusMult > 0.5) {
-    // Any opposition caps at 0.5
-    consensusMult = Math.min(consensusMult, 0.5);
-  }
-
-  // === FINAL KELLY SIZING (with spread inflation, consensus gate, macro circuit breaker) ===
-  // Inflate sigma by spread (model uncertainty)
-  const muEst = consensus * 0.003;
-  const sigmaEst = Math.sqrt(var20 + spread*spread*0.001);
-  const rawKelly = 0.25 * muEst / (sigmaEst*sigmaEst);
-
-  // Apply consensus gate (multi-agent voting)
-  let kellyAfterConsensus = rawKelly * consensusMult;
-
-  // MACRO CIRCUIT BREAKER (Gemini's suggestion #4)
-  // Cross-asset stress > 70% = forced deleveraging risk regime.
-  // When stress is extreme, cut Kelly by 50%. When stress > 90%, cut to 25%.
-  // This is a HARD multiplier separate from the cross-asset-stress signal,
-  // because in deleveraging cascades correlations go to 1 and all signal
-  // edges decay simultaneously. Capital preservation overrides edge claims.
-  let macroMult = 1.0;
-  if (stress.stress > 0.90)      macroMult = 0.25;
-  else if (stress.stress > 0.70) macroMult = 0.50;
-  else if (stress.stress > 0.50) macroMult = 0.75;
-
-  const kelly = kellyAfterConsensus * macroMult;
-  const kellyClamped = Math.max(-1, Math.min(1, kelly));
-
-  // ===================================================================
-  // PROBABILISTIC FORECAST
-  // ===================================================================
-  // The same μ̂ and σ̂² that drive Kelly sizing give us a posterior
-  // distribution over future returns. For an H-day horizon:
-  //   mean(H)     = μ̂ * H
-  //   var(H)      = σ̂² * H  (random walk variance accumulation)
-  // We use the model-uncertainty-inflated sigmaEst, then add additional
-  // honest uncertainty: when confidence is LOW the band widens further,
-  // approaching the unconditional return distribution (50/50 outcomes).
-  //
-  // The "uncertainty about uncertainty" adjustment: we mix the conditional
-  // forecast with the unconditional one weighted by signal confidence.
-  //   p_final = w * p_conditional + (1-w) * p_unconditional
-  // where w = max(0, 1 - spread*1.5). Low spread → trust the signal. High
-  // spread → trust the unconditional baseline (essentially 50/50).
-
-  function probUp(mu, sigma){
-    // Probability that a Normal(mu, sigma²) > 0
-    // = 1 - Φ(-mu/sigma) = Φ(mu/sigma)
-    const z = mu / sigma;
-    return normalCDF(z);
-  }
-  function normalCDF(z){
-    // Abramowitz & Stegun approximation
-    const t = 1 / (1 + 0.2316419 * Math.abs(z));
-    const d = 0.3989422804 * Math.exp(-z*z/2);
-    const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
-    return z >= 0 ? 1 - p : p;
-  }
-  function probBetween(mu, sigma, lo, hi){
-    return normalCDF((hi - mu)/sigma) - normalCDF((lo - mu)/sigma);
-  }
-
-  // Confidence weighting: spread → 0 means trust signal, spread → 1 means use unconditional
-  const trustWeight = Math.max(0.15, Math.min(1, 1 - spread * 1.5));
-
-  // Unconditional: based purely on long-run distribution of silver returns
-  const uncondDailyMu = 0;  // assume martingale baseline
-  const uncondDailySigma = Math.sqrt(var20);  // recent vol regime
-
-  // Conditional: from our signals
-  const condDailyMu = muEst;
-  const condDailySigma = sigmaEst;
-
-  // Mixed forecast
-  function mixedForecast(horizon){
-    const muCond = condDailyMu * horizon;
-    const muUncond = uncondDailyMu * horizon;
-    const sigmaCond = condDailySigma * Math.sqrt(horizon);
-    const sigmaUncond = uncondDailySigma * Math.sqrt(horizon);
-    // Mixture of two Gaussians; for simplicity use weighted mean+variance
-    const mu = trustWeight * muCond + (1 - trustWeight) * muUncond;
-    // Variance of mixture: weighted variance plus between-component variance
-    const sigma2 = trustWeight * sigmaCond * sigmaCond +
-                   (1 - trustWeight) * sigmaUncond * sigmaUncond +
-                   trustWeight * (1 - trustWeight) * (muCond - muUncond) * (muCond - muUncond);
-    const sigma = Math.sqrt(sigma2);
-    return { mu, sigma, horizon };
-  }
-
-  const f5 = mixedForecast(5);
-  const f20 = mixedForecast(20);
-
-  // Compute named probabilities for the 5-day horizon
-  const probabilities = {
-    pUp5d:        probUp(f5.mu, f5.sigma),
-    pDn5d:        1 - probUp(f5.mu, f5.sigma),
-    pUp3pct5d:    1 - normalCDF((0.03 - f5.mu) / f5.sigma),
-    pDn3pct5d:    normalCDF((-0.03 - f5.mu) / f5.sigma),
-    pUp7pct5d:    1 - normalCDF((0.07 - f5.mu) / f5.sigma),
-    pDn7pct5d:    normalCDF((-0.07 - f5.mu) / f5.sigma),
-    pUp20d:       probUp(f20.mu, f20.sigma),
-    pDn10pct20d:  normalCDF((-0.10 - f20.mu) / f20.sigma),
-    pUp10pct20d:  1 - normalCDF((0.10 - f20.mu) / f20.sigma),
-  };
-
-  // Headline forecast for display: probability of moving meaningfully in either direction
-  const dominantDirection = probabilities.pUp5d > 0.55 ? 'up'
-                          : probabilities.pUp5d < 0.45 ? 'down'
-                          : 'neutral';
-  const dominantProbability = Math.max(probabilities.pUp5d, probabilities.pDn5d);
-
-  // ===================================================================
-  // EXIT DISCIPLINE MODULE
-  // ===================================================================
-  // Kelly-optimal exit theory: don't wait for the maximum. The forecast
-  // distribution implies an expected maximum over horizon H of approximately:
-  //   E[max over H] ≈ μH + σ√(2H ln H)
-  // But the realized payoff at exit time T is just the price level reached.
-  // Optimal capture is ~70-80% of expected max under realistic costs.
-  //
-  // We compute three exit triggers:
-  //   1. Take-profit: 75% of expected 5-day move in direction of trade
-  //   2. Trail stop: σ-based, tightens as price moves favorably
-  //   3. Time stop: exit at end of horizon regardless (limit decay)
-
-  function computeExits(direction){
-    if (direction === 0 || !isFinite(direction)) {
-      return { active: false, reason: 'no position' };
-    }
-    const sign = Math.sign(direction);
-    // Expected max move over 5 days in direction of trade
-    const horizon = 5;
-    // E[max] for a Gaussian with drift over horizon ~ μH + σ√(2H ln H)
-    const expectedMax = f5.mu * sign + f5.sigma * Math.sqrt(2 * horizon * Math.log(horizon));
-    // Take-profit: 75% of expected max move
-    const takeProfitPct = expectedMax * 0.75;
-    // Stop-loss: 1.0σ in the adverse direction (Kelly says: stop when forward
-    // expected return goes negative; for a Gaussian this is ~1σ away from
-    // current price in adverse direction)
-    const stopLossPct = -f5.sigma * 1.0;
-    // Trail stop: starts wider, tightens as the trade moves favorably
-    const initialTrailPct = f5.sigma * 0.75;
-    // Time stop: 5 sessions; exit at end of horizon
-    const timeStop = horizon;
-    // Volume-spike exit: if realized vol jumps 3x baseline, regime change
-    const volSpikeThreshold = 3.0;
-
-    return {
-      active: true,
-      direction: sign,
-      takeProfitPct: takeProfitPct * sign,  // sign-adjusted for display
-      takeProfitPrice: PRICE * (1 + takeProfitPct * sign),
-      stopLossPct: stopLossPct * sign,
-      stopLossPrice: PRICE * (1 + stopLossPct * sign),
-      trailPct: initialTrailPct,
-      timeStopSessions: timeStop,
-      volSpikeMult: volSpikeThreshold,
-      expectedMaxPct: expectedMax * sign,
-      capturedFraction: 0.75,
-    };
-  }
-
-  // Direction comes from the consensus vote, not just the Kelly sign
-  const exitDirection = dominantVote;
-  const exits = computeExits(exitDirection);
-
-  return {
-    signals: allSigs,
-    classical: signals.classical,
-    negSpace: signals.negSpace,
-    context: signals.context,
-    raw: signals.raw,
-    portfolio: {
-      portKelly, consensus, spread, kelly, kellyClamped,
-      rawKelly, consensusMult, macroMult, kellyAfterConsensus,
-      clusterSigs, nClusters,
-      confidence: spread > 0.4 ? 'LOW' : spread > 0.25 ? 'MEDIUM' : 'HIGH'
-    },
-    forecast: {
-      f5, f20, probabilities,
-      trustWeight,
-      dominantDirection, dominantProbability,
-      currentPrice: PRICE,
-    },
-    fractal: {
-      ...fractal,
-      momWeight, revWeight, hurstTilt
-    },
-    agentVotes: {
-      votes: agentVotes,
-      longCount: longVotes,
-      shortCount: shortVotes,
-      neutralCount: neutralVotes,
-      dominantVote, dominantCount,
-      consensusMult,
-      opposingVotes,
-    },
-    exits,
-  };
-}
-
-/* --- Render ----------------------------------------------- */
-const css = getComputedStyle(document.documentElement);
-const C = n => css.getPropertyValue(n).trim();
-
-function render(){
-  const result = computeAll();
-
-  // === Verdict ===
-  const k = result.portfolio.kellyClamped;
-  let verdictText, verdictClass, verdictLabel;
-  if(Math.abs(k) < 0.10){ verdictText = 'STAND ASIDE'; verdictClass = 'flat'; verdictLabel = 'signals conflict'; }
-  else if(k > 0.5){ verdictText = 'LONG'; verdictClass = 'long'; verdictLabel = 'strong consensus'; }
-  else if(k > 0.10){ verdictText = 'LEAN LONG'; verdictClass = 'long'; verdictLabel = 'mild edge'; }
-  else if(k < -0.5){ verdictText = 'SHORT'; verdictClass = 'short'; verdictLabel = 'strong consensus'; }
-  else { verdictText = 'LEAN SHORT'; verdictClass = 'short'; verdictLabel = 'mild edge'; }
-
-  document.getElementById('verdictText').textContent = verdictText;
-  document.getElementById('verdictText').className = 'verdict-readout ' + verdictClass;
-  document.getElementById('verdictLabel').textContent = verdictLabel;
-  document.getElementById('kellyVal').textContent = (k>=0?'+':'') + k.toFixed(2) + '×';
-  document.getElementById('confLevel').textContent = result.portfolio.confidence;
-  document.getElementById('confLevel').style.color =
-    result.portfolio.confidence === 'HIGH' ? C('--bull') :
-    result.portfolio.confidence === 'MEDIUM' ? C('--warn') : C('--bear');
-
-  // === Crowdedness gauge ===
-  const crowd = result.context.crowd;
-  document.getElementById('crowdFill').style.width = (crowd*100)+'%';
-  document.getElementById('crowdMarker').style.left = (crowd*100)+'%';
-  const crowdLabel = crowd > 0.7 ? 'EXTREME' : crowd > 0.5 ? 'ELEVATED' : crowd > 0.3 ? 'MODERATE' : 'LOW';
-  const crowdClass = crowd > 0.7 ? 'high' : crowd > 0.4 ? 'med' : 'low';
-  document.getElementById('crowdLabel').textContent = crowdLabel;
-  document.getElementById('crowdLabel').className = 'value ' + (crowd > 0.7 ? 'bear' : crowd > 0.4 ? 'warn' : 'bull');
-  document.getElementById('crowdVal').textContent = (crowd*100).toFixed(0)+'%';
-  document.getElementById('crowdVal').className = 'gauge-bigval ' + crowdClass;
-
-  // Crowd components
-  const compHtml = Object.entries(result.context.crowdComponents).map(([k,v])=>{
-    const pct = Math.min(100,Math.max(0,v*100));
-    return `<div class="crowd-comp"><span class="nm">${k}</span><span class="bar"><span style="position:absolute;left:0;top:0;height:100%;width:${pct}%;background:var(--acc)"></span></span><span class="vl">${pct.toFixed(0)}%</span></div>`;
-  }).join('');
-  document.getElementById('crowdComp').innerHTML = compHtml;
-
-  // === Action narrative ===
-  let action, detail;
-  if(Math.abs(k) < 0.10){
-    action = 'WAIT';
-    detail = `Mixed signals after the −7.3% session. Crowdedness was extreme into the high — now reset to <b>${(crowd*100).toFixed(0)}%</b>. Reversion signals say oversold, but cross-asset stress (VIX +12%, oil +6%) flags continuation risk. <b class="warn">Watch for absorption print on next session.</b>`;
-  } else if(k > 0.10){
-    action = 'BUY';
-    detail = `Multiple oversold signals firing post-crash. Crowdedness reset to <b>${(crowd*100).toFixed(0)}%</b>. ${result.raw.absorp.closeInRange < 0.25 ? '<b class="bull">Capitulation-style close near session low</b> often marks short-term lows.' : ''} Size at <b>${(k*100).toFixed(0)}%</b> of max notional.`;
-  } else {
-    action = 'SELL/SHORT';
-    detail = `Bearish consensus with cross-asset stress at <b class="bear">${(result.raw.stress.stress*100).toFixed(0)}%</b>. Forced-deleveraging signature visible across all assets. Continuation lower likely.`;
-  }
-  document.getElementById('actionLabel').textContent = action;
-  document.getElementById('actionLabel').className = 'value ' +
-    (k > 0.1 ? 'bull' : k < -0.1 ? 'bear' : 'warn');
-  document.getElementById('actionDetail').innerHTML = detail;
-
-  // === Agent consensus panel ===
-  const av = result.agentVotes;
-  const agentRows = Object.entries(av.votes).map(([name, v]) => {
-    const cls = v.vote > 0 ? 'long' : v.vote < 0 ? 'short' : 'neutral';
-    return `<div class="agent-row">
-      <span class="nm">${name}</span>
-      <span class="score">${v.score >= 0 ? '+' : ''}${v.score.toFixed(2)}</span>
-      <span class="vote ${cls}">${v.label}</span>
-    </div>`;
-  }).join('');
-  document.getElementById('agentGrid').innerHTML = agentRows;
-
-  const consensusMultPct = (av.consensusMult * 100).toFixed(0);
-  const consensusCls = av.consensusMult >= 1.0 ? 'good' : av.consensusMult >= 0.6 ? 'warn' : av.consensusMult >= 0.25 ? 'warn' : 'bad';
-  document.getElementById('consensusReadout').innerHTML = `
-    <div class="consensus-readout">
-      <div class="item"><div class="lbl">long votes</div><div class="val ${av.longCount > av.shortCount ? 'good' : ''}">${av.longCount}/4</div></div>
-      <div class="item"><div class="lbl">short votes</div><div class="val ${av.shortCount > av.longCount ? 'bad' : ''}">${av.shortCount}/4</div></div>
-      <div class="item"><div class="lbl">neutral</div><div class="val">${av.neutralCount}/4</div></div>
-      <div class="item"><div class="lbl">Kelly mult</div><div class="val ${consensusCls}">${consensusMultPct}%</div></div>
-    </div>
-    <div style="margin-top:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;color:var(--ink2);line-height:1.5">
-      ${av.dominantCount >= 4 ? `<b style="color:var(--bull);font-style:normal">Unanimous consensus.</b> Full Kelly sizing applied.` :
-        av.dominantCount === 3 ? `<b style="color:var(--warn);font-style:normal">3-of-4 agreement.</b> Sized at 60% — ${av.opposingVotes >= 1 ? 'opposing vote caps further.' : 'mild disagreement noted.'}` :
-        av.dominantCount === 2 ? `<b style="color:var(--warn);font-style:normal">Split decision (2-of-4).</b> Sized at 25% — significant uncertainty.` :
-        `<b style="color:var(--bear);font-style:normal">No consensus.</b> Kelly multiplied by 0 — stand aside.`}
-      ${result.portfolio.macroMult < 1 ? ` <b style="color:var(--bear);font-style:normal">Macro circuit breaker active:</b> position cut to ${(result.portfolio.macroMult*100).toFixed(0)}% of consensus-Kelly due to cross-asset stress.` : ''}
-    </div>
-  `;
-
-  // === Exit discipline panel ===
-  const exits = result.exits;
-  const exitGrid = document.getElementById('exitGrid');
-  const exitNote = document.getElementById('exitNote');
-  if (!exits.active) {
-    exitGrid.innerHTML = `<div class="exit-inactive" style="grid-column:span 2">No position implied — consensus says stand aside. Exit triggers will populate once a directional consensus forms.</div>`;
-    exitNote.innerHTML = `When agent consensus turns directional, this panel will compute Kelly-optimal take-profit, stop-loss, trail, and time-stop levels based on the 5-day forecast distribution.`;
-  } else {
-    const dirLabel = exits.direction > 0 ? 'LONG' : 'SHORT';
-    const tpCls = exits.direction > 0 ? 'bull' : 'bear';
-    const slCls = exits.direction > 0 ? 'bear' : 'bull';
-    exitGrid.innerHTML = `
-      <div class="exit-trigger tp">
-        <div class="lbl">take-profit · 75% of expected max</div>
-        <div class="price ${tpCls}">$${exits.takeProfitPrice.toFixed(2)}</div>
-        <div class="pct">${exits.takeProfitPct >= 0 ? '+' : ''}${(exits.takeProfitPct*100).toFixed(2)}%</div>
-      </div>
-      <div class="exit-trigger sl">
-        <div class="lbl">stop-loss · 1σ adverse</div>
-        <div class="price ${slCls}">$${exits.stopLossPrice.toFixed(2)}</div>
-        <div class="pct">${exits.stopLossPct >= 0 ? '+' : ''}${(exits.stopLossPct*100).toFixed(2)}%</div>
-      </div>
-      <div class="exit-trigger trail">
-        <div class="lbl">trail stop · 0.75σ</div>
-        <div class="price">${(exits.trailPct*100).toFixed(2)}%</div>
-        <div class="pct">tightens as favorable; resets on each new high/low</div>
-      </div>
-      <div class="exit-trigger time">
-        <div class="lbl">time stop / vol spike</div>
-        <div class="price">${exits.timeStopSessions}d / ${exits.volSpikeMult}×</div>
-        <div class="pct">exit at horizon end OR realized vol > ${exits.volSpikeMult}× baseline</div>
-      </div>
-    `;
-    const horizonMaxPct = (exits.expectedMaxPct * 100).toFixed(2);
-    exitNote.innerHTML = `For a <b style="color:var(--${tpCls});font-style:normal">${dirLabel}</b> position, the 5-day forecast distribution implies expected max move of ${horizonMaxPct}%. Take-profit captures ${(exits.capturedFraction*100).toFixed(0)}% of that. Stop is set at 1σ adverse — beyond this, the forward expected return inverts and Kelly says exit. Either of the four triggers fires whichever comes first.`;
-  }
-
-  // === Probabilistic forecast ===
-  const fcast = result.forecast;
-  const PRICE = fcast.currentPrice;
-
-  // 5-day prediction interval
-  function renderPI(prefix, forecast){
-    const muPct = forecast.mu * 100;
-    const sigmaPct = forecast.sigma * 100;
-    const loPct = muPct - sigmaPct;
-    const hiPct = muPct + sigmaPct;
-    // Visible range: ±max(|lo|, |hi|, 5%)
-    const visibleRange = Math.max(Math.abs(loPct), Math.abs(hiPct), 5);
-    const visMin = -visibleRange * 1.2;
-    const visMax = visibleRange * 1.2;
-    const totalSpan = visMax - visMin;
-    const piLoPct = ((loPct - visMin) / totalSpan) * 100;
-    const piHiPct = ((hiPct - visMin) / totalSpan) * 100;
-    const piCtrPct = ((muPct - visMin) / totalSpan) * 100;
-
-    document.getElementById('piRange' + prefix).style.left = piLoPct + '%';
-    document.getElementById('piRange' + prefix).style.width = (piHiPct - piLoPct) + '%';
-    document.getElementById('piCenter' + prefix).style.left = piCtrPct + '%';
-
-    const priceLo = PRICE * (1 + loPct/100);
-    const priceHi = PRICE * (1 + hiPct/100);
-    const priceCtr = PRICE * (1 + muPct/100);
-
-    document.getElementById('piLabelLo' + prefix).textContent =
-      `$${priceLo.toFixed(2)} (${loPct >= 0 ? '+' : ''}${loPct.toFixed(1)}%)`;
-    document.getElementById('piLabelHi' + prefix).textContent =
-      `$${priceHi.toFixed(2)} (${hiPct >= 0 ? '+' : ''}${hiPct.toFixed(1)}%)`;
-    document.getElementById('piLabelCtr' + prefix).textContent =
-      `$${priceCtr.toFixed(2)} · ${muPct >= 0 ? '+' : ''}${muPct.toFixed(1)}%`;
-    document.getElementById('piLabelCtr' + prefix).style.left = piCtrPct + '%';
-  }
-  renderPI('5d', fcast.f5);
-  renderPI('20d', fcast.f20);
-
-  // Headline
-  const headEl = document.getElementById('forecastHeadline');
-  const probHigh = fcast.dominantProbability * 100;
-  if (fcast.dominantDirection === 'up'){
-    headEl.textContent = `${probHigh.toFixed(0)}% UP`;
-    headEl.className = 'big bull';
-  } else if (fcast.dominantDirection === 'down'){
-    headEl.textContent = `${probHigh.toFixed(0)}% DOWN`;
-    headEl.className = 'big bear';
-  } else {
-    headEl.textContent = `${probHigh.toFixed(0)}% / ${(100-probHigh).toFixed(0)}%`;
-    headEl.className = 'big neutral';
-  }
-  document.getElementById('forecastSubReadout').innerHTML =
-    `μ=${(fcast.f5.mu*100).toFixed(2)}% · σ=${(fcast.f5.sigma*100).toFixed(2)}% · trust ${(fcast.trustWeight*100).toFixed(0)}%`;
-
-  // Probability table
-  const probRows = [
-    {  desc: 'Up over next 5 sessions',          prob: fcast.probabilities.pUp5d  },
-    {  desc: 'Down over next 5 sessions',        prob: fcast.probabilities.pDn5d  },
-    {  desc: `Rallies > +3% (above $${(PRICE*1.03).toFixed(2)})`,  prob: fcast.probabilities.pUp3pct5d },
-    {  desc: `Drops > 3% (below $${(PRICE*0.97).toFixed(2)})`,     prob: fcast.probabilities.pDn3pct5d },
-    {  desc: `Rallies > +7% (above $${(PRICE*1.07).toFixed(2)})`,  prob: fcast.probabilities.pUp7pct5d },
-    {  desc: `Drops > 7% (below $${(PRICE*0.93).toFixed(2)})`,     prob: fcast.probabilities.pDn7pct5d },
-    {  desc: 'Up over next 20 sessions',         prob: fcast.probabilities.pUp20d  },
-    {  desc: `Drops > 10% in 20 sessions`,        prob: fcast.probabilities.pDn10pct20d },
-    {  desc: `Rallies > +10% in 20 sessions`,    prob: fcast.probabilities.pUp10pct20d },
-  ];
-  document.getElementById('probTable').innerHTML = probRows.map(r => {
-    const pct = (r.prob * 100).toFixed(0);
-    const cls = r.prob > 0.65 ? 'high' : r.prob > 0.35 ? 'med' : 'low';
-    const barWidth = Math.round(r.prob * 80);
-    return `<tr>
-      <td class="desc">${r.desc}</td>
-      <td class="pct ${cls}">${pct}%<span class="bar" style="width:${barWidth}px"></span></td>
-    </tr>`;
-  }).join('');
-
-  // === Negative-space signals grid ===
-  const negSpaceHtml = Object.entries(result.negSpace).map(([name, s])=>{
-    const sig = s.raw;
-    const cls = sig > 0.15 ? 'bull' : sig < -0.15 ? 'bear' : 'neutral';
-    const arrow = sig > 0.15 ? '▲' : sig < -0.15 ? '▼' : '◆';
-    let title, body;
-    switch(name){
-      case 'Gamma proxy':
-        title = 'Gamma exposure';
-        body = 'Intraday range ÷ close-to-close move. <b>High = dealers pinning</b> (short γ). Low = amplifying (long γ).';
-        break;
-      case 'Skew proxy':
-        title = 'Vol asymmetry';
-        body = 'Down-vol minus up-vol over 20d. <b>Positive = puts bid</b>. Inverted = hedges exhausted.';
-        break;
-      case 'Dark-pool proxy':
-        title = 'Hidden flow (Kyle\'s λ)';
-        body = 'Price impact per unit volume. <b>Spike = off-tape flow</b> moved price more than lit volume justifies.';
-        break;
-      case 'Velocity':
-        title = 'Crowdedness Δ';
-        body = 'Rate of change of RSI. <b>Acceleration tells you positioning is building reflexively</b>.';
-        break;
-      case 'Absorption':
-        title = 'Hidden absorption';
-        body = 'High-low ÷ close-close. <b>High = somebody fought hard</b>. Close in range tells you who won.';
-        break;
-      case 'Miner divergence':
-        title = 'Smart-money flow';
-        body = 'Mining ETF return minus expected beta. <b>Allocators move first; miners lead the metal</b>.';
-        break;
-      case 'Cross-asset stress':
-        title = 'Risk regime';
-        body = 'VIX + oil + bonds + DXY composite. <b>>50% = forced-deleveraging cascade in progress</b>.';
-        break;
-    }
-    return `<div class="panel shadow-card">
-      <h2>${title} <span class="num">${name.split(' ')[0]}</span></h2>
-      <div class="sub">${body}</div>
-      <div class="reading">
-        <span class="label">${s.val}${s.interp ? ' · '+s.interp : ''}</span>
-        <span class="value ${cls}">${arrow} ${(sig>=0?'+':'')}${sig.toFixed(2)}</span>
-      </div>
-      <div class="interpretation">${signalNarrative(name, s, result.raw)}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('shadowGrid').innerHTML = negSpaceHtml;
-
-  // === Classical signal table ===
-  const classHtml = Object.entries(result.classical).map(([name, s])=>{
-    const cls = s.adj > 0.15 ? 'bull' : s.adj < -0.15 ? 'bear' : 'neutral';
-    return `<tr>
-      <td>
-        <div class="name">${name}</div>
-        <div class="sublbl">${s.val} ${s.unit||''}</div>
-      </td>
-      <td class="num sig ${cls}">${(s.raw>=0?'+':'')}${s.raw.toFixed(2)}</td>
-      <td class="num sig ${cls}">${(s.adj>=0?'+':'')}${s.adj.toFixed(2)}</td>
-      <td class="source">price</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('classicalSignals').innerHTML = classHtml;
-
-  // === Context table ===
-  const d = LIVE_DATA;
-  // Helpers so the table reflects ACTUAL live direction rather than
-  // hard-coded snapshot-era values.
-  const dir = pct => pct >= 0 ? 'up' : 'down';
-  const dcls = pct => pct >= 0 ? 'bull' : 'bear';
-  const sgn = pct => (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
-  const ctx = [
-    { name:'Silver', val:'$'+d.silver.spot.toFixed(2), state:dir(d.silver.changePct)+' '+sgn(d.silver.changePct), cls:dcls(d.silver.changePct) },
-    { name:'Gold', val:'$'+d.gold.spot.toLocaleString(), state:dir(d.gold.changePct)+' '+sgn(d.gold.changePct), cls:dcls(d.gold.changePct) },
-    { name:'G/S ratio', val:result.context.gsRatio.toFixed(1), state:'vs eq '+result.context.gsEq.toFixed(1), cls:'warn' },
-    { name:'DXY', val:d.dxy.spot.toString(), state:sgn(d.dxy.changePct), cls:dcls(-d.dxy.changePct) },
-    { name:'Copper', val:'$'+d.copper.spot, state:sgn(d.copper.changePct), cls:dcls(d.copper.changePct) },
-    { name:'Crude (Brent)', val:'$'+d.oil.spot, state:sgn(d.oil.changePct)+' · Hormuz risk', cls:'warn' },
-    { name:'VIX', val:d.vix.spot.toString(), state:sgn(d.vix.changePct), cls:dcls(-d.vix.changePct) },
-    { name:'S&P 500', val:d.spx.spot.toLocaleString(), state:sgn(d.spx.changePct), cls:dcls(d.spx.changePct) },
-    { name:'Silver miners (SIL)', val:'$'+d.sil.spot.toFixed(2), state:sgn(d.sil.changePct), cls:dcls(d.sil.changePct) },
-    { name:'Realized vol (20d)', val:(result.context.vol20Ann*100).toFixed(1)+'%', state:result.context.vol20Ann>0.40?'elevated':'normal', cls:result.context.vol20Ann>0.40?'bear':'neutral' },
-    { name:'COT large specs', val:'22k net-long', state:'2-yr low', cls:'warn' },
-    { name:'COT gross long/short', val:'32.5k / 10.2k', state:'13-yr low both · liquidity vacuum', cls:'bear' },
-  ];
-  document.getElementById('contextTable').innerHTML = ctx.map(c=>`
-    <tr>
-      <td class="name">${c.name}</td>
-      <td class="num">${c.val}</td>
-      <td class="num sig ${c.cls}">${c.state}</td>
-    </tr>
-  `).join('');
-
-  // === Fractal analysis panel ===
-  const fr = result.fractal;
-  function hCard(label, h, scale) {
-    const cls = h > 0.55 ? 'trend' : h < 0.45 ? 'revert' : 'random';
-    const interp = h > 0.55 ? 'persistent' : h < 0.45 ? 'anti-persistent' : 'random walk';
-    const pct = Math.max(0, Math.min(100, h * 100));
-    return `<div class="fractal-card">
-      <div class="nm">${label}</div>
-      <div class="val ${cls}">${h.toFixed(3)}</div>
-      <div class="sub-readout">${interp} · D = ${(2-h).toFixed(3)}</div>
-      <div class="h-bar"><div class="marker" style="left:${pct}%"></div></div>
-      <div class="h-bar-ticks"><span>0.0</span><span>0.5</span><span>1.0</span></div>
-      <div class="desc">${scale} timeframe — ${interp === 'persistent' ? 'trends sustain' : interp === 'anti-persistent' ? 'reversion dominates' : 'no edge from direction'}</div>
-    </div>`;
-  }
-  // Multifractal width interpretation: typical range 0.0 to 0.5
-  // Above 0.3 = wide spectrum = complexity rising = regime change risk
-  const mfPct = Math.min(100, fr.mfWidth * 250);
-  const mfClass = fr.mfWidth > 0.3 ? 'revert' : fr.mfWidth > 0.15 ? 'random' : 'trend';
-  const mfInterp = fr.mfWidth > 0.3 ? 'wide · regime change risk'
-                 : fr.mfWidth > 0.15 ? 'moderate complexity'
-                 : 'narrow · stable regime';
-  // Scale divergence interpretation
-  const sdAbs = Math.abs(fr.scaleDivergence);
-  const sdClass = sdAbs > 0.15 ? 'revert' : sdAbs > 0.07 ? 'random' : 'trend';
-  const sdInterp = sdAbs > 0.15 ? 'large · regime shifting' : sdAbs > 0.07 ? 'moderate' : 'aligned';
-
-  document.getElementById('fractalGrid').innerHTML =
-    hCard('Hurst (short · 15 bars)', fr.hShort, 'short-term') +
-    hCard('Hurst (medium · 30 bars)', fr.hMed, 'medium-term') +
-    hCard('Hurst (long · 60 bars)', fr.hLong, 'long-term') +
-    `<div class="fractal-card">
-      <div class="nm">Multifractal width</div>
-      <div class="val ${mfClass}">${fr.mfWidth.toFixed(3)}</div>
-      <div class="sub-readout">${mfInterp}</div>
-      <div class="mf-bar"><div class="fill" style="width:${mfPct}%"></div></div>
-      <div class="desc">Spectrum width measures complexity. Widens before regime breaks. Watch for sustained increases.</div>
-    </div>` +
-    `<div class="fractal-card">
-      <div class="nm">Scale divergence</div>
-      <div class="val ${sdClass}">${fr.scaleDivergence >= 0 ? '+' : ''}${fr.scaleDivergence.toFixed(3)}</div>
-      <div class="sub-readout">H_short − H_long · ${sdInterp}</div>
-      <div class="desc">Short-term Hurst diverging from long-term Hurst signals a regime in transition.</div>
-    </div>` +
-    `<div class="fractal-card">
-      <div class="nm">Regime weighting</div>
-      <div class="val ${fr.hAvg > 0.55 ? 'trend' : fr.hAvg < 0.45 ? 'revert' : 'random'}">${fr.regime}</div>
-      <div class="sub-readout">μ_mom = ${fr.momWeight.toFixed(2)}× · μ_rev = ${fr.revWeight.toFixed(2)}×</div>
-      <div class="desc">Momentum signals weighted by ${fr.momWeight.toFixed(2)}, reversion signals by ${fr.revWeight.toFixed(2)} based on current H.</div>
-    </div>`;
-
-  // Fractal interpretation narrative
-  let narrative;
-  if (fr.hAvg > 0.58) {
-    narrative = `Current regime is <b class="bull">persistent (H = ${fr.hAvg.toFixed(2)})</b> — trends sustain across timeframes. <b>Momentum signals are being weighted up</b> by ${((fr.momWeight - 1) * 100).toFixed(0)}%. Mean-reversion signals are correspondingly down-weighted. This is the regime where breakouts work.`;
-  } else if (fr.hAvg < 0.42) {
-    narrative = `Current regime is <b class="bear">mean-reverting (H = ${fr.hAvg.toFixed(2)})</b> — moves get faded systematically. <b>Reversion signals are being weighted up</b> by ${((fr.revWeight - 1) * 100).toFixed(0)}%. Momentum signals are correspondingly down-weighted. This is the regime where fading extremes works.`;
-  } else {
-    narrative = `Current regime is <b>${fr.regime} (H = ${fr.hAvg.toFixed(2)})</b> — close to random walk. <span class="warn">Neither pure momentum nor pure reversion has structural edge.</span> The model treats signals equally; consensus must come from the non-directional negative-space signals (gamma, absorption, hidden flow).`;
-  }
-  if (sdAbs > 0.15) {
-    narrative += ` <span class="warn">Short and long Hurst diverge by ${sdAbs.toFixed(2)}</span> — regime is in transition. Recent dynamics differ from longer-window dynamics; treat all signals as tentative.`;
-  }
-  if (fr.mfWidth > 0.3) {
-    narrative += ` <span class="warn">Multifractal spectrum is wide (${fr.mfWidth.toFixed(2)})</span> — complexity is elevated, historically a precursor to regime breaks.`;
-  }
-  document.getElementById('fractalInterp').innerHTML =
-    `<div class="header">Reading</div><div class="narrative">${narrative}</div>`;
-
-  // === Update header price ===
-  // Use silverDisplay (the validated cross-source price) if available
-  const headerData = d.silverDisplay || d.silver;
-  document.getElementById('spotPrice').textContent = '$'+headerData.spot.toFixed(2);
-  document.getElementById('spotChange').textContent =
-    (headerData.change>=0?'+':'')+'$'+headerData.change.toFixed(2)+' ('+headerData.changePct.toFixed(2)+'%)';
-  document.getElementById('spotPrice').className = 'price ' + (headerData.changePct<0?'bear':'bull');
-  document.getElementById('spotChange').style.color = headerData.changePct<0 ? C('--bear') : C('--bull');
-
-  // Update source label
-  const srcEl = document.getElementById('spotSource');
-  const srcSuffix = headerData.source ? ' · ' + headerData.source : '';
-  if (d.fetchedAt) {
-    const ago = timeAgo(d.fetchedAt);
-    if (d.dataSource === 'live') srcEl.textContent = 'live · updated ' + ago + srcSuffix;
-    else if (d.dataSource === 'partial') srcEl.textContent = 'partial · ' + ago + srcSuffix;
-    else if (d.dataSource === 'stale') srcEl.textContent = 'stale · ' + ago + srcSuffix;
-    else srcEl.textContent = 'snapshot' + srcSuffix;
-  } else {
-    srcEl.textContent = 'spot · ' + (d.dataSource || 'snapshot');
-  }
-}
-
-function signalNarrative(name, s, raw){
-  switch(name){
-    case 'Gamma proxy':
-      if(raw.gamma.ratio > 3) return `Ratio of <b>${raw.gamma.ratio.toFixed(2)}× </b>indicates dealers were short gamma and pinning. Today's break-out from the pin is the regime change.`;
-      if(raw.gamma.ratio < 1.5) return `Ratio of <b>${raw.gamma.ratio.toFixed(2)}×</b> indicates long-gamma dealers <b class="bear">amplifying directional moves</b>. Trend continuation favored.`;
-      return `Ratio of <b>${raw.gamma.ratio.toFixed(2)}×</b> is neutral — neither pinning nor amplifying. Dealer book balanced.`;
-    case 'Skew proxy':
-      if(raw.skew.asymmetry > 0.005) return `Down-vol exceeds up-vol by <b>${(raw.skew.asymmetry*100).toFixed(2)}pp</b>. Put hedges are bid — protection is being purchased.`;
-      if(raw.skew.asymmetry < -0.002) return `Vol asymmetry compressed. Hedges have been <b class="warn">bought out</b> — next move down has no put demand to absorb it.`;
-      return `Down-vol and up-vol are balanced at <b>${(raw.skew.downVol*100).toFixed(2)}%</b> / <b>${(raw.skew.upVol*100).toFixed(2)}%</b>. Symmetric distribution.`;
-    case 'Dark-pool proxy':
-      if(raw.darkPool.anomaly > 1.5) return `Today's price impact ${raw.darkPool.anomaly.toFixed(2)}× the rolling average. <b class="bear">Off-tape selling</b> consistent with institutional unwinding.`;
-      if(raw.darkPool.anomaly < 0.7) return `Price impact below average — moves were absorbed by lit-market volume. No dark-pool anomaly.`;
-      return `Price impact within normal range. Flow consistent with visible volume.`;
-    case 'Velocity':
-      if(raw.vel.rsiAccel > 5) return `RSI accelerating <b>+${raw.vel.rsiAccel.toFixed(1)}</b> over last 5 sessions — positioning building fast. Reflexive risk elevated.`;
-      if(raw.vel.rsiAccel < -5) return `RSI <b>decelerating ${raw.vel.rsiAccel.toFixed(1)}</b> — crowd unwinding. <b class="bull">Position reset</b> after today's crash.`;
-      return `RSI velocity stable at <b>${raw.vel.rsiVel.toFixed(1)}</b>. No acceleration signal.`;
-    case 'Absorption':
-      if(raw.absorp.ratio > 3){
-        if(raw.absorp.closeInRange < 0.25) return `Wide range (<b>${raw.absorp.ratio.toFixed(1)}× cc</b>) with close at <b class="warn">${(raw.absorp.closeInRange*100).toFixed(0)}% of range</b> = capitulation-style flush. Often marks short-term lows.`;
-        if(raw.absorp.closeInRange > 0.75) return `Wide range with close near high — buyers absorbed dip. <b class="bull">Constructive</b>.`;
-        return `Range of <b>${raw.absorp.ratio.toFixed(1)}× cc</b> with mid-range close — battle continues.`;
-      }
-      return `Normal range day. No absorption signal.`;
-    case 'Miner divergence':
-      if(raw.miner.divergence > 0.005) return `Miners outperforming beta by <b>+${(raw.miner.divergence*100).toFixed(2)}pp</b>. <b class="bull">Institutional accumulation</b> in the theme.`;
-      if(raw.miner.divergence < -0.005) return `Miners underperforming by <b class="bear">${(raw.miner.divergence*100).toFixed(2)}pp</b>. Allocators distributing.`;
-      return `Miners moving with expected beta. No divergence.`;
-    case 'Cross-asset stress':
-      if(raw.stress.stress > 0.5) return `Stress index at <b class="bear">${(raw.stress.stress*100).toFixed(0)}%</b>. VIX, oil, equities, and bonds all stressed — <b>forced-deleveraging cascade</b> active.`;
-      if(raw.stress.stress > 0.25) return `Elevated stress at <b class="warn">${(raw.stress.stress*100).toFixed(0)}%</b>. Risk regime turning.`;
-      return `Stress at <b class="bull">${(raw.stress.stress*100).toFixed(0)}%</b> — calm cross-asset backdrop.`;
-  }
-  return '';
-}
-
-/* --- Init: handle URL params, load ticker list, ticker switching ---- */
 async function init(){
-  // 1) Determine which ticker to load (URL param > default silver)
-  const urlTicker = getTickerFromURL();
-  if (urlTicker) CURRENT_TICKER = urlTicker.toUpperCase();
-
-  // 2) Render immediately with snapshot so user sees content fast
-  render();
-
-  // 3) Load ticker dropdown and fetch committed file in parallel
-  const [indexData] = await Promise.all([
-    loadTickerIndex(),
-    fetchLiveData(),
-  ]);
-
-  // 4) Populate dropdown
-  populateTickerDropdown(indexData);
-
-  // 5) Update header title with asset name
-  updateAssetTitle();
-
-  // 6) Re-render with committed-file data (fast paint)
-  render();
-
-  // 7) Overlay live browser-fetched quotes (fixes stale GitHub Action),
-  //    then re-render so the smart-money / cross-asset signals use
-  //    current prices rather than a possibly-stale snapshot.
-  try {
-    const n = await refreshLiveQuotes();
-    if (n > 0) render();
-  } catch(e){ /* keep file data if live refresh fails */ }
-}
-
-function updateAssetTitle(){
-  const config = LIVE_DATA.config || { name: 'Silver' };
-  const titleEl = document.getElementById('dashTitle');
-  if (titleEl) titleEl.innerHTML = `Kelly ${config.name} Live <span class="v">/ v4</span>`;
-  document.title = `Kelly ${config.name} Live · v4`;
-}
-
-async function switchTicker(newTicker){
-  if (!newTicker || newTicker === CURRENT_TICKER) return;
-  CURRENT_TICKER = newTicker;
-  // Update URL without page reload
-  const url = new URL(window.location);
-  url.searchParams.set('ticker', newTicker);
-  window.history.replaceState({}, '', url);
-  // Fetch and re-render
-  await fetchLiveData();
-  updateAssetTitle();
-  render();
-  try {
-    const n = await refreshLiveQuotes();
-    if (n > 0) render();
-  } catch(e){ /* keep file data if live refresh fails */ }
-}
-
-document.getElementById('refreshBtn').addEventListener('click', async () => {
-  const btn = document.getElementById('refreshBtn');
-  btn.textContent = 'fetching…';
-  btn.disabled = true;
-  await fetchLiveData();
-  updateAssetTitle();
-  render();
-  try {
-    const n = await refreshLiveQuotes();
-    if (n > 0) render();
-  } catch(e){ /* keep file data if live refresh fails */ }
-  btn.textContent = '↻ refresh';
-  btn.disabled = false;
-});
-
-document.getElementById('tickerSelect').addEventListener('change', (e) => {
-  switchTicker(e.target.value);
-});
-
-document.getElementById('tickerLoadBtn').addEventListener('click', () => {
-  const input = document.getElementById('tickerInput');
-  const t = input.value.trim().toUpperCase();
-  if (t) switchTicker(t);
-});
-
-document.getElementById('tickerInput').addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    const t = e.target.value.trim().toUpperCase();
-    if (t) switchTicker(t);
+  drawSpark();
+  let reg=computeRegime(null); setVerdict(reg);
+  $('px').textContent='$'+reg.curSpot.toFixed(2);
+  $('pxmeta').textContent='embedded close · fetching live…';
+  const live=await fetchLiveSilver();
+  if(live&&live.spot){
+    reg=computeRegime(live.spot); setVerdict(reg);
+    $('px').textContent='$'+live.spot.toFixed(2);
+    $('chg').textContent=fmt(live.changePct)+'%'; $('chg').className='chg '+(live.changePct>=0?'bull':'bear');
+    $('pxmeta').innerHTML='<span class="pulse"></span>LIVE · roll-safe · '+new Date().toLocaleTimeString();
+    $('banner').className='banner ok'; $('banner').innerHTML='● LIVE — silver $'+live.spot.toFixed(2)+' ('+fmt(live.changePct)+'%) · data current';
+    // ME tilt from silver/oil co-move is set on catalyst fetch
+  } else {
+    $('banner').innerHTML='● live fetch failed (CORS proxy) — showing embedded snapshot. Verify prices independently.';
   }
-});
+}
 
-document.getElementById('dismissHint').addEventListener('click', () => {
-  document.getElementById('setupHint').classList.remove('show');
-  localStorage.setItem('kelly-hint-dismissed', '1');
-});
-
+// ---- catalyst ----
+function titleDatePast(t){const M={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};const m=t.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);if(!m)return false;const now=new Date();const yr=m[3]?+m[3]:now.getFullYear();const d=new Date(yr,M[m[1]],m[2]?+m[2]:28);return d<new Date(now.getFullYear(),now.getMonth(),now.getDate());}
+async function fetchCat(){
+  $('fetchCat').textContent='fetching…';$('fetchCat').disabled=true;
+  const terms=['iran','hormuz','fed rate','israel','ukraine','russia'];
+  const out=[];
+  for(const t of terms){
+    const j=await viaProxy('https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(t)+'&limit_per_type=8&events_status=active');
+    let got=[];if(j){(j.events||[]).forEach(e=>(e.markets||[]).forEach(m=>got.push(m)));(j.markets||[]).forEach(m=>got.push(m));}
+    got.map(m=>{let yes=null;try{const op=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices;if(op&&op.length)yes=parseFloat(op[0])*100;}catch(e){}
+      return{title:m.question||m.title||t,yes,vol:m.volume24hr||m.volume||0,delta:m.oneDayPriceChange!=null?parseFloat(m.oneDayPriceChange)*100:null,q:t};})
+      .filter(r=>{const w=t.toLowerCase().split(/\s+/).filter(x=>x.length>2);return w.every(x=>r.title.toLowerCase().includes(x));})
+      .forEach(r=>out.push(r));
+  }
+  const seen=new Set();const uniq=out.filter(r=>{if(seen.has(r.title))return false;seen.add(r.title);return true;})
+    .map(r=>{const dp=titleDatePast(r.title);const pin=r.yes!=null&&(r.yes<=1||r.yes>=99);r.resolved=dp||pin;return r;})
+    .filter(r=>!r.resolved).sort((a,b)=>(b.vol||0)-(a.vol||0)).slice(0,12);
+  const tb=$('catTable').querySelector('tbody');tb.innerHTML='';
+  if(!uniq.length)tb.innerHTML='<tr><td class="dim" colspan="4">No live contracts matched. Try again or terms may have no active market.</td></tr>';
+  uniq.forEach(c=>{const big=c.delta!=null&&Math.abs(c.delta)>=5;
+    const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';
+    const ukr=/ukrain|russia|oreshnik|nato/i.test(c.title);
+    tb.innerHTML+='<tr><td>'+(ukr?'<span class="purp">◆ </span>':'')+c.title.slice(0,52)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta,1)+'pt</td><td>'+(big?'<span class="flag warn" style="border-color:var(--warn);color:var(--warn)">moved</span>':'')+'</td></tr>';
+  });
+  // oil
+  const oj=await viaProxy('https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=10d');
+  const ores=oj?.chart?.result?.[0];
+  if(ores){const cl=(ores.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);const sp=ores.meta?.regularMarketPrice??cl[cl.length-1];const pv=cl.length>=2?cl[cl.length-2]:sp;const ch=pv?((sp-pv)/pv*100):0;
+    const susp=Math.abs(ch)>8;
+    $('oilrow').innerHTML='Brent $'+sp.toFixed(2)+' <span class="'+(susp?'warn':ch>=0?'bull':'bear')+'">'+fmt(ch)+'%</span>'+(susp?' <span class="flag warn" style="border-color:var(--warn);color:var(--warn)">verify</span>':'');
+    // set ME tilt: oil down = bullish silver (corrected channel)
+    const t=$('metilt');
+    if(ch<=-1){t.className='tilt up';t.textContent='tilt: bullish (oil falling → reflation)';}
+    else if(ch>=1){t.className='tilt down';t.textContent='tilt: bearish (oil rising → stagflation)';}
+    else{t.className='tilt neutral';t.textContent='tilt: neutral (oil flat)';}
+  }
+  $('fetchCat').textContent='▶ Refresh catalyst odds';$('fetchCat').disabled=false;
+}
+$('fetchCat').addEventListener('click',fetchCat);
 init();
-window.addEventListener('resize', render);
-
-// Auto-refresh every 5 minutes
-setInterval(async () => {
-  await fetchLiveData();
-  render();
-}, 5 * 60 * 1000);
-
 </script>
-</body>
-</html>
+</div></body></html>
