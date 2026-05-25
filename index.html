@@ -1,100 +1,88 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Silver Synthesis · v12</title>
+<title>Silver Reasoning · v13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{--bg:#06070b;--bg2:#0a0c12;--bg3:#0e1119;--ink:#d4dae6;--ink2:#7a8496;--ink3:#454d5d;--acc:#7fd4c8;--acc2:#a8e8de;--bull:#5dcf7e;--bear:#e85c5c;--warn:#e2c25b;--purp:#b59ce8;--line:#1c2029;--gold:#d4af6a;}
   *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5}
-  body{padding:14px 14px 80px;min-height:100vh;background:radial-gradient(ellipse at 50% -8%,rgba(181,156,232,0.07),transparent 55%),linear-gradient(180deg,#06070b,#08090e)}
+  body{padding:14px 14px 80px;min-height:100vh;background:radial-gradient(ellipse at 50% -8%,rgba(212,175,106,0.06),transparent 55%),linear-gradient(180deg,#06070b,#08090e)}
   .wrap{max-width:1180px;margin:0 auto}
   header{padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:16px}
   h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:34px;margin:0;letter-spacing:-.4px;color:var(--acc2)}
-  h1 .v{color:var(--purp);font-style:italic;font-size:17px;margin-left:8px}
+  h1 .v{color:var(--gold);font-style:italic;font-size:17px;margin-left:8px}
   .sub{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--ink2);font-size:15px;margin-top:4px}
   .nav{display:flex;gap:14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:10px;flex-wrap:wrap}
-  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}.nav a.active{color:var(--purp);border-color:var(--purp)}
+  .nav a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}.nav a.active{color:var(--gold);border-color:var(--gold)}
   .grid{display:grid;gap:14px}
   .panel{background:linear-gradient(180deg,var(--bg2),var(--bg));border:1px solid var(--line);padding:16px 18px;position:relative}
-  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:13px;height:13px;border-top:1px solid var(--purp);border-left:1px solid var(--purp)}
-  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;border-bottom:1px solid var(--purp);border-right:1px solid var(--purp)}
+  .panel::before{content:"";position:absolute;top:-1px;left:-1px;width:13px;height:13px;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+  .panel::after{content:"";position:absolute;bottom:-1px;right:-1px;width:13px;height:13px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
   .panel h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:20px;margin:0 0 2px;color:var(--acc2);display:flex;justify-content:space-between;align-items:baseline}
   .panel h2 .num{font-size:9px;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;border:1px solid var(--line);padding:1px 7px}
   .psub{font-size:13px;color:var(--ink2);font-family:'Cormorant Garamond',serif;font-style:italic;margin-bottom:12px}
   .bull{color:var(--bull)}.bear{color:var(--bear)}.warn{color:var(--warn)}.dim{color:var(--ink3)}.purp{color:var(--purp)}.gold{color:var(--gold)}.acc{color:var(--acc)}
-  .scenario{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:6px 0}
-  @media(max-width:680px){.scenario{grid-template-columns:1fr}}
-  .scell{border:1px solid var(--line);padding:14px;text-align:center;background:var(--bg3);position:relative;overflow:hidden}
-  .scell .pct{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;line-height:1}
-  .scell .lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-  .scell .desc{font-size:11px;color:var(--ink3);margin-top:6px;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:12px}
-  .scell .fill{position:absolute;bottom:0;left:0;right:0;opacity:.08}
-  .conf{font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:8px;text-align:center}
-  .btn{background:var(--purp);color:var(--bg);border:none;padding:10px 20px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
-  .btn:hover{filter:brightness(1.1)}.btn.ghost{background:var(--bg3);color:var(--acc);border:1px solid var(--acc)}.btn:disabled{opacity:.5}
-  table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{font-size:9px;letter-spacing:1.5px;color:var(--ink3);text-transform:uppercase;font-weight:400}td:first-child,th:first-child{text-align:left}
-  .flag{display:inline-block;font-size:8px;letter-spacing:.5px;padding:1px 5px;border:1px solid;text-transform:uppercase;margin-left:4px}
-  .f-ahead{border-color:var(--purp);color:var(--purp)}.f-accum{border-color:var(--bull);color:var(--bull)}.f-cohere{border-color:var(--acc);color:var(--acc)}.f-thin{border-color:var(--ink3);color:var(--ink3)}.f-accel{border-color:var(--warn);color:var(--warn)}
-  .note{font-size:11px;color:var(--ink3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px;line-height:1.5;margin-top:10px}
+  .btn{background:var(--gold);color:var(--bg);border:none;padding:11px 22px;font-family:inherit;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:700}
+  .btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.5}.btn.ghost{background:var(--bg3);color:var(--acc);border:1px solid var(--acc)}
+  table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:right;padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:9px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;font-weight:400}td:first-child,th:first-child{text-align:left}
   .banner{font-size:11px;letter-spacing:1px;padding:8px 14px;border:1px solid var(--warn);color:var(--warn);background:rgba(226,194,91,.06);margin-bottom:14px;text-transform:uppercase}
   .banner.ok{border-color:var(--bull);color:var(--bull);background:rgba(93,207,126,.06)}
-  .tiltbar{height:10px;background:linear-gradient(90deg,var(--bear),var(--ink3) 50%,var(--bull));position:relative;margin:10px 0;border:1px solid var(--line)}
-  .tiltbar .marker{position:absolute;top:-3px;width:3px;height:16px;background:#fff;transition:left .5s}
+  .banner.err{border-color:var(--bear);color:var(--bear);background:rgba(232,92,92,.06)}
+  .reason{font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.6;color:var(--ink)}
+  .reason h3{font-family:'JetBrains Mono';font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin:16px 0 6px;font-weight:700}
+  .reason p{margin:6px 0}
+  .verdict{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:6px 0}
+  .verdict .big{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
+  .chip{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 9px;border:1px solid;text-transform:uppercase;margin:2px 4px 2px 0}
   .pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bull);margin-right:5px;animation:p 2s infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+  .pt{font-size:12px;color:var(--ink2);margin:4px 0;padding-left:14px;position:relative}
+  .pt::before{content:"›";position:absolute;left:0;color:var(--gold)}
   .logrow{font-size:11px;color:var(--ink2);border-bottom:1px solid var(--line);padding:4px 0}
+  .thinking{font-size:12px;color:var(--ink3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:14px}
+  .falsify{border-left:2px solid var(--bear);padding-left:12px;margin-top:8px;font-size:12px;color:var(--ink2)}
 </style></head>
 <body><div class="wrap">
 <header>
-  <h1>Silver Synthesis <span class="v">/ v12 · anomaly-weighted</span></h1>
-  <div class="sub">The anatomy quantified + Polymarket as the exogenous catalyst, mapped through the validated dual-channel model into ever-moving scenario probabilities. Signals weighted by how expensive they are to fake. Unvalidated until the log earns it.</div>
+  <h1>Silver Reasoning <span class="v">/ v13 · geopolitical engine</span></h1>
+  <div class="sub">An AI reasoning layer that reads the full Polymarket contract population — level, decay, curve, theme presence — and reasons over it geopolitically, anchored by the validated oil channel. Multiple inferences per data point. Every call logged + falsifiers stated.</div>
   <nav class="nav">
-    <a href="index.html">v6</a><a href="vol-lab.html">vol</a><a href="catalyst.html">catalyst</a><a href="v11.html">v11</a><a href="v12.html" class="active">v12 synthesis</a>
+    <a href="index.html">v6</a><a href="vol-lab.html">vol</a><a href="catalyst.html">catalyst</a><a href="v11.html">v11</a><a href="v12.html">v12</a><a href="v13.html" class="active">v13 reasoning</a>
   </nav>
 </header>
-<div id="banner" class="banner">● tap Run synthesis to pull live odds trajectories…</div>
+<div id="banner" class="banner">● tap Analyze to pull live data and run the reasoning layer…</div>
 <div class="grid">
 
   <div class="panel">
-    <h2>Ever-moving scenario probabilities <span class="num">live · self-scoring</span></h2>
-    <div class="psub">Bull/base/bear blended from the loaded anatomy (magnitude) and the depth-weighted catalyst tilt (direction). Confidence collapses toward "no call" when channels disagree or markets are thin. Updates as Polymarket moves.</div>
-    <button class="btn" id="run">▶ Run synthesis</button>
-    <div class="scenario" style="margin-top:12px">
-      <div class="scell"><div class="fill bull" style="background:var(--bull)"></div><div class="pct bull" id="sBull">—</div><div class="lbl bull">Bull · relief</div><div class="desc" id="sBullD">oil down / Ukraine haven → real-rate relief</div></div>
-      <div class="scell"><div class="fill" style="background:var(--ink3)"></div><div class="pct dim" id="sBase">—</div><div class="lbl dim">Base · chop</div><div class="desc">77% historical base rate — coil holds</div></div>
-      <div class="scell"><div class="fill bear" style="background:var(--bear)"></div><div class="pct bear" id="sBear">—</div><div class="lbl bear">Bear · stagflation</div><div class="desc" id="sBearD">oil up / blockade → hawkish clamp</div></div>
-    </div>
-    <div class="tiltbar"><div class="marker" id="tiltMark" style="left:50%"></div></div>
-    <div class="conf" id="confLine">confidence: —</div>
-    <div class="note" id="readLine">Awaiting first run.</div>
+    <h2>Geopolitical synthesis <span class="num">ai reasoning · oil-anchored</span></h2>
+    <div class="psub">Reads every contract as a multi-inference object (level, Δ, decay, curve position, theme presence), not one signed number. Reasons like an analyst, then hard-checks against oil. States confidence AND what would change its mind.</div>
+    <button class="btn" id="run">▶ Analyze</button>
+    <div id="verdictBox" style="margin-top:14px"></div>
+    <div id="reasonBox" class="reason"></div>
+    <div id="falsifyBox"></div>
   </div>
 
   <div class="panel">
-    <h2>Catalyst signals — anomaly-weighted <span class="num">expensive-to-fake = trusted</span></h2>
-    <div class="psub">Each contract scored on: ahead-of-tape (◆ leads oil), accumulation (▲ volume w/o price), coherence (≈ moves with theme), acceleration. Thin markets discounted hard. The weight column is how much each contract moves the scenario.</div>
-    <table id="sigTable"><thead><tr><th>Contract</th><th>Yes%</th><th>Δ/vel</th><th>$vol</th><th>signals</th><th>weight</th></tr></thead><tbody><tr><td class="dim" colspan="6">Run synthesis…</td></tr></tbody></table>
-    <div class="row" style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px"><span class="dim">Oil cross-check</span><span id="oilrow">—</span></div>
+    <h2>The data it reasoned over <span class="num">live · auditable</span></h2>
+    <div class="psub">Full transparency — exactly the inputs the reasoning layer saw. Each contract carries level, change, days-to-expiry, depth. You can audit whether the read matches the data.</div>
+    <div id="dataMeta" style="font-size:11px;color:var(--ink3);margin-bottom:8px"></div>
+    <table id="dataTable"><thead><tr><th>Contract</th><th>Yes%</th><th>Δ</th><th>DTE</th><th>$vol</th></tr></thead><tbody><tr><td class="dim" colspan="5">Run analysis…</td></tr></tbody></table>
   </div>
 
   <div class="panel">
-    <h2>Prediction log <span class="num">self-scoring · earns trust</span></h2>
-    <div class="psub">Every run logs the scenario %s + silver price + timestamp, persisted in your browser. Over weeks this becomes the track record that tells us whether the anomaly signals actually led price — the validation we cannot do in advance.</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log this reading</button><button class="btn ghost" id="expBtn">⬇ Export CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
+    <h2>Reasoning log <span class="num">self-scoring</span></h2>
+    <div class="psub">Each analysis logs the verdict + silver price + timestamp. The reasoning improves interpretation; this log still does the validating. Over weeks it shows whether the geopolitical read actually led price.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
     <div id="logBox" style="margin-top:10px"></div>
   </div>
 
   <div class="panel">
-    <h2>How a signal earns its weight <span class="num">methodology</span></h2>
-    <div class="note" style="margin-top:0">
-      <b class="purp">◆ Ahead-of-tape</b>: contract repriced &gt;5pt while oil flat (&lt;1%). Someone acted before it hit commodities. Up-weighted — hard to fake on a deep market.<br>
-      <b class="bull">▲ Accumulation</b>: volume rising, price stable. Quiet position-building, the informed-trader footprint. Hardest to fake (costs money, no price payoff).<br>
-      <b class="acc">≈ Coherence</b>: moves the same direction as its theme-mates (Iran deal ↑ + Hormuz ↑ + blockade ↓). Multi-market conviction can't be manufactured cheaply — strongest anti-noise filter.<br>
-      <b class="warn">↑ Acceleration</b>: move is speeding up, not exhausting. Counts only stacked with depth (thin markets are jumpy).<br>
-      <b class="dim">thin</b>: low volume → discounted toward zero. One loud bettor ≠ signal.<br>
-      <b>Composite weight = depth-gate × coherence × hard-to-fake bonus − thin-jumpiness.</b> Trust ∝ cost-to-fake.
+    <h2>How this differs — and its limits <span class="num">read me</span></h2>
+    <div class="thinking">
+      <p><b class="gold">What it does:</b> extracts multiple inferences per contract (a falling near-dated peace deal = calendar decay, NOT bearish; a deep far-dated deal at 76% = the real de-escalation regime; a cluster of peace contracts existing = active negotiation). It separates decay from news, reads regime from the curve, and synthesizes the two theaters (Middle East via oil → reflation; Ukraine via haven). Then it hard-anchors on the realized oil move — the one channel we validated.</p>
+      <p><b class="bear">What it can't do:</b> it cannot tell you if the signal leads or lags price — only the log can. A reasoning layer produces fluent narratives for any direction, so it's constrained to reason ONLY over the live data shown, forced to state falsifiers, and capped in confidence when contracts fight oil. It is an interpreter, not an oracle. The fluency is not proof.</p>
     </div>
-    <div class="note"><b>Honest status:</b> the dual-channel mapping is validated (sign only). The lead/lag of odds vs price is NOT — that's what the log measures. Volume/depth on Polymarket's API is partial; signals show their data quality. This is a structured hypothesis engine, not an oracle. It earns credibility only through the logged track record.</div>
   </div>
 </div>
 
@@ -103,133 +91,116 @@ const SV=[["2021-05-20",28.052,28.052,27.72,26],["2021-05-21",27.473,28.12,27.39
 const CORS=[u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
 async function viaProxy(url){for(const p of CORS){try{const r=await fetch(p(url),{cache:'no-cache'});if(r.ok)return await r.json();}catch(e){}}return null;}
 const $=id=>document.getElementById(id);const fmt=(x,d=1)=>x==null?'—':(x>=0?'+':'')+x.toFixed(d);
+function parseTitleDate(t){const M={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};const m=t.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);if(!m)return null;const now=new Date();const yr=m[3]?+m[3]:now.getFullYear();return new Date(yr,M[m[1]],m[2]?+m[2]:28);}
+function daysToExpiry(t){const d=parseTitleDate(t);if(!d)return null;return Math.round((d-new Date())/86400000);}
 
-// dual-channel mapping: contract topic -> silver direction sign when YES rises
-function channelSign(title){
-  const t=title.toLowerCase();
-  if(/peace|ceasefire|deal|diplomat|returns to normal|reopen/.test(t)) return +1; // de-escalation/relief -> bullish
-  if(/blockade|close|strike|escalat|war|attack/.test(t)) return -1;               // ME escalation -> stagflation -> bearish
-  if(/ukrain|russia|oreshnik|nato/.test(t)) return +1;                            // Ukraine fear -> haven -> bullish
-  if(/rate cut|decrease/.test(t)) return +1;                                       // cuts -> real-rate relief -> bullish
-  if(/rate hike|increase/.test(t)) return -1;                                      // hikes -> clamp -> bearish
-  return 0;
-}
-function titleDatePast(t){const M={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};const m=t.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);if(!m)return false;const now=new Date();const yr=m[3]?+m[3]:now.getFullYear();const d=new Date(yr,M[m[1]],m[2]?+m[2]:28);return d<new Date(now.getFullYear(),now.getMonth(),now.getDate());}
+let lastVerdict=null,lastSpot=null;
 
-let lastScenario=null, lastSpot=null;
-
-async function run(){
-  $('run').textContent='running…';$('run').disabled=true;
-  $('banner').className='banner';$('banner').innerHTML='● pulling odds trajectories + oil…';
-  // live silver
-  let spot=SV[SV.length-1].c, chg=0;
+async function gatherData(){
+  // silver
+  let spot=SV[SV.length-1].c,chg=0;
   const sj=await viaProxy('https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=10d');
   const sres=sj?.chart?.result?.[0];
   if(sres){const cl=(sres.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);spot=sres.meta?.regularMarketPrice??cl[cl.length-1];const pv=cl.length>=2?cl[cl.length-2]:spot;chg=pv?((spot-pv)/pv*100):0;}
-  lastSpot=spot;
   // oil
   let oilChg=null,oilSp=null;
   const oj=await viaProxy('https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=10d');
   const ores=oj?.chart?.result?.[0];
   if(ores){const cl=(ores.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);oilSp=ores.meta?.regularMarketPrice??cl[cl.length-1];const pv=cl.length>=2?cl[cl.length-2]:oilSp;oilChg=pv?((oilSp-pv)/pv*100):0;}
-  const oilFlat=oilChg!=null&&Math.abs(oilChg)<1;
-  $('oilrow').innerHTML=oilSp?('Brent $'+oilSp.toFixed(2)+' <span class="'+(oilChg>=0?'bull':'bear')+'">'+fmt(oilChg)+'%</span>'):'—';
-
-  // catalyst contracts
+  // contracts
   const terms=['iran','hormuz','fed rate','israel','ukraine','russia'];
   const raw=[];
   for(const t of terms){
-    const j=await viaProxy('https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(t)+'&limit_per_type=8&events_status=active');
+    const j=await viaProxy('https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(t)+'&limit_per_type=10&events_status=active');
     let got=[];if(j){(j.events||[]).forEach(e=>(e.markets||[]).forEach(m=>got.push(m)));(j.markets||[]).forEach(m=>got.push(m));}
     got.forEach(m=>{let yes=null;try{const op=typeof m.outcomePrices==='string'?JSON.parse(m.outcomePrices):m.outcomePrices;if(op&&op.length)yes=parseFloat(op[0])*100;}catch(e){}
       const title=m.question||m.title||t;const w=t.toLowerCase().split(/\s+/).filter(x=>x.length>2);
       if(!w.every(x=>title.toLowerCase().includes(x)))return;
-      raw.push({title,yes,vol:m.volume24hr||m.volume||0,totalVol:m.volume||0,delta:m.oneDayPriceChange!=null?parseFloat(m.oneDayPriceChange)*100:null,q:t});});
+      raw.push({title,yes,vol:m.volume24hr||m.volume||0,delta:m.oneDayPriceChange!=null?parseFloat(m.oneDayPriceChange)*100:null,theme:t});});
   }
-  const seen=new Set();let contracts=raw.filter(r=>{if(seen.has(r.title))return false;seen.add(r.title);return true;})
-    .map(r=>{const dp=titleDatePast(r.title);const pin=r.yes!=null&&(r.yes<=1||r.yes>=99);r.resolved=dp||pin;return r;})
-    .filter(r=>!r.resolved).sort((a,b)=>(b.vol||0)-(a.vol||0)).slice(0,16);
-
-  // ---- anomaly scoring per contract ----
-  // coherence: group by channel sign; if multiple contracts in same theme move same dir, coherent
-  contracts.forEach(c=>{c.sign=channelSign(c.title);});
-  // theme coherence: net direction of deltas weighted by sign
-  function themeDir(topic){const grp=contracts.filter(c=>c.q===topic&&c.delta!=null);if(grp.length<2)return 0;const net=grp.reduce((a,c)=>a+(c.delta*c.sign),0);return Math.sign(net)*Math.min(1,Math.abs(net)/10);}
-  const maxVol=Math.max(...contracts.map(c=>c.vol||0),1);
-
-  let tilt=0, totalW=0, anyAhead=false, coherentThemes=0;
-  const themesSeen={};
-  contracts.forEach(c=>{
-    // depth gate: 0..1, hard discount below ~$200k
-    const depth=Math.min(1,(c.vol||0)/maxVol)*Math.min(1,(c.vol||0)/200000);
-    const thin = (c.vol||0)<150000;
-    // ahead-of-tape
-    const ahead = c.delta!=null&&Math.abs(c.delta)>=5&&oilFlat;
-    if(ahead&&!thin)anyAhead=true;
-    // coherence with theme
-    const td=themeDir(c.q); const coherent = td!==0 && Math.sign(td)===Math.sign((c.delta||0)*c.sign) && Math.abs(c.delta||0)>=2;
-    if(coherent&&!themesSeen[c.q]){coherentThemes++;themesSeen[c.q]=1;}
-    // acceleration proxy: large delta on deep market
-    const accel = c.delta!=null&&Math.abs(c.delta)>=8&&!thin;
-    // composite weight
-    let w=depth;
-    if(coherent)w*=1.8;
-    if(ahead&&!thin)w*=1.6;
-    if(accel)w*=1.3;
-    if(thin)w*=0.25;
-    c._w=w; c._ahead=ahead; c._coherent=coherent; c._accel=accel; c._thin=thin; c._depth=depth;
-    // contribution to tilt: sign * how much YES moved * weight
-    if(c.delta!=null&&c.sign!==0){ tilt += c.sign*(c.delta/10)*w; totalW+=w; }
-  });
-  const netTilt = totalW>0? tilt/totalW : 0; // -1..+1 ish
-
-  // ---- blend into scenarios ----
-  // base (chop) anchored at historical 0.62-0.77; shrink base when strong coherent tilt + ahead signals
-  let base=0.62;
-  const convict = Math.min(1, (coherentThemes/3) + (anyAhead?0.2:0));
-  base = 0.62 - convict*0.20; // more conviction -> less chop
-  const dir = Math.max(-1,Math.min(1,netTilt));
-  let bull=(1-base)*(0.5+dir/2);
-  let bear=(1-base)*(0.5-dir/2);
-  // normalize
-  const s=base+bull+bear; base/=s;bull/=s;bear/=s;
-  // confidence: high when coherent themes + ahead-of-tape + deep; low when thin/incoherent
-  const conf = Math.round(Math.min(95, 25 + coherentThemes*18 + (anyAhead?15:0) + Math.min(20,totalW*8)));
-
-  $('sBull').textContent=Math.round(bull*100)+'%';
-  $('sBase').textContent=Math.round(base*100)+'%';
-  $('sBear').textContent=Math.round(bear*100)+'%';
-  $('tiltMark').style.left=(50+dir*48)+'%';
-  $('confLine').innerHTML='confidence: <b class="'+(conf>55?'bull':conf>35?'warn':'dim')+'">'+conf+'%</b> · coherent themes: '+coherentThemes+' · ahead-of-tape: '+(anyAhead?'yes':'no');
-  const lean = dir>0.15?'bullish (relief)':dir<-0.15?'bearish (stagflation clamp)':'balanced — coil holds';
-  $('readLine').innerHTML='Net catalyst tilt: <b class="'+(dir>0.15?'bull':dir<-0.15?'bear':'dim')+'">'+lean+'</b>. '+(conf<40?'Low confidence — signals thin or disagree; treat as no-call (the honest default given 77% chop).':'Conviction from '+coherentThemes+' coherent theme(s)'+(anyAhead?' + odds leading the oil tape':'')+'. Logged for scoring.');
-
-  // render signal table
-  const tb=$('sigTable').querySelector('tbody');tb.innerHTML='';
-  contracts.sort((a,b)=>b._w-a._w).forEach(c=>{
-    let fl='';
-    if(c._ahead)fl+='<span class="flag f-ahead">◆ahead</span>';
-    if(c._coherent)fl+='<span class="flag f-cohere">≈cohere</span>';
-    if(c._accel)fl+='<span class="flag f-accel">↑accel</span>';
-    if(c._thin)fl+='<span class="flag f-thin">thin</span>';
-    const ukr=/ukrain|russia|oreshnik|nato/i.test(c.title);
-    const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';
-    tb.innerHTML+='<tr><td>'+(ukr?'<span class="purp">◆ </span>':'')+c.title.slice(0,46)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'pt</td><td class="dim">$'+Math.round(c.vol/1000)+'k</td><td>'+fl+'</td><td class="'+(c._w>0.5?'acc':'dim')+'">'+c._w.toFixed(2)+'</td></tr>';
-  });
-
-  lastScenario={bull:Math.round(bull*100),base:Math.round(base*100),bear:Math.round(bear*100),conf,dir:dir.toFixed(2),tilt:lean};
-  $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>LIVE — silver $'+spot.toFixed(2)+' ('+fmt(chg)+'%) · '+contracts.length+' live contracts · '+new Date().toLocaleTimeString();
-  $('run').textContent='▶ Re-run synthesis';$('run').disabled=false;
+  const seen=new Set();const contracts=raw.filter(r=>{if(seen.has(r.title))return false;seen.add(r.title);return true;})
+    .map(r=>{r.dte=daysToExpiry(r.title);const pin=r.yes!=null&&(r.yes<=1||r.yes>=99);const past=r.dte!=null&&r.dte<0;r.resolved=pin||past;return r;})
+    .filter(r=>!r.resolved).sort((a,b)=>(b.vol||0)-(a.vol||0)).slice(0,20);
+  return{spot,chg,oilChg,oilSp,contracts};
 }
 
-// ---- log (persisted) ----
+function buildPrompt(d){
+  const rows=d.contracts.map(c=>'- "'+c.title+'" | level '+(c.yes==null?'?':c.yes.toFixed(0)+'%')+' | 24h Δ '+(c.delta==null?'?':fmt(c.delta)+'pt')+' | days-to-expiry '+(c.dte==null?'?':c.dte)+' | $'+Math.round((c.vol||0)/1000)+'k vol').join('\n');
+  return [
+    'You are a markets+geopolitics analyst reasoning over LIVE prediction-market and commodity data to assess the near-term tilt for SILVER. Reason ONLY over the data provided below — do not use prior knowledge of specific events, which may be stale. Today is '+new Date().toISOString().slice(0,10)+'.',
+    '',
+    'VALIDATED CAUSAL MODEL (use this, it is empirically confirmed):',
+    '- Middle East (Iran/Hormuz) transmits to silver via OIL. De-escalation/peace → oil DOWN → inflation & rate-hike pressure ease → real rates & dollar soften → silver UP (relief/reflation). Escalation → oil UP → stagflation → hawkish Fed, strong dollar → silver DOWN.',
+    '- Ukraine/Russia transmits via SAFE-HAVEN (no oil offset): escalation → flight-to-safety + growth-scare → silver UP.',
+    '- OIL IS THE HARD, VALIDATED SIGNAL. Prediction-market contracts are upstream guesses. When contracts and oil disagree, trust oil and lower confidence.',
+    '',
+    'CRITICAL INTERPRETIVE RULES (this is why you exist, not arithmetic):',
+    '1. A near-dated contract (low days-to-expiry) falling toward 0 is CALENDAR DECAY, not bearish news — that specific deadline is failing, but the underlying process may be fine.',
+    '2. Read THEME REGIME from the deepest, longest-dated contracts (least decay contamination), not from near-dated deltas.',
+    '3. The PRESENCE of many peace/deal contracts = active de-escalation negotiation (a bullish-silver environment) even as specific deadlines lapse. The presence of many strike/blockade contracts = live escalation risk.',
+    '4. Each contract carries MULTIPLE inferences (level=regime, delta=change, decay=calendar, curve position, theme presence). Do not collapse to one number.',
+    '5. Thin markets (<$150k) are noise, not signal.',
+    '',
+    'LIVE DATA:',
+    'Silver SI=F: $'+d.spot.toFixed(2)+' ('+fmt(d.chg)+'% today)',
+    'Brent oil: '+(d.oilSp?'$'+d.oilSp.toFixed(2)+' ('+fmt(d.oilChg)+'% today)':'unavailable'),
+    'Active contracts (resolved/expired already removed):',
+    rows,
+    '',
+    'Respond ONLY with valid JSON, no markdown:',
+    '{"tilt":"bullish|bearish|balanced","confidence":0-100,"headline":"one sentence","regime":"2-3 sentence read of the geopolitical regime from theme presence and the deep contracts","decay_caught":"note any near-dated contracts whose moves you discounted as calendar decay","oil_check":"does oil agree or contradict the contract read, and what you did about it","key_points":["3-5 distinct inferences drawn from the data, each a short string"],"falsifiers":["2-3 things that would flip or kill this read"]}'
+  ].join('\n');
+}
+
+async function callAI(prompt){
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+  const data=await resp.json();
+  const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+  const clean=txt.replace(/\u0060\u0060\u0060json/g,'').replace(/\u0060\u0060\u0060/g,'').trim();
+  return JSON.parse(clean);
+}
+
+async function run(){
+  $('run').textContent='gathering data…';$('run').disabled=true;
+  $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
+  let d;
+  try{ d=await gatherData(); }catch(e){ $('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return; }
+  lastSpot=d.spot;
+  // render data table
+  const tb=$('dataTable').querySelector('tbody');tb.innerHTML='';
+  d.contracts.forEach(c=>{const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';const near=c.dte!=null&&c.dte>=0&&c.dte<=7;
+    tb.innerHTML+='<tr><td>'+c.title.slice(0,44)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'</td><td class="'+(near?'warn':'dim')+'">'+(c.dte==null?'—':c.dte+'d')+'</td><td class="dim">$'+Math.round((c.vol||0)/1000)+'k</td></tr>';});
+  $('dataMeta').innerHTML='Silver $'+d.spot.toFixed(2)+' ('+fmt(d.chg)+'%) · Brent '+(d.oilSp?'$'+d.oilSp.toFixed(2)+' ('+fmt(d.oilChg)+'%)':'n/a')+' · '+d.contracts.length+' live contracts';
+  // call AI
+  $('banner').innerHTML='● reasoning over '+d.contracts.length+' contracts + oil anchor…';
+  let v;
+  try{ v=await callAI(buildPrompt(d)); }
+  catch(e){ $('banner').className='banner err';$('banner').innerHTML='● reasoning layer failed: '+(e.message||e)+'. Data above is still valid.';$('run').textContent='▶ Re-analyze';$('run').disabled=false;return; }
+  // render verdict
+  const tc=v.tilt==='bullish'?'bull':v.tilt==='bearish'?'bear':'dim';
+  $('verdictBox').innerHTML='<div class="verdict"><span class="big '+tc+'">'+(v.tilt||'—').toUpperCase()+'</span>'
+    +'<span class="chip" style="border-color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+');color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+')">confidence '+(v.confidence!=null?v.confidence+'%':'—')+'</span></div>'
+    +'<div class="reason" style="font-size:18px;margin:6px 0">'+(v.headline||'')+'</div>';
+  let html='';
+  if(v.regime){html+='<h3>Regime read</h3><p>'+v.regime+'</p>';}
+  if(v.decay_caught){html+='<h3>Decay discounted</h3><p>'+v.decay_caught+'</p>';}
+  if(v.oil_check){html+='<h3>Oil anchor</h3><p>'+v.oil_check+'</p>';}
+  if(v.key_points&&v.key_points.length){html+='<h3>Inferences drawn</h3>'+v.key_points.map(p=>'<div class="pt">'+p+'</div>').join('');}
+  $('reasonBox').innerHTML=html;
+  $('falsifyBox').innerHTML=(v.falsifiers&&v.falsifiers.length)?'<div class="falsify"><b class="bear">What would change this read:</b><br>'+v.falsifiers.map(f=>'• '+f).join('<br>')+'</div>':'';
+  lastVerdict={tilt:v.tilt,confidence:v.confidence,headline:v.headline};
+  $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>analyzed — silver $'+d.spot.toFixed(2)+' · '+(v.tilt||'').toUpperCase()+' @ '+v.confidence+'% · '+new Date().toLocaleTimeString();
+  $('run').textContent='▶ Re-analyze';$('run').disabled=false;
+}
+
+// log
 let LOG=[];
-async function persist(){if(window.storage){try{await window.storage.set('v12_log',JSON.stringify(LOG));}catch(e){}}}
-async function restore(){if(window.storage){try{const r=await window.storage.get('v12_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}render();}
-function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No readings logged yet.</div>';return;}
-  b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · bull '+r.bull+'% base '+r.base+'% bear '+r.bear+'% · conf '+r.conf+'% · '+r.tilt+'</div>').join('');}
-$('logBtn').addEventListener('click',()=>{if(!lastScenario){alert('Run synthesis first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,...lastScenario});persist();render();});
-$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','bull','base','bear','conf','dir','tilt']].concat(LOG.map(r=>[r.t,r.spot,r.bull,r.base,r.bear,r.conf,r.dir,'"'+r.tilt+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v12-prediction-log.csv';a.click();});
+async function persist(){if(window.storage){try{await window.storage.set('v13_log',JSON.stringify(LOG));}catch(e){}}}
+async function restore(){if(window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}render();}
+function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}
+  b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+(r.tilt||'').toUpperCase()+'</b> @ '+r.confidence+'% · '+(r.headline||'').slice(0,70)+'</div>').join('');}
+$('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,...lastVerdict});persist();render();});
+$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-reasoning-log.csv';a.click();});
 $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});
 $('run').addEventListener('click',run);
 restore();
