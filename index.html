@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Silver Reasoning · v13</title>
+<title>Silver Curve-Regime · v13</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -36,52 +36,56 @@
   .verdict{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:6px 0}
   .verdict .big{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:600;line-height:1}
   .chip{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 9px;border:1px solid;text-transform:uppercase;margin:2px 4px 2px 0}
+  .tiltbar{height:10px;background:linear-gradient(90deg,var(--bear),var(--ink3) 50%,var(--bull));position:relative;margin:12px 0;border:1px solid var(--line)}
+  .tiltbar .marker{position:absolute;top:-3px;width:3px;height:16px;background:#fff;transition:left .5s}
   .pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bull);margin-right:5px;animation:p 2s infinite}@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-  .pt{font-size:12px;color:var(--ink2);margin:4px 0;padding-left:14px;position:relative}
-  .pt::before{content:"›";position:absolute;left:0;color:var(--gold)}
+  .pt{font-size:12px;color:var(--ink2);margin:4px 0;padding-left:14px;position:relative}.pt::before{content:"›";position:absolute;left:0;color:var(--gold)}
   .logrow{font-size:11px;color:var(--ink2);border-bottom:1px solid var(--line);padding:4px 0}
   .thinking{font-size:12px;color:var(--ink3);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:14px}
   .falsify{border-left:2px solid var(--bear);padding-left:12px;margin-top:8px;font-size:12px;color:var(--ink2)}
+  .rtag{font-size:8px;letter-spacing:.5px;padding:1px 5px;border:1px solid;text-transform:uppercase}
+  .rt-anchor{border-color:var(--gold);color:var(--gold)}.rt-decay{border-color:var(--ink3);color:var(--ink3)}.rt-esc{border-color:var(--bear);color:var(--bear)}.rt-reprice{border-color:var(--purp);color:var(--purp)}.rt-thin{border-color:var(--ink3);color:var(--ink3)}.rt-context{border-color:var(--line);color:var(--ink3)}
 </style></head>
 <body><div class="wrap">
 <header>
-  <h1>Silver Reasoning <span class="v">/ v13 · geopolitical engine</span></h1>
-  <div class="sub">An AI reasoning layer that reads the full Polymarket contract population — level, decay, curve, theme presence — and reasons over it geopolitically, anchored by the validated oil channel. Multiple inferences per data point. Every call logged + falsifiers stated.</div>
+  <h1>Silver Curve-Regime <span class="v">/ v13 · rules engine</span></h1>
+  <div class="sub">Reads the contract curve the way an analyst would — regime from the deep far-dated levels, calendar decay discounted, oil as the validated anchor. Deterministic, transparent, runs natively. Multiple inferences per data point, each tagged with the role it played.</div>
   <nav class="nav">
-    <a href="index.html">v6</a><a href="vol-lab.html">vol</a><a href="catalyst.html">catalyst</a><a href="v11.html">v11</a><a href="v12.html">v12</a><a href="v13.html" class="active">v13 reasoning</a>
+    <a href="index.html">v6</a><a href="vol-lab.html">vol</a><a href="catalyst.html">catalyst</a><a href="v11.html">v11</a><a href="v12.html">v12</a><a href="v13.html" class="active">v13 curve-regime</a>
   </nav>
 </header>
-<div id="banner" class="banner">● tap Analyze to pull live data and run the reasoning layer…</div>
+<div id="banner" class="banner">● tap Analyze to pull live data and run the curve-regime engine…</div>
 <div class="grid">
 
   <div class="panel">
-    <h2>Geopolitical synthesis <span class="num">ai reasoning · oil-anchored</span></h2>
-    <div class="psub">Reads every contract as a multi-inference object (level, Δ, decay, curve position, theme presence), not one signed number. Reasons like an analyst, then hard-checks against oil. States confidence AND what would change its mind.</div>
+    <h2>Curve-regime synthesis <span class="num">deterministic · oil-anchored</span></h2>
+    <div class="psub">Regime read from the deepest, longest-dated contracts (least decay contamination) — not from near-dated deltas. Calendar decay excluded from direction. Oil is the hard anchor; when contracts fight oil, confidence collapses.</div>
     <button class="btn" id="run">▶ Analyze</button>
     <div id="verdictBox" style="margin-top:14px"></div>
+    <div class="tiltbar"><div class="marker" id="tiltMark" style="left:50%"></div></div>
     <div id="reasonBox" class="reason"></div>
     <div id="falsifyBox"></div>
   </div>
 
   <div class="panel">
     <h2>The data it reasoned over <span class="num">live · auditable</span></h2>
-    <div class="psub">Full transparency — exactly the inputs the reasoning layer saw. Each contract carries level, change, days-to-expiry, depth. You can audit whether the read matches the data.</div>
+    <div class="psub">Every contract tagged with the role it played: <span class="rtag rt-anchor">regime anchor</span> deep/far (sets the regime) · <span class="rtag rt-decay">decay</span> near-dated, excluded · <span class="rtag rt-esc">escalation</span> watch · <span class="rtag rt-reprice">repricing</span> real move · <span class="rtag rt-thin">thin</span> discounted.</div>
     <div id="dataMeta" style="font-size:11px;color:var(--ink3);margin-bottom:8px"></div>
-    <table id="dataTable"><thead><tr><th>Contract</th><th>Yes%</th><th>Δ</th><th>DTE</th><th>$vol</th></tr></thead><tbody><tr><td class="dim" colspan="5">Run analysis…</td></tr></tbody></table>
+    <table id="dataTable"><thead><tr><th>Contract</th><th>Yes%</th><th>Δ</th><th>DTE</th><th>$vol</th><th>role</th></tr></thead><tbody><tr><td class="dim" colspan="6">Run analysis…</td></tr></tbody></table>
   </div>
 
   <div class="panel">
     <h2>Reasoning log <span class="num">self-scoring</span></h2>
-    <div class="psub">Each analysis logs the verdict + silver price + timestamp. The reasoning improves interpretation; this log still does the validating. Over weeks it shows whether the geopolitical read actually led price.</div>
+    <div class="psub">Each analysis logs the verdict + silver price + timestamp. The engine improves interpretation; the log does the validating. Over weeks it shows whether the curve-regime read actually led price.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
     <div id="logBox" style="margin-top:10px"></div>
   </div>
 
   <div class="panel">
-    <h2>How this differs — and its limits <span class="num">read me</span></h2>
+    <h2>How it reasons — and its limits <span class="num">read me</span></h2>
     <div class="thinking">
-      <p><b class="gold">What it does:</b> extracts multiple inferences per contract (a falling near-dated peace deal = calendar decay, NOT bearish; a deep far-dated deal at 76% = the real de-escalation regime; a cluster of peace contracts existing = active negotiation). It separates decay from news, reads regime from the curve, and synthesizes the two theaters (Middle East via oil → reflation; Ukraine via haven). Then it hard-anchors on the realized oil move — the one channel we validated.</p>
-      <p><b class="bear">What it can't do:</b> it cannot tell you if the signal leads or lags price — only the log can. A reasoning layer produces fluent narratives for any direction, so it's constrained to reason ONLY over the live data shown, forced to state falsifiers, and capped in confidence when contracts fight oil. It is an interpreter, not an oracle. The fluency is not proof.</p>
+      <p><b class="gold">The logic:</b> (1) Each contract is split into level, Δ, days-to-expiry, depth, theme. (2) A near-dated contract falling toward zero is <i>calendar decay</i>, excluded from direction. (3) The <i>regime</i> is read from the deepest, longest-dated de-escalation contracts — their LEVEL says whether peace is structurally expected. (4) Escalation contracts only count when high-level AND rising. (5) Oil is the validated anchor and gets the dominant vote; when contracts disagree with oil, confidence collapses to a no-call.</p>
+      <p><b class="bear">The limits:</b> it cannot tell you if the signal leads or lags price — only the log can. It's a transparent rule set, not a crystal ball; it can be wrong when the rules don't fit the moment. For a deeper, free-form geopolitical read on any given day, paste the data table into a conversation — that's the AI reasoning layer, which can't run on a public page but runs fine in dialogue.</p>
     </div>
   </div>
 </div>
@@ -94,20 +98,15 @@ const $=id=>document.getElementById(id);const fmt=(x,d=1)=>x==null?'—':(x>=0?'
 function parseTitleDate(t){const M={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};const m=t.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);if(!m)return null;const now=new Date();const yr=m[3]?+m[3]:now.getFullYear();return new Date(yr,M[m[1]],m[2]?+m[2]:28);}
 function daysToExpiry(t){const d=parseTitleDate(t);if(!d)return null;return Math.round((d-new Date())/86400000);}
 
-let lastVerdict=null,lastSpot=null;
-
 async function gatherData(){
-  // silver
   let spot=SV[SV.length-1].c,chg=0;
   const sj=await viaProxy('https://query1.finance.yahoo.com/v8/finance/chart/SI=F?interval=1d&range=10d');
   const sres=sj?.chart?.result?.[0];
   if(sres){const cl=(sres.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);spot=sres.meta?.regularMarketPrice??cl[cl.length-1];const pv=cl.length>=2?cl[cl.length-2]:spot;chg=pv?((spot-pv)/pv*100):0;}
-  // oil
   let oilChg=null,oilSp=null;
   const oj=await viaProxy('https://query1.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=10d');
   const ores=oj?.chart?.result?.[0];
   if(ores){const cl=(ores.indicators?.quote?.[0]?.close||[]).filter(x=>x!=null);oilSp=ores.meta?.regularMarketPrice??cl[cl.length-1];const pv=cl.length>=2?cl[cl.length-2]:oilSp;oilChg=pv?((oilSp-pv)/pv*100):0;}
-  // contracts
   const terms=['iran','hormuz','fed rate','israel','ukraine','russia'];
   const raw=[];
   for(const t of terms){
@@ -124,83 +123,102 @@ async function gatherData(){
   return{spot,chg,oilChg,oilSp,contracts};
 }
 
-function buildPrompt(d){
-  const rows=d.contracts.map(c=>'- "'+c.title+'" | level '+(c.yes==null?'?':c.yes.toFixed(0)+'%')+' | 24h Δ '+(c.delta==null?'?':fmt(c.delta)+'pt')+' | days-to-expiry '+(c.dte==null?'?':c.dte)+' | $'+Math.round((c.vol||0)/1000)+'k vol').join('\n');
-  return [
-    'You are a markets+geopolitics analyst reasoning over LIVE prediction-market and commodity data to assess the near-term tilt for SILVER. Reason ONLY over the data provided below — do not use prior knowledge of specific events, which may be stale. Today is '+new Date().toISOString().slice(0,10)+'.',
-    '',
-    'VALIDATED CAUSAL MODEL (use this, it is empirically confirmed):',
-    '- Middle East (Iran/Hormuz) transmits to silver via OIL. De-escalation/peace → oil DOWN → inflation & rate-hike pressure ease → real rates & dollar soften → silver UP (relief/reflation). Escalation → oil UP → stagflation → hawkish Fed, strong dollar → silver DOWN.',
-    '- Ukraine/Russia transmits via SAFE-HAVEN (no oil offset): escalation → flight-to-safety + growth-scare → silver UP.',
-    '- OIL IS THE HARD, VALIDATED SIGNAL. Prediction-market contracts are upstream guesses. When contracts and oil disagree, trust oil and lower confidence.',
-    '',
-    'CRITICAL INTERPRETIVE RULES (this is why you exist, not arithmetic):',
-    '1. A near-dated contract (low days-to-expiry) falling toward 0 is CALENDAR DECAY, not bearish news — that specific deadline is failing, but the underlying process may be fine.',
-    '2. Read THEME REGIME from the deepest, longest-dated contracts (least decay contamination), not from near-dated deltas.',
-    '3. The PRESENCE of many peace/deal contracts = active de-escalation negotiation (a bullish-silver environment) even as specific deadlines lapse. The presence of many strike/blockade contracts = live escalation risk.',
-    '4. Each contract carries MULTIPLE inferences (level=regime, delta=change, decay=calendar, curve position, theme presence). Do not collapse to one number.',
-    '5. Thin markets (<$150k) are noise, not signal.',
-    '',
-    'LIVE DATA:',
-    'Silver SI=F: $'+d.spot.toFixed(2)+' ('+fmt(d.chg)+'% today)',
-    'Brent oil: '+(d.oilSp?'$'+d.oilSp.toFixed(2)+' ('+fmt(d.oilChg)+'% today)':'unavailable'),
-    'Active contracts (resolved/expired already removed):',
-    rows,
-    '',
-    'Respond ONLY with valid JSON, no markdown:',
-    '{"tilt":"bullish|bearish|balanced","confidence":0-100,"headline":"one sentence","regime":"2-3 sentence read of the geopolitical regime from theme presence and the deep contracts","decay_caught":"note any near-dated contracts whose moves you discounted as calendar decay","oil_check":"does oil agree or contradict the contract read, and what you did about it","key_points":["3-5 distinct inferences drawn from the data, each a short string"],"falsifiers":["2-3 things that would flip or kill this read"]}'
-  ].join('\n');
+// ---- THE CURVE-REGIME ENGINE ----
+function reason(d){
+  const C=d.contracts;
+  C.forEach(c=>{
+    c.near=c.dte!=null&&c.dte>=0&&c.dte<=7;
+    c.far=c.dte!=null&&c.dte>30;
+    c.thin=(c.vol||0)<150000;
+    c.decay=c.near&&c.delta!=null&&c.delta<0;
+    const t=c.title.toLowerCase();
+    if(/peace|deal|ceasefire|agreement|returns to normal|restored|surrender|nuclear|diplomat/.test(t))c.escSign=+1;
+    else if(/blockade|airspace|strike|attack|invade|war|sink|missile/.test(t))c.escSign=-1;
+    else c.escSign=0;
+    if(c.thin)c.role='thin';
+    else if(c.decay)c.role='decay·excluded';
+    else if(c.far&&Math.abs(c.escSign)===1)c.role='regime anchor';
+    else if(c.escSign===-1)c.role='escalation watch';
+    else if(!c.near&&c.delta!=null&&Math.abs(c.delta)>=5)c.role='repricing';
+    else c.role='context';
+  });
+  const anchors=C.filter(c=>c.escSign===+1&&c.far&&!c.thin&&c.yes!=null);
+  let regimeLevel=null,sw=0,sv=0;
+  anchors.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});
+  if(sw>0)regimeLevel=sv/sw;
+  if(regimeLevel==null){const med=C.filter(c=>c.escSign===+1&&!c.near&&!c.thin&&c.yes!=null);med.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});if(sw>0)regimeLevel=sv/sw;}
+  let regimeTilt=regimeLevel!=null?Math.max(-1,Math.min(1,(regimeLevel-50)/40)):0;
+  const esc=C.filter(c=>c.escSign===-1&&!c.thin&&c.yes!=null);
+  let escLevel=esc.length?Math.max(...esc.map(c=>c.yes)):0;
+  let escRising=esc.some(c=>c.yes>=25&&c.delta!=null&&c.delta>=5);
+  let escTilt=-Math.max(0,(escLevel-35)/50);if(escRising)escTilt-=0.15;escTilt=Math.max(-1,escTilt);
+  let contractTilt=Math.max(-1,Math.min(1,regimeTilt+escTilt));
+  let oilTilt=d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null;
+  let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
+  const contradiction=oilTilt!=null&&Math.sign(contractTilt)!==Math.sign(oilTilt)&&Math.abs(contractTilt)>0.35&&Math.abs(oilTilt)>0.25;
+  let conf=22+Math.min(20,anchors.length*6)+((oilTilt!=null&&Math.abs(oilTilt)>0.3)?18:0)+((oilTilt!=null&&Math.sign(contractTilt)===Math.sign(oilTilt))?12:0);
+  conf=Math.min(78,conf);if(contradiction)conf=Math.min(conf,28);
+  const dir=netTilt,tilt=dir>0.15?'bullish':dir<-0.15?'bearish':'balanced';
+  // narrative
+  const decayed=C.filter(c=>c.decay);
+  const standout=C.filter(c=>!c.decay&&!c.thin&&c.delta!=null).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))[0];
+  const regimeWord=regimeLevel==null?'unclear (no deep anchors)':regimeLevel>=60?'active de-escalation':regimeLevel>=45?'leaning de-escalation':regimeLevel>=30?'mixed':'escalation-leaning';
+  let headline;
+  if(contradiction)headline='Contracts and oil disagree — no confident call. Oil ('+fmt(d.oilChg)+'%) is the validated channel; the contract lean is treated as suspect.';
+  else if(tilt==='bullish')headline='Relief tilt: '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime — the bullish-silver setup.';
+  else if(tilt==='bearish')headline='Stagflation tilt: '+(d.oilChg!=null&&d.oilChg>1?'oil rising '+fmt(d.oilChg)+'% ':'')+'with '+regimeWord+' — the bearish-silver setup.';
+  else headline='Balanced — coil holds. No channel is decisively in control today.';
+  const reg='Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.';
+  const decTxt=decayed.length?decayed.length+' near-dated contract'+(decayed.length===1?'':'s')+' bleeding toward zero on calendar decay (e.g. "'+decayed[0].title.slice(0,40)+'" '+fmt(decayed[0].delta)+'pt at '+decayed[0].dte+'d) — excluded from direction. These deadline-failures are NOT escalation.':'No near-dated decay distortion today.';
+  const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.'));
+  const points=[];
+  points.push('Regime (deep curve): '+regimeWord+' at ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' deal odds — the de-escalation backdrop that drives silver via oil.');
+  if(decayed.length)points.push('Calendar decay disarmed: '+decayed.length+' near-dated drop'+(decayed.length===1?'':'s')+' correctly read as deadline-lapse, not escalation (the trap that fooled the arithmetic engine).');
+  if(standout&&Math.abs(standout.delta)>=5)points.push('Standout real move: "'+standout.title.slice(0,40)+'" '+fmt(standout.delta)+'pt — '+(standout.escSign>0?'de-escalation/normalization signal':standout.escSign<0?'escalation signal':'notable repricing')+', not decay.');
+  points.push('Escalation watch: max escalation odds '+Math.round(escLevel)+'%'+(escRising?' and rising':' and quiet')+' → '+(escTilt<-0.1?'meaningful bearish drag':'no escalation bid'));
+  if(d.oilChg!=null)points.push('Oil anchor: '+fmt(d.oilChg)+'% '+(d.oilChg<0?'confirms relief':d.oilChg>0?'signals stagflation':'neutral')+' — the one validated channel, weighted 60% of direction.');
+  const fals=[];
+  if(d.oilChg!=null&&d.oilChg<0)fals.push('Oil reversing back up — the relief bid evaporates (oil is the anchor).');
+  else if(d.oilChg!=null&&d.oilChg>0)fals.push('Oil rolling back down — the stagflation pressure releases.');
+  fals.push('Deep deal odds (now ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+') breaking '+(regimeLevel!=null&&regimeLevel>=50?'below 50% — de-escalation regime failing.':'above 50% — de-escalation taking hold.'));
+  fals.push('An escalation contract (blockade/airspace) spiking high on real news rather than calendar noise.');
+  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,key_points:points,falsifiers:fals,contradiction};
 }
 
-async function callAI(prompt){
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
-  const data=await resp.json();
-  const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
-  const clean=txt.replace(/\u0060\u0060\u0060json/g,'').replace(/\u0060\u0060\u0060/g,'').trim();
-  return JSON.parse(clean);
-}
-
+let lastVerdict=null,lastSpot=null;
 async function run(){
   $('run').textContent='gathering data…';$('run').disabled=true;
   $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
-  let d;
-  try{ d=await gatherData(); }catch(e){ $('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return; }
+  let d;try{d=await gatherData();}catch(e){$('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return;}
   lastSpot=d.spot;
-  // render data table
+  const v=reason(d);
+  // data table with role tags
+  const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
   const tb=$('dataTable').querySelector('tbody');tb.innerHTML='';
-  d.contracts.forEach(c=>{const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';const near=c.dte!=null&&c.dte>=0&&c.dte<=7;
-    tb.innerHTML+='<tr><td>'+c.title.slice(0,44)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'</td><td class="'+(near?'warn':'dim')+'">'+(c.dte==null?'—':c.dte+'d')+'</td><td class="dim">$'+Math.round((c.vol||0)/1000)+'k</td></tr>';});
+  d.contracts.forEach(c=>{const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';const near=c.near;
+    tb.innerHTML+='<tr><td>'+c.title.slice(0,42)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'</td><td class="'+(near?'warn':'dim')+'">'+(c.dte==null?'—':c.dte+'d')+'</td><td class="dim">$'+Math.round((c.vol||0)/1000)+'k</td><td><span class="rtag '+(roleClass[c.role]||'rt-context')+'">'+c.role+'</span></td></tr>';});
   $('dataMeta').innerHTML='Silver $'+d.spot.toFixed(2)+' ('+fmt(d.chg)+'%) · Brent '+(d.oilSp?'$'+d.oilSp.toFixed(2)+' ('+fmt(d.oilChg)+'%)':'n/a')+' · '+d.contracts.length+' live contracts';
-  // call AI
-  $('banner').innerHTML='● reasoning over '+d.contracts.length+' contracts + oil anchor…';
-  let v;
-  try{ v=await callAI(buildPrompt(d)); }
-  catch(e){ $('banner').className='banner err';$('banner').innerHTML='● reasoning layer failed: '+(e.message||e)+'. Data above is still valid.';$('run').textContent='▶ Re-analyze';$('run').disabled=false;return; }
-  // render verdict
+  // verdict
   const tc=v.tilt==='bullish'?'bull':v.tilt==='bearish'?'bear':'dim';
-  $('verdictBox').innerHTML='<div class="verdict"><span class="big '+tc+'">'+(v.tilt||'—').toUpperCase()+'</span>'
-    +'<span class="chip" style="border-color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+');color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+')">confidence '+(v.confidence!=null?v.confidence+'%':'—')+'</span></div>'
-    +'<div class="reason" style="font-size:18px;margin:6px 0">'+(v.headline||'')+'</div>';
+  $('verdictBox').innerHTML='<div class="verdict"><span class="big '+tc+'">'+v.tilt.toUpperCase()+'</span><span class="chip" style="border-color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+');color:var(--'+(v.confidence>55?'bull':v.confidence>35?'warn':'ink3')+')">confidence '+v.confidence+'%</span></div><div class="reason" style="font-size:18px;margin:6px 0">'+v.headline+'</div>';
+  $('tiltMark').style.left=(50+Math.max(-1,Math.min(1,v.dir))*48)+'%';
   let html='';
-  if(v.regime){html+='<h3>Regime read</h3><p>'+v.regime+'</p>';}
-  if(v.decay_caught){html+='<h3>Decay discounted</h3><p>'+v.decay_caught+'</p>';}
-  if(v.oil_check){html+='<h3>Oil anchor</h3><p>'+v.oil_check+'</p>';}
-  if(v.key_points&&v.key_points.length){html+='<h3>Inferences drawn</h3>'+v.key_points.map(p=>'<div class="pt">'+p+'</div>').join('');}
+  html+='<h3>Regime read</h3><p>'+v.regime+'</p>';
+  html+='<h3>Decay discounted</h3><p>'+v.decay_caught+'</p>';
+  html+='<h3>Oil anchor</h3><p>'+v.oil_check+'</p>';
+  html+='<h3>Inferences drawn</h3>'+v.key_points.map(p=>'<div class="pt">'+p+'</div>').join('');
   $('reasonBox').innerHTML=html;
-  $('falsifyBox').innerHTML=(v.falsifiers&&v.falsifiers.length)?'<div class="falsify"><b class="bear">What would change this read:</b><br>'+v.falsifiers.map(f=>'• '+f).join('<br>')+'</div>':'';
+  $('falsifyBox').innerHTML='<div class="falsify"><b class="bear">What would change this read:</b><br>'+v.falsifiers.map(f=>'• '+f).join('<br>')+'</div>';
   lastVerdict={tilt:v.tilt,confidence:v.confidence,headline:v.headline};
-  $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>analyzed — silver $'+d.spot.toFixed(2)+' · '+(v.tilt||'').toUpperCase()+' @ '+v.confidence+'% · '+new Date().toLocaleTimeString();
+  $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>analyzed — silver $'+d.spot.toFixed(2)+' · '+v.tilt.toUpperCase()+' @ '+v.confidence+'% · '+new Date().toLocaleTimeString();
   $('run').textContent='▶ Re-analyze';$('run').disabled=false;
 }
-
-// log
 let LOG=[];
 async function persist(){if(window.storage){try{await window.storage.set('v13_log',JSON.stringify(LOG));}catch(e){}}}
 async function restore(){if(window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}render();}
-function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}
-  b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+(r.tilt||'').toUpperCase()+'</b> @ '+r.confidence+'% · '+(r.headline||'').slice(0,70)+'</div>').join('');}
+function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'% · '+(r.headline||'').slice(0,66)+'</div>').join('');}
 $('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,...lastVerdict});persist();render();});
-$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-reasoning-log.csv';a.click();});
+$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
 $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});
 $('run').addEventListener('click',run);
 restore();
