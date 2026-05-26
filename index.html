@@ -131,6 +131,8 @@ function reason(d){
     c.far=c.dte!=null&&c.dte>30;
     c.thin=(c.vol||0)<150000;
     c.decay=c.near&&c.delta!=null&&c.delta<0;
+    // a near-dated contract RISING hard is NOT decay — it's real repricing on news
+    c.repriceUp=c.delta!=null&&Math.abs(c.delta)>=8&&!c.decay;
     const t=c.title.toLowerCase();
     if(/peace|deal|ceasefire|agreement|returns to normal|restored|surrender|nuclear|diplomat/.test(t))c.escSign=+1;
     else if(/blockade|airspace|strike|attack|invade|war|sink|missile/.test(t))c.escSign=-1;
@@ -139,9 +141,15 @@ function reason(d){
     else if(c.decay)c.role='decay·excluded';
     else if(c.far&&Math.abs(c.escSign)===1)c.role='regime anchor';
     else if(c.escSign===-1)c.role='escalation watch';
-    else if(!c.near&&c.delta!=null&&Math.abs(c.delta)>=5)c.role='repricing';
+    else if(c.delta!=null&&Math.abs(c.delta)>=5&&!c.decay)c.role='repricing';
     else c.role='context';
   });
+  // repricing contributions: a hard move on a non-decaying, non-thin contract feeds the tilt
+  // via its escSign direction (de-escalation rising = bullish, escalation rising = bearish)
+  const repricers=C.filter(c=>c.role==='repricing'&&!c.thin&&c.escSign!==0&&c.delta!=null);
+  let repTilt=0,repW=0;
+  repricers.forEach(c=>{const w=Math.min(1,c.vol/600000);repTilt+=c.escSign*Math.sign(c.delta)*Math.min(1,Math.abs(c.delta)/30)*w;repW+=w;});
+  repTilt=repW>0?repTilt/repW:0;
   const anchors=C.filter(c=>c.escSign===+1&&c.far&&!c.thin&&c.yes!=null);
   let regimeLevel=null,sw=0,sv=0;
   anchors.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});
@@ -152,7 +160,7 @@ function reason(d){
   let escLevel=esc.length?Math.max(...esc.map(c=>c.yes)):0;
   let escRising=esc.some(c=>c.yes>=25&&c.delta!=null&&c.delta>=5);
   let escTilt=-Math.max(0,(escLevel-35)/50);if(escRising)escTilt-=0.15;escTilt=Math.max(-1,escTilt);
-  let contractTilt=Math.max(-1,Math.min(1,regimeTilt+escTilt));
+  let contractTilt=Math.max(-1,Math.min(1,regimeTilt+escTilt+0.4*repTilt));
   let oilTilt=d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null;
   let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
   const contradiction=oilTilt!=null&&Math.sign(contractTilt)!==Math.sign(oilTilt)&&Math.abs(contractTilt)>0.35&&Math.abs(oilTilt)>0.25;
@@ -163,6 +171,22 @@ function reason(d){
   const decayed=C.filter(c=>c.decay);
   const standout=C.filter(c=>!c.decay&&!c.thin&&c.delta!=null).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))[0];
   const regimeWord=regimeLevel==null?'unclear (no deep anchors)':regimeLevel>=60?'active de-escalation':regimeLevel>=45?'leaning de-escalation':regimeLevel>=30?'mixed':'escalation-leaning';
+  // ---- CATALYST TIMELINE: term structure of de-escalation from the deal curve ----
+  // Read the market's expected WHEN, not silver's price. Each deal contract = P(catalyst by its date).
+  const dealCurve=C.filter(c=>c.escSign===+1&&/deal|ceasefire|agreement|peace/.test(c.title.toLowerCase())&&c.dte!=null&&c.dte>=0&&c.yes!=null&&!c.thin)
+    .sort((a,b)=>a.dte-b.dte);
+  let timelineTxt='',slope=null,nearP=null,farP=null;
+  if(dealCurve.length>=2){
+    nearP=dealCurve[0]; farP=dealCurve[dealCurve.length-1];
+    slope=(farP.yes-nearP.yes)/Math.max(1,(farP.dte-nearP.dte)); // pts per day
+    const shape = farP.yes-nearP.yes>15?'rising term structure (slow thaw — more likely the longer the horizon)':
+                  farP.yes-nearP.yes<-15?'inverted (near-term resolution priced, fades later)':'flat (steady probability across horizons)';
+    // expected duration of the relief tilt: long if far-dated odds high & rising
+    const duration = (farP.yes>=65&&farP.dte>=60)?'durable — the catalyst backdrop extends months out, so the relief tilt is not about to expire':
+                     (nearP.yes>=55)?'near-term — resolution expected soon, watch for a confirming spike or a fade':
+                     'uncertain — the curve does not strongly favor a timeframe';
+    timelineTxt='Catalyst term structure: P(deal) runs '+Math.round(nearP.yes)+'% by '+nearP.dte+'d → '+Math.round(farP.yes)+'% by '+farP.dte+'d. Shape: '+shape+'. Duration of tilt: '+duration+'.';
+  } else timelineTxt='Insufficient dated deal contracts to build a catalyst term structure today.';
   let headline;
   if(contradiction)headline='Contracts and oil disagree — no confident call. Oil ('+fmt(d.oilChg)+'%) is the validated channel; the contract lean is treated as suspect.';
   else if(tilt==='bullish')headline='Relief tilt: '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime — the bullish-silver setup.';
@@ -182,7 +206,7 @@ function reason(d){
   else if(d.oilChg!=null&&d.oilChg>0)fals.push('Oil rolling back down — the stagflation pressure releases.');
   fals.push('Deep deal odds (now ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+') breaking '+(regimeLevel!=null&&regimeLevel>=50?'below 50% — de-escalation regime failing.':'above 50% — de-escalation taking hold.'));
   fals.push('An escalation contract (blockade/airspace) spiking high on real news rather than calendar noise.');
-  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,key_points:points,falsifiers:fals,contradiction};
+  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction};
 }
 
 let lastVerdict=null,lastSpot=null;
@@ -206,6 +230,7 @@ async function run(){
   html+='<h3>Regime read</h3><p>'+v.regime+'</p>';
   html+='<h3>Decay discounted</h3><p>'+v.decay_caught+'</p>';
   html+='<h3>Oil anchor</h3><p>'+v.oil_check+'</p>';
+  html+='<h3>Catalyst timeline</h3><p>'+v.timeline+'</p>';
   html+='<h3>Inferences drawn</h3>'+v.key_points.map(p=>'<div class="pt">'+p+'</div>').join('');
   $('reasonBox').innerHTML=html;
   $('falsifyBox').innerHTML='<div class="falsify"><b class="bear">What would change this read:</b><br>'+v.falsifiers.map(f=>'• '+f).join('<br>')+'</div>';
@@ -214,8 +239,18 @@ async function run(){
   $('run').textContent='▶ Re-analyze';$('run').disabled=false;
 }
 let LOG=[];
-async function persist(){if(window.storage){try{await window.storage.set('v13_log',JSON.stringify(LOG));}catch(e){}}}
-async function restore(){if(window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}render();}
+async function persist(){
+  // localStorage works on GitHub Pages and persists across sessions (iPad Safari OK).
+  try{ localStorage.setItem('v13_log',JSON.stringify(LOG)); }catch(e){}
+  // also mirror to window.storage when available (inside Claude artifact viewer)
+  if(window.storage){try{await window.storage.set('v13_log',JSON.stringify(LOG));}catch(e){}}
+}
+async function restore(){
+  let loaded=false;
+  try{ const ls=localStorage.getItem('v13_log'); if(ls){LOG=JSON.parse(ls);loaded=true;} }catch(e){}
+  if(!loaded&&window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}
+  render();
+}
 function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'% · '+(r.headline||'').slice(0,66)+'</div>').join('');}
 $('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,...lastVerdict});persist();render();});
 $('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
