@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-26T13:27:50.706Z",
+  "generatedAt": "2026-05-26T16:57:35.112Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 76.55,
-      "changePct": 0.8656954895059972,
+      "spot": 76.445,
+      "changePct": 0.727342804641222,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4519.7,
-      "changePct": -0.028754700287551026,
+      "spot": 4506.6,
+      "changePct": -0.31851360318512795,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -26,8 +26,8 @@
       "filename": "AAPL.json",
       "name": "Apple",
       "assetClass": "equity",
-      "spot": 308.82,
-      "changePct": 1.255782120154748,
+      "spot": 310.06,
+      "changePct": 0.40152601721799386,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -36,8 +36,8 @@
       "filename": "NVDA.json",
       "name": "Nvidia",
       "assetClass": "equity",
-      "spot": 215.33,
-      "changePct": -1.9042388098213692,
+      "spot": 213.66,
+      "changePct": -0.7755546448956769,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -46,8 +46,8 @@
       "filename": "TSLA.json",
       "name": "Tesla",
       "assetClass": "equity",
-      "spot": 426.01,
-      "changePct": 1.952852405717773,
+      "spot": 432.434,
+      "changePct": 1.5079434959543014,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -56,8 +56,8 @@
       "filename": "SPY.json",
       "name": "S&P 500 ETF",
       "assetClass": "index",
-      "spot": 745.64,
-      "changePct": 0.39315346457031797,
+      "spot": 749.151,
+      "changePct": 0.4708686876492072,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -66,8 +66,8 @@
       "filename": "QQQ.json",
       "name": "Nasdaq 100",
       "assetClass": "index",
-      "spot": 717.54,
-      "changePct": 0.4240654704570013,
+      "spot": 727.89,
+      "changePct": 1.44243140307115,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 76721.75,
-      "changePct": -0.7222828614843905,
+      "spot": 76395.43,
+      "changePct": -1.1445399744496332,
       "healthyCount": 2,
       "totalCount": 2
     }
