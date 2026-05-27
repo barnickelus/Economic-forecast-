@@ -254,7 +254,18 @@ function projectApex(liveSpot){
     tf.push({...s,state:'ok',hi,lo,daysOut,converging,narrowing,fitOk,tightPct:Math.round(tight*100),
              hiSlope:hi.a,loSlope:lo.a,hiR2:hi.r2,loR2:lo.r2,segLen:SEG.length,seg:SEG});
   });
-  return {timeframes:tf};
+  // ===== HORIZONTAL SHELVES: price levels with many swing-touches =====
+  const SEG=S.slice(Math.max(0,N-120));const px=SEG[SEG.length-1].c;
+  const sw=_swing(SEG,3,'h'),swl=_swing(SEG,3,'l');
+  const pts=[];sw.hi.forEach(i=>pts.push({price:SEG[i].h,idx:i,type:'H'}));swl.lo.forEach(i=>pts.push({price:SEG[i].l,idx:i,type:'L'}));
+  pts.sort((a,b)=>a.price-b.price);
+  const tol=px*0.025;const clusters=[];let cur=[];
+  pts.forEach(p=>{if(cur.length===0||p.price-cur[cur.length-1].price<=tol)cur.push(p);else{if(cur.length>=2)clusters.push(cur);cur=[p];}});
+  if(cur.length>=2)clusters.push(cur);
+  const shelves=clusters.map(s=>{const level=s.reduce((a,p)=>a+p.price,0)/s.length;const touches=s.length;const recency=s.reduce((a,p)=>a+(p.idx/SEG.length),0)/s.length;const mixed=s.some(p=>p.type==='H')&&s.some(p=>p.type==='L');const distNow=Math.abs(level-px)/px;const score=touches*(0.5+recency)*(mixed?1.5:1)*(1/(1+distNow*10));return{level:+level.toFixed(2),touches,mixed,distNowPct:+(distNow*100).toFixed(1),score:+score.toFixed(2)};}).sort((a,b)=>b.score-a.score);
+  const primaryShelf=shelves.find(s=>s.distNowPct<8)||shelves[0]||null;
+  const pinned=primaryShelf&&primaryShelf.distNowPct<3;
+  return {timeframes:tf,shelves,primaryShelf,pinned,price:px};
 }
 function renderConvergence(d,apex){
   const ab=$('apexBox');
@@ -262,6 +273,15 @@ function renderConvergence(d,apex){
   // summarize each timeframe + collect apex windows (only from converging, well-fit, near-term scales)
   let rows='',windows=[];
   const names={short:'Short (90d)',medium:'Medium (200d)',long:'Long (420d)'};
+  if(apex.primaryShelf){
+    const ps=apex.primaryShelf;
+    if(apex.pinned){
+      rows+='<div class="apexline"><b class="gold">\u25ac Horizontal shelf $'+ps.level+' \u2014 price PINNED to it NOW</b> ('+ps.touches+' touches'+(ps.mixed?', acts as both support & resistance':'')+', '+ps.distNowPct+'% from spot). A heavily-tested level being actively tested is a compression focal point in the present tense \u2014 the live coil, regardless of where the sloped apex sits.</div>';
+    } else {
+      rows+='<div class="apexline"><b class="gold">\u25ac Horizontal shelf $'+ps.level+'</b> ('+ps.touches+' touches'+(ps.mixed?', support+resistance':'')+', '+ps.distNowPct+'% from spot $'+apex.price.toFixed(2)+'). The level price keeps returning to.</div>';
+    }
+    if(apex.shelves.length>1){rows+='<div class="apexline dim" style="font-size:11px">Other shelves: '+apex.shelves.slice(1,3).map(s=>'$'+s.level+' ('+s.touches+'t)').join(', ')+'</div>';}
+  }
   tf.forEach(t=>{
     if(t.state!=='ok'){rows+='<div class="apexline dim">'+names[t.name]+': '+t.state.replace('-',' ')+'</div>';return;}
     const resDir=t.hiSlope<0?'descending':'rising';
@@ -272,15 +292,14 @@ function renderConvergence(d,apex){
     rows+='<div class="apexline"><b class="'+cls+'">'+names[t.name]+'</b>: resistance '+resDir+' (R\u00b2 '+t.hiR2.toFixed(2)+'), support '+supDir+' (R\u00b2 '+t.loR2.toFixed(2)+'). '
       +(triangle?'<b class="acc">Converging triangle</b> \u2014 ':(t.converging?'Converging but weak fit \u2014 ':'Not converging \u2014 '))
       +where+(t.fitOk?'':' <span class="dim">(fit too loose to trust)</span>')+'.</div>';
-    // a usable apex window: converging + good fit + ahead + within 120d
     if(triangle&&t.daysOut!=null&&t.daysOut>0&&t.daysOut<=120){
       const fuzz=Math.max(5,Math.round(t.daysOut*0.35));
       windows.push({name:t.name,lo:Math.max(0,t.daysOut-fuzz),hi:t.daysOut+fuzz,days:t.daysOut,scale:t.lb});
     }
   });
+  if(apex.pinned){windows.push({name:'shelf',lo:0,hi:14,days:7,kind:'shelf'});}
   ab.innerHTML=rows;
-  // draw mini-chart for the LONGEST scale that fit (most structural context), with its lines
-  drawGeomChart(tf);
+  drawGeomChart(tf,apex);
   // catalyst calendar
   const cal=$('calBox');
   const dated=d.contracts.filter(c=>c.dte!=null&&c.dte>=0&&c.dte<=90);
@@ -297,7 +316,7 @@ function renderConvergence(d,apex){
   cal.innerHTML='<div style="font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin:14px 0 4px">Catalyst expiration calendar \u00b7 volume-weighted \u00b7 next 90d \u00b7 gold=apex window(s)</div><div class="cal">'+bars+'</div><div style="height:30px"></div>';
   // convergence: check catalyst money inside each apex window
   const cb=$('convBox');
-  if(!windows.length){cb.innerHTML='<div class="convflag miss">No converging triangle with a near-term, well-fit apex on any timescale right now \u2014 nothing to converge against. (A descending line alone, or a rising channel, doesn\u2019t make an apex.)</div>';$('convNote').innerHTML=noteTxt();return null;}
+  if(!windows.length){cb.innerHTML='<div class="convflag miss">No focal point right now \u2014 no converging triangle with a near-term well-fit apex, and price isn\u2019t pinned to a shelf. Nothing to converge against.</div>';$('convNote').innerHTML=noteTxt();return null;}
   const totalVol=dated.reduce((a,c)=>a+(c.vol||0),0);
   let best=null;
   windows.forEach(w=>{
@@ -306,15 +325,16 @@ function renderConvergence(d,apex){
     const share=totalVol>0?v/totalVol:0;const hit=share>=0.25&&n>=2&&v>=500000;
     if(!best||share>best.share)best={...w,vol:v,n,top,share,hit};
   });
+  const focalDesc=best.kind==='shelf'?'price pinned to the $'+(apex.primaryShelf?apex.primaryShelf.level:'')+' shelf':('the '+best.name+'-scale coil apex');
   cb.innerHTML=best.hit
-    ?'<div class="convflag hit"><b>\u2299 CONVERGENCE \u2014 '+best.name+'-scale apex \u00d7 catalyst cluster, window '+best.lo+'\u2013'+best.hi+'d.</b> The '+best.name+' coil projects its apex here, and '+Math.round(best.share*100)+'% of near-term catalyst money ($'+Math.round(best.vol/1000)+'k across '+best.n+' contracts) expires inside it. Structure loaded + dated triggers scheduled. Heaviest: "'+best.top.slice(0,42)+'".</div>'
-    :'<div class="convflag miss">Apex window(s) found ('+windows.map(w=>w.name+' '+w.lo+'\u2013'+w.hi+'d').join(', ')+') but catalyst money doesn\u2019t cluster there (best '+Math.round(best.share*100)+'%, $'+Math.round(best.vol/1000)+'k). Coil and calendar point at different moments.</div>';
+    ?'<div class="convflag hit"><b>\u2299 CONVERGENCE \u2014 '+(best.kind==='shelf'?'shelf':best.name+' apex')+' \u00d7 catalyst cluster, window '+best.lo+'\u2013'+best.hi+'d.</b> With '+focalDesc+', '+Math.round(best.share*100)+'% of near-term catalyst money ($'+Math.round(best.vol/1000)+'k across '+best.n+' contracts) expires inside it. Structure at a focal point + dated triggers scheduled. Heaviest: "'+best.top.slice(0,42)+'".</div>'
+    :'<div class="convflag miss">Focal window(s): '+windows.map(w=>(w.kind==='shelf'?'shelf':w.name)+' '+w.lo+'\u2013'+w.hi+'d').join(', ')+'. But catalyst money doesn\u2019t cluster there (best '+Math.round(best.share*100)+'%, $'+Math.round(best.vol/1000)+'k). Structure and calendar point at different moments.</div>';
   $('convNote').innerHTML=noteTxt();
   return best.hit?{name:best.name,lo:best.lo,hi:best.hi,share:Math.round(best.share*100)}:null;
 }
 function noteTxt(){return 'Honest limits: trendline fits can be spurious (the mini-chart shows the lines \u2014 check them by eye against what you\u2019d draw); clusters can be month-end calendar artifacts; the apex is fuzzy; and only the forward log proves convergence windows matter. Different timescales genuinely tell different stories \u2014 a short descending line can coexist with a long rising channel; that\u2019s why all three are shown.';}
 // draw a compact price line with the fitted trendlines of the longest well-fit scale
-function drawGeomChart(tf){
+function drawGeomChart(tf,apex){
   let host=$('geomChart');
   if(!host){host=document.createElement('canvas');host.id='geomChart';host.style.width='100%';host.style.height='150px';host.style.display='block';host.style.marginTop='8px';$('apexBox').after(host);}
   const fit=tf.filter(t=>t.state==='ok').sort((a,b)=>b.lb-a.lb)[0]; // longest that computed
@@ -332,8 +352,10 @@ function drawGeomChart(tf){
     const x0=xOf(0),y0=yOf(L.a*0+L.b);const xe=n-1+Math.min(40,n*0.2);const ye=yOf(L.a*xe+L.b);
     ctx.moveTo(x0,y0);ctx.lineTo(pad+(xe/(n-1))*(W-2*pad),ye);ctx.stroke();ctx.setLineDash([]);}
   drawLine(fit.hi,'#e85c5c');drawLine(fit.lo,'#5dcf7e');
-  // label
-  ctx.fillStyle='#454d5d';ctx.font='20px JetBrains Mono';ctx.fillText(fit.name+' scale ('+fit.lb+'d): red=resistance green=support',pad+4,24);
+  // horizontal shelf line (gold, solid) — the level price keeps returning to
+  if(apex&&apex.primaryShelf){const sy=yOf(apex.primaryShelf.level);ctx.strokeStyle='#d4af6a';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(pad,sy);ctx.lineTo(W-pad,sy);ctx.stroke();
+    ctx.fillStyle='#d4af6a';ctx.font='18px JetBrains Mono';ctx.fillText('$'+apex.primaryShelf.level+' shelf',W-200,sy-8);}
+  ctx.fillStyle='#454d5d';ctx.font='20px JetBrains Mono';ctx.fillText(fit.name+' scale ('+fit.lb+'d): red=resistance green=support gold=shelf',pad+4,24);
 }
 let lastVerdict=null,lastSpot=null;
 async function run(){
