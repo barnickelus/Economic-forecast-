@@ -45,6 +45,15 @@
   .falsify{border-left:2px solid var(--bear);padding-left:12px;margin-top:8px;font-size:12px;color:var(--ink2)}
   .rtag{font-size:8px;letter-spacing:.5px;padding:1px 5px;border:1px solid;text-transform:uppercase}
   .rt-anchor{border-color:var(--gold);color:var(--gold)}.rt-decay{border-color:var(--ink3);color:var(--ink3)}.rt-esc{border-color:var(--bear);color:var(--bear)}.rt-reprice{border-color:var(--purp);color:var(--purp)}.rt-thin{border-color:var(--ink3);color:var(--ink3)}.rt-context{border-color:var(--line);color:var(--ink3)}
+  .apexline{font-size:13px;margin:6px 0}
+  .cal{display:flex;align-items:flex-end;gap:3px;height:90px;margin:10px 0;padding:0 2px;border-bottom:1px solid var(--line);position:relative}
+  .calbar{flex:1;background:linear-gradient(180deg,var(--purp),rgba(181,156,232,.3));min-height:2px;position:relative;border-radius:1px 1px 0 0}
+  .calbar.inwin{background:linear-gradient(180deg,var(--gold),rgba(212,175,106,.3))}
+  .callabel{font-size:8px;color:var(--ink3);text-align:center;transform:rotate(-90deg);transform-origin:center;white-space:nowrap;position:absolute;bottom:-26px;left:50%;margin-left:-4px}
+  .apexband{position:absolute;top:0;bottom:0;background:rgba(127,212,200,.10);border-left:1px dashed var(--acc);border-right:1px dashed var(--acc);pointer-events:none}
+  .convflag{font-size:13px;padding:10px 14px;border:1px solid;margin-top:8px}
+  .convflag.hit{border-color:var(--gold);color:var(--gold);background:rgba(212,175,106,.07)}
+  .convflag.miss{border-color:var(--ink3);color:var(--ink2)}
 </style></head>
 <body><div class="wrap">
 <header>
@@ -72,6 +81,15 @@
     <div class="psub">Every contract tagged with the role it played: <span class="rtag rt-anchor">regime anchor</span> deep/far (sets the regime) · <span class="rtag rt-decay">decay</span> near-dated, excluded · <span class="rtag rt-esc">escalation</span> watch · <span class="rtag rt-reprice">repricing</span> real move · <span class="rtag rt-thin">thin</span> discounted.</div>
     <div id="dataMeta" style="font-size:11px;color:var(--ink3);margin-bottom:8px"></div>
     <table id="dataTable"><thead><tr><th>Contract</th><th>Yes%</th><th>Δ</th><th>DTE</th><th>$vol</th><th>role</th></tr></thead><tbody><tr><td class="dim" colspan="6">Run analysis…</td></tr></tbody></table>
+  </div>
+
+  <div class="panel">
+    <h2>Apex × catalyst convergence <span class="num">experimental · timing only</span></h2>
+    <div class="psub">Pairs two clocks: silver's compression apex (where the coil's bandwidth-contraction projects to its floor) and the catalyst calendar (when high-volume contracts expire). When they overlap, structure is loaded AND a dated trigger is scheduled — a "watch window." Says nothing about direction. Volume-weighted: deep, active contracts count; thin ones are calendar noise.</div>
+    <div id="apexBox" style="margin:10px 0"></div>
+    <div id="calBox"></div>
+    <div id="convBox" style="margin-top:10px"></div>
+    <div class="note" id="convNote"></div>
   </div>
 
   <div class="panel">
@@ -209,6 +227,64 @@ function reason(d){
   return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction};
 }
 
+function projectApex(liveSpot){
+  const closes=SV.map(b=>b.c).concat(liveSpot?[liveSpot]:[]);
+  const N=closes.length;
+  function bw(i,w=20){if(i<w)return null;const s=closes.slice(i-w+1,i+1);const mu=s.reduce((a,b)=>a+b,0)/w;const sd=Math.sqrt(s.reduce((a,b)=>a+(b-mu)**2,0)/w);return 2*2*sd/mu;}
+  const bwS=[];for(let i=0;i<N;i++)bwS.push(bw(i));
+  const recent=bwS.slice(N-20).filter(v=>v!=null);const n=recent.length;
+  if(n<10)return{state:'insufficient'};
+  const xs=recent.map((_,i)=>i);const mx=xs.reduce((a,b)=>a+b,0)/n,my=recent.reduce((a,b)=>a+b,0)/n;
+  let num=0,den=0;xs.forEach((x,i)=>{num+=(x-mx)*(recent[i]-my);den+=(x-mx)**2;});
+  const slope=num/den;const curBw=recent[n-1];
+  const hist=bwS.slice(Math.max(0,N-252)).filter(v=>v!=null).sort((a,b)=>a-b);
+  const floor=hist[Math.floor(hist.length*0.10)];
+  const pctl=Math.round(hist.filter(v=>v<=curBw).length/hist.length*100);
+  if(curBw<=floor*1.1)return{state:'at-floor',curBw,floor,pctl};
+  if(slope>=-1e-6)return{state:'expanding',curBw,floor,pctl,slope};
+  const daysToFloor=(floor-curBw)/slope;
+  if(daysToFloor>180)return{state:'slow',curBw,floor,pctl,days:Math.round(daysToFloor)};
+  const fuzz=Math.max(5,Math.abs(daysToFloor)*0.4);
+  return{state:'projected',curBw,floor,pctl,days:Math.round(daysToFloor),fuzzLo:Math.round(daysToFloor-fuzz),fuzzHi:Math.round(daysToFloor+fuzz)};
+}
+function renderConvergence(d,apex){
+  const ab=$('apexBox');
+  let apexLo=null,apexHi=null;
+  if(apex.state==='projected'){
+    apexLo=Math.max(0,apex.fuzzLo);apexHi=apex.fuzzHi;
+    ab.innerHTML='<div class="apexline"><b class="acc">Compression apex projected ~'+apex.days+' days out</b> (window '+apexLo+'\u2013'+apexHi+'d). Bandwidth at '+apex.pctl+'th pct, contracting toward its floor. <span class="dim">The coil is tightening \u2014 a focal point is forming.</span></div>';
+  } else if(apex.state==='at-floor'){
+    ab.innerHTML='<div class="apexline"><b class="warn">Compression AT its floor now</b> (bandwidth '+apex.pctl+'th pct). Apex is the present \u2014 any catalyst expiring in ~2 weeks is the one to watch.</div>';
+    apexLo=0;apexHi=14;
+  } else if(apex.state==='expanding'){
+    ab.innerHTML='<div class="apexline"><b class="dim">No apex \u2014 bandwidth expanding</b> (coil releasing, not tightening, '+apex.pctl+'th pct). Convergence timing not meaningful.</div>';
+  } else if(apex.state==='slow'){
+    ab.innerHTML='<div class="apexline"><b class="dim">Apex very far out</b> (~'+apex.days+'d) \u2014 too gradual to time. No near-term focal point.</div>';
+  } else { ab.innerHTML='<div class="apexline dim">Insufficient data to project an apex.</div>'; }
+  const cal=$('calBox');
+  const dated=d.contracts.filter(c=>c.dte!=null&&c.dte>=0&&c.dte<=90);
+  if(!dated.length){cal.innerHTML='<div class="dim" style="font-size:11px">No dated contracts in the next 90 days.</div>';$('convBox').innerHTML='';$('convNote').textContent='';return null;}
+  const buckets={};const bwk=7;
+  dated.forEach(c=>{const b=Math.floor(c.dte/bwk);if(!buckets[b])buckets[b]={vol:0,n:0,maxVol:0,top:''};buckets[b].vol+=(c.vol||0);buckets[b].n++;if((c.vol||0)>buckets[b].maxVol){buckets[b].maxVol=c.vol||0;buckets[b].top=c.title;}});
+  const maxBuckets=13;const bvals=[];for(let b=0;b<maxBuckets;b++)bvals.push(buckets[b]?buckets[b].vol:0);
+  const maxV=Math.max(...bvals,1);
+  const winLo=apexLo,winHi=apexHi;
+  let bars='';
+  for(let b=0;b<maxBuckets;b++){const dLo=b*bwk,dHi=b*bwk+bwk;const inWin=winLo!=null&&dHi>=winLo&&dLo<=winHi;const h=Math.round((bvals[b]/maxV)*100);
+    bars+='<div class="calbar'+(inWin?' inwin':'')+'" style="height:'+Math.max(2,h)+'%" title="'+dLo+'-'+dHi+'d: $'+Math.round(bvals[b]/1000)+'k / '+(buckets[b]?buckets[b].n:0)+' contracts"><span class="callabel">'+dLo+'d</span></div>';}
+  cal.innerHTML='<div style="font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Catalyst expiration calendar \u00b7 volume-weighted \u00b7 next 90d \u00b7 gold=apex window</div><div class="cal">'+bars+'</div><div style="height:30px"></div>';
+  const cb=$('convBox');
+  if(winLo==null){cb.innerHTML='<div class="convflag miss">No apex projection right now \u2014 nothing to converge against. Watch this when the coil tightens.</div>';$('convNote').textContent='';return null;}
+  let winVol=0,winTop='',winTopVol=0,winN=0;
+  dated.forEach(c=>{if(c.dte>=winLo&&c.dte<=winHi){winVol+=(c.vol||0);winN++;if((c.vol||0)>winTopVol){winTopVol=c.vol||0;winTop=c.title;}}});
+  const totalVol=dated.reduce((a,c)=>a+(c.vol||0),0);const share=totalVol>0?winVol/totalVol:0;
+  const hit=share>=0.25&&winN>=2&&winVol>=500000;
+  cb.innerHTML=hit
+    ?'<div class="convflag hit"><b>\u2299 CONVERGENCE \u2014 watch window '+winLo+'\u2013'+winHi+'d.</b> '+Math.round(share*100)+'% of near-term catalyst money ($'+Math.round(winVol/1000)+'k across '+winN+' contracts) expires inside the projected apex window. Structure loaded + dated triggers scheduled. Heaviest: "'+winTop.slice(0,44)+'".</div>'
+    :'<div class="convflag miss">No strong convergence. '+Math.round(share*100)+'% of catalyst money ($'+Math.round(winVol/1000)+'k, '+winN+' contracts) in the apex window \u2014 below threshold. Coil and calendar aren\u2019t pointing at the same moment.</div>';
+  $('convNote').innerHTML='Honest limits: clusters can be calendar artifacts (month-end listing, not real deadlines); the apex projection is fuzzy; and we have no history to prove convergence windows matter \u2014 only the forward log can. Volume-weighting means deep, active contracts dominate; thin month-end housekeeping is discounted.';
+  return hit?{winLo,winHi,share:Math.round(share*100)}:null;
+}
 let lastVerdict=null,lastSpot=null;
 async function run(){
   $('run').textContent='gathering data…';$('run').disabled=true;
@@ -234,6 +310,8 @@ async function run(){
   html+='<h3>Inferences drawn</h3>'+v.key_points.map(p=>'<div class="pt">'+p+'</div>').join('');
   $('reasonBox').innerHTML=html;
   $('falsifyBox').innerHTML='<div class="falsify"><b class="bear">What would change this read:</b><br>'+v.falsifiers.map(f=>'• '+f).join('<br>')+'</div>';
+  // apex × catalyst convergence
+  try{ const apex=projectApex(d.spot); renderConvergence(d,apex); }catch(e){ $('apexBox').innerHTML='<div class="apexline dim">Convergence calc error: '+(e.message||e)+'</div>'; }
   lastVerdict={tilt:v.tilt,confidence:v.confidence,headline:v.headline};
   $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>analyzed — silver $'+d.spot.toFixed(2)+' · '+v.tilt.toUpperCase()+' @ '+v.confidence+'% · '+new Date().toLocaleTimeString();
   $('run').textContent='▶ Re-analyze';$('run').disabled=false;
