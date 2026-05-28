@@ -183,7 +183,19 @@ function reason(d){
   let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
   const contradiction=oilTilt!=null&&Math.sign(contractTilt)!==Math.sign(oilTilt)&&Math.abs(contractTilt)>0.35&&Math.abs(oilTilt)>0.25;
   let conf=22+Math.min(20,anchors.length*6)+((oilTilt!=null&&Math.abs(oilTilt)>0.3)?18:0)+((oilTilt!=null&&Math.sign(contractTilt)===Math.sign(oilTilt))?12:0);
-  conf=Math.min(78,conf);if(contradiction)conf=Math.min(conf,28);
+  // PRICED-IN PENALTY: when relief is already consensus (far-dated odds high), the channel may
+  // have already fired; sell-the-news risk is elevated. Cap confidence on bullish calls accordingly.
+  // Rationale: silver fell across multiple confident bullish reads while the regime sat at 57-79%.
+  // We can't validate this yet — it's a hypothesis — but the asymmetric room-for-surprise is real.
+  let pricedIn=false, pricedInLevel=null;
+  if(regimeLevel!=null && regimeLevel>=60 && netTilt>0){
+    pricedIn=true; pricedInLevel=regimeLevel;
+    // taper bullish confidence as regime exceeds 60%: at 60% = no penalty, at 80% = cap at 45
+    const over=Math.min(1,(regimeLevel-60)/20);
+    const cap=Math.round(65-over*20); // 65 down to 45
+    conf=Math.min(conf,cap);
+  }
+  if(contradiction)conf=Math.min(conf,28);
   const dir=netTilt,tilt=dir>0.15?'bullish':dir<-0.15?'bearish':'balanced';
   // narrative
   const decayed=C.filter(c=>c.decay);
@@ -207,14 +219,16 @@ function reason(d){
   } else timelineTxt='Insufficient dated deal contracts to build a catalyst term structure today.';
   let headline;
   if(contradiction)headline='Contracts and oil disagree — no confident call. Oil ('+fmt(d.oilChg)+'%) is the validated channel; the contract lean is treated as suspect.';
+  else if(tilt==='bullish'&&pricedIn)headline='Relief tilt, but consensus already priced (regime '+Math.round(pricedInLevel)+'% — sell-the-news risk elevated). Confidence throttled.';
   else if(tilt==='bullish')headline='Relief tilt: '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime — the bullish-silver setup.';
   else if(tilt==='bearish')headline='Stagflation tilt: '+(d.oilChg!=null&&d.oilChg>1?'oil rising '+fmt(d.oilChg)+'% ':'')+'with '+regimeWord+' — the bearish-silver setup.';
   else headline='Balanced — coil holds. No channel is decisively in control today.';
-  const reg='Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.';
+  const reg='Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.'+(pricedIn?' <b class="warn">CAUTION:</b> regime is already at consensus — relief is the priced view, not a surprise. Sell-the-news risk material; confidence capped accordingly.':'');
   const decTxt=decayed.length?decayed.length+' near-dated contract'+(decayed.length===1?'':'s')+' bleeding toward zero on calendar decay (e.g. "'+decayed[0].title.slice(0,40)+'" '+fmt(decayed[0].delta)+'pt at '+decayed[0].dte+'d) — excluded from direction. These deadline-failures are NOT escalation.':'No near-dated decay distortion today.';
   const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.'));
   const points=[];
   points.push('Regime (deep curve): '+regimeWord+' at ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' deal odds — the de-escalation backdrop that drives silver via oil.');
+  if(pricedIn)points.push('PRICED-IN check fired: regime at '+Math.round(pricedInLevel)+'% means relief is consensus, not surprise. Room to upside-disappoint > room to upside-surprise. Confidence capped — this addresses the failure mode where confident bullish reads preceded silver DOWN-days.');
   if(decayed.length)points.push('Calendar decay disarmed: '+decayed.length+' near-dated drop'+(decayed.length===1?'':'s')+' correctly read as deadline-lapse, not escalation (the trap that fooled the arithmetic engine).');
   if(standout&&Math.abs(standout.delta)>=5)points.push('Standout real move: "'+standout.title.slice(0,40)+'" '+fmt(standout.delta)+'pt — '+(standout.escSign>0?'de-escalation/normalization signal':standout.escSign<0?'escalation signal':'notable repricing')+', not decay.');
   points.push('Escalation watch: max escalation odds '+Math.round(escLevel)+'%'+(escRising?' and rising':' and quiet')+' → '+(escTilt<-0.1?'meaningful bearish drag':'no escalation bid'));
@@ -224,7 +238,8 @@ function reason(d){
   else if(d.oilChg!=null&&d.oilChg>0)fals.push('Oil rolling back down — the stagflation pressure releases.');
   fals.push('Deep deal odds (now ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+') breaking '+(regimeLevel!=null&&regimeLevel>=50?'below 50% — de-escalation regime failing.':'above 50% — de-escalation taking hold.'));
   fals.push('An escalation contract (blockade/airspace) spiking high on real news rather than calendar noise.');
-  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction};
+  if(pricedIn)fals.push('Silver continuing to ignore relief signals — would confirm sell-the-news regime; downgrade the channel until proven otherwise.');
+  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction,pricedIn,regimeLevel};
 }
 
 // ===== MULTI-TIMESCALE TRENDLINE GEOMETRY =====
@@ -363,6 +378,7 @@ async function run(){
   $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
   let d;try{d=await gatherData();}catch(e){$('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return;}
   lastSpot=d.spot;
+  scoreLog(d.spot); persist(); render();
   const v=reason(d);
   // data table with role tags
   const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
@@ -401,9 +417,48 @@ async function restore(){
   if(!loaded&&window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}
   render();
 }
-function render(){const b=$('logBox');if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}b.innerHTML=LOG.slice(-30).reverse().map(r=>'<div class="logrow">'+r.t+' · $'+r.spot.toFixed(2)+' · <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'% · '+(r.headline||'').slice(0,66)+'</div>').join('');}
-$('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,...lastVerdict});persist();render();});
-$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
+// FORWARD-FILL SCORING: when a logged entry is +5d or +10d old, fill in silver's price then,
+// and score whether the call was right. This is the validation accruing in time — without it,
+// the log is a list of guesses; with it, it's a measurable backtest.
+function scoreLog(currentSpot){
+  if(!LOG.length||currentSpot==null)return;
+  const now=new Date();
+  LOG.forEach(r=>{
+    const logTime=new Date(r.t.replace(' ','T'));
+    const daysSince=(now-logTime)/86400000;
+    if(r.p5==null&&daysSince>=5){r.p5=currentSpot; r.pct5=((currentSpot-r.spot)/r.spot)*100;
+      r.hit5=(r.tilt==='bullish'&&r.pct5>0)||(r.tilt==='bearish'&&r.pct5<0)||(r.tilt==='balanced'&&Math.abs(r.pct5)<2);}
+    if(r.p10==null&&daysSince>=10){r.p10=currentSpot; r.pct10=((currentSpot-r.spot)/r.spot)*100;
+      r.hit10=(r.tilt==='bullish'&&r.pct10>0)||(r.tilt==='bearish'&&r.pct10<0)||(r.tilt==='balanced'&&Math.abs(r.pct10)<2);}
+  });
+}
+function hitRate(){
+  const s5=LOG.filter(r=>r.hit5!=null);const s10=LOG.filter(r=>r.hit10!=null);
+  return {n5:s5.length,hit5:s5.length?Math.round(s5.filter(r=>r.hit5).length/s5.length*100):null,
+          n10:s10.length,hit10:s10.length?Math.round(s10.filter(r=>r.hit10).length/s10.length*100):null,
+          avg5:s5.length?(s5.reduce((a,r)=>a+(r.tilt==='bearish'?-r.pct5:r.pct5),0)/s5.length):null,
+          avg10:s10.length?(s10.reduce((a,r)=>a+(r.tilt==='bearish'?-r.pct10:r.pct10),0)/s10.length):null};
+}
+function render(){
+  const b=$('logBox');
+  if(!LOG.length){b.innerHTML='<div class="dim" style="font-size:11px">No verdicts logged yet.</div>';return;}
+  const hr=hitRate();
+  let scoreLine='';
+  if(hr.n5||hr.n10){
+    scoreLine='<div style="font-size:11px;padding:6px 0;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Track record so far:</b> ';
+    if(hr.n5)scoreLine+=' <b class="'+(hr.hit5>=55?'bull':hr.hit5<=45?'bear':'dim')+'">+5d: '+hr.hit5+'% hit ('+hr.n5+' scored, avg '+(hr.avg5>=0?'+':'')+hr.avg5.toFixed(1)+'%)</b>';
+    if(hr.n10)scoreLine+=' \u00b7 <b class="'+(hr.hit10>=55?'bull':hr.hit10<=45?'bear':'dim')+'">+10d: '+hr.hit10+'% hit ('+hr.n10+' scored, avg '+(hr.avg10>=0?'+':'')+hr.avg10.toFixed(1)+'%)</b>';
+    scoreLine+='</div>';
+  }
+  b.innerHTML=scoreLine+LOG.slice(-30).reverse().map(r=>{
+    let scoreTag='';
+    if(r.hit5!=null)scoreTag+=' <span class="'+(r.hit5?'bull':'bear')+'" style="font-size:10px">[+5d '+(r.pct5>=0?'+':'')+r.pct5.toFixed(1)+'% '+(r.hit5?'\u2713':'\u2717')+']</span>';
+    if(r.hit10!=null)scoreTag+=' <span class="'+(r.hit10?'bull':'bear')+'" style="font-size:10px">[+10d '+(r.pct10>=0?'+':'')+r.pct10.toFixed(1)+'% '+(r.hit10?'\u2713':'\u2717')+']</span>';
+    return '<div class="logrow">'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
+  }).join('');
+}
+$('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,p5:null,pct5:null,hit5:null,p10:null,pct10:null,hit10:null,...lastVerdict});persist();render();});
+$('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','p5','pct5','hit5','p10','pct10','hit10','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,r.p5||'',r.pct5||'',r.hit5==null?'':r.hit5,r.p10||'',r.pct10||'',r.hit10==null?'':r.hit10,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
 $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});
 $('run').addEventListener('click',run);
 restore();
