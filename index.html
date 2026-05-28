@@ -471,7 +471,20 @@ function render(){
     return '<div class="logrow">'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
   }).join('');
 }
-$('logBtn').addEventListener('click',()=>{if(!lastVerdict){alert('Analyze first');return;}LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,p5:null,pct5:null,hit5:null,p10:null,pct10:null,hit10:null,...lastVerdict});persist();render();});
+$('logBtn').addEventListener('click',()=>{
+  if(!lastVerdict){alert('Analyze first');return;}
+  // Guard against duplicate same-day entries that would inflate the +5d/+10d sample.
+  // Independent daily observations are what the hit-rate needs; clustered re-runs are one observation.
+  if(LOG.length){
+    const last=LOG[LOG.length-1];
+    const hrsSince=(new Date()-new Date(last.t.replace(' ','T')))/3600000;
+    if(hrsSince<20){
+      const proceed=confirm('You logged a verdict '+(hrsSince<1?'less than an hour':Math.round(hrsSince)+' hours')+' ago.\n\nLogging again today double-counts one observation and inflates the track-record sample. Best practice is ONE entry per day (ideally near the close).\n\nLog anyway?');
+      if(!proceed)return;
+    }
+  }
+  LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,p5:null,pct5:null,hit5:null,p10:null,pct10:null,hit10:null,...lastVerdict});persist();render();
+});
 $('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','p5','pct5','hit5','p10','pct10','hit10','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,r.p5||'',r.pct5||'',r.hit5==null?'':r.hit5,r.p10||'',r.pct10||'',r.hit10==null?'':r.hit10,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
 $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});
 $('run').addEventListener('click',run);
