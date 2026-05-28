@@ -100,6 +100,20 @@
   </div>
 
   <div class="panel">
+    <h2>Channel scope <span class="num">what this engine sees \u2014 and doesn\u2019t</span></h2>
+    <div class="psub">The dual-channel model was validated against the current Iran/Hormuz arc. Silver is moved by multiple geopolitical regimes simultaneously, and this engine only models one of them. The others can offset or amplify it independently. Calls here are one channel\u2019s read, not a silver verdict.</div>
+    <div class="thinking" style="margin-top:6px">
+      <p><b class="gold">\u2713 Modeled here: Iran / Hormuz / oil channel.</b> De-escalation \u2192 oil falls \u2192 real rates ease \u2192 silver rises (relief). Escalation \u2192 oil rises \u2192 stagflation \u2192 silver falls. The headline tilt above is this channel\u2019s read, anchored on the realized oil move and the deep deal-contract curve. Validated against this conflict\u2019s news archive.</p>
+      <p><b class="bear">\u2717 NOT modeled here \u2014 active but invisible to the engine:</b></p>
+      <p style="padding-left:14px;margin:4px 0"><b>Real-rate / Fed channel.</b> Silver pays no yield, so when real rates rise (Fed hawkish, dollar firm), silver falls <i>independent of geopolitics</i>. This is likely the biggest unmodeled driver. In 2022 the Fed hiking cycle dragged silver from $26 to $18 <i>while</i> Russia/Ukraine escalated \u2014 the macro channel completely overwhelmed any geopolitical bid. Recent confident-bullish reads losing against silver are most consistent with this channel quietly tightening.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Russia / Ukraine haven channel (smaller than I previously implied).</b> Honest empirical check: silver got a ~6% bid in the 2 weeks AFTER the Feb 2022 invasion, then mean-reverted hard. Subsequent escalations (mobilization, annexations, Poland missile, first Oreshnik) produced little measurable silver move. So this channel exists but is short-lived shock-bid, not a multi-quarter regime \u2014 less load-bearing for silver than for gold.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Structural fiat / reserve channel.</b> Slow multi-quarter: BRICS gold/silver accumulation, deficit trajectory, dollar reserve share. Probably the floor under silver\u2019s $70s coil \u2014 structural buying as base while tactical channels noise the daily move.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Positioning / COT / gamma.</b> Speculative positioning and dealer hedging extremes that can move silver against fundamentals. Unmeasured.</p>
+      <p><b class="warn">Implication:</b> a bullish read on the Iran/oil channel does not equal a bullish silver outlook. If the Fed/real-rate channel is quietly firming (a dovish surprise priced out, or a strong dollar), silver can fall on falling oil because that macro channel loses more than the relief channel gains. The recent log pattern (confident bullish reads, silver down) is most consistent with that \u2014 the engine sees one channel and the tape is the sum of several, with the macro one likely dominant.</p>
+    </div>
+  </div>
+
+  <div class="panel">
     <h2>How it reasons — and its limits <span class="num">read me</span></h2>
     <div class="thinking">
       <p><b class="gold">The logic:</b> (1) Each contract is split into level, Δ, days-to-expiry, depth, theme. (2) A near-dated contract falling toward zero is <i>calendar decay</i>, excluded from direction. (3) The <i>regime</i> is read from the deepest, longest-dated de-escalation contracts — their LEVEL says whether peace is structurally expected. (4) Escalation contracts only count when high-level AND rising. (5) Oil is the validated anchor and gets the dominant vote; when contracts disagree with oil, confidence collapses to a no-call.</p>
@@ -218,11 +232,11 @@ function reason(d){
     timelineTxt='Catalyst term structure: P(deal) runs '+Math.round(nearP.yes)+'% by '+nearP.dte+'d → '+Math.round(farP.yes)+'% by '+farP.dte+'d. Shape: '+shape+'. Duration of tilt: '+duration+'.';
   } else timelineTxt='Insufficient dated deal contracts to build a catalyst term structure today.';
   let headline;
-  if(contradiction)headline='Contracts and oil disagree — no confident call. Oil ('+fmt(d.oilChg)+'%) is the validated channel; the contract lean is treated as suspect.';
-  else if(tilt==='bullish'&&pricedIn)headline='Relief tilt, but consensus already priced (regime '+Math.round(pricedInLevel)+'% — sell-the-news risk elevated). Confidence throttled.';
-  else if(tilt==='bullish')headline='Relief tilt: '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime — the bullish-silver setup.';
-  else if(tilt==='bearish')headline='Stagflation tilt: '+(d.oilChg!=null&&d.oilChg>1?'oil rising '+fmt(d.oilChg)+'% ':'')+'with '+regimeWord+' — the bearish-silver setup.';
-  else headline='Balanced — coil holds. No channel is decisively in control today.';
+  if(contradiction)headline='Iran/oil channel: contracts and oil disagree — no confident call. (Other channels not modeled — see scope note.)';
+  else if(tilt==='bullish'&&pricedIn)headline='Iran/oil channel only: relief tilt, but consensus already priced (regime '+Math.round(pricedInLevel)+'%) — sell-the-news risk + other-channel offsets not modeled. Confidence throttled.';
+  else if(tilt==='bullish')headline='Iran/oil channel only: relief tilt, '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime. One channel\u2019s read — see scope note before treating as a silver verdict.';
+  else if(tilt==='bearish')headline='Iran/oil channel only: stagflation tilt, '+(d.oilChg!=null&&d.oilChg>1?'oil rising '+fmt(d.oilChg)+'% ':'')+'with '+regimeWord+'. One channel\u2019s read \u2014 other channels not modeled here.';
+  else headline='Iran/oil channel: balanced \u2014 no decisive lean. Other channels not modeled here.';
   const reg='Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.'+(pricedIn?' <b class="warn">CAUTION:</b> regime is already at consensus — relief is the priced view, not a surprise. Sell-the-news risk material; confidence capped accordingly.':'');
   const decTxt=decayed.length?decayed.length+' near-dated contract'+(decayed.length===1?'':'s')+' bleeding toward zero on calendar decay (e.g. "'+decayed[0].title.slice(0,40)+'" '+fmt(decayed[0].delta)+'pt at '+decayed[0].dte+'d) — excluded from direction. These deadline-failures are NOT escalation.':'No near-dated decay distortion today.';
   const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.'));
