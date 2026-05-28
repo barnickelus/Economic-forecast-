@@ -6,7 +6,7 @@
     "sectorETF": "SMH",
     "typicalVolAnnual": 0.5
   },
-  "fetchedAt": "2026-05-27T22:57:24.605Z",
+  "fetchedAt": "2026-05-28T00:07:17.537Z",
   "sources": {
     "asset": "yahoo:NVDA",
     "sector": "yahoo:SMH"
@@ -11443,7 +11443,7 @@
     "source": "NVDA"
   },
   "macro": {
-    "fetchedAt": "2026-05-27T22:57:23.652Z",
+    "fetchedAt": "2026-05-28T00:07:15.332Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11452,16 +11452,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 99.219,
+      "spot": 99.289,
       "prev": 99.16999816894531,
-      "change": 0.04900183105468159,
-      "changePct": 0.0494119511540198
+      "change": 0.11900183105468898,
+      "changePct": 0.11999781511738891
     },
     "oil": {
-      "spot": 89.62,
+      "spot": 90.13,
       "prev": 93.88999938964844,
-      "change": -4.269999389648433,
-      "changePct": -4.547874552568384
+      "change": -3.759999389648442,
+      "changePct": -4.004685711035365
     },
     "vix": {
       "spot": 16.29,
