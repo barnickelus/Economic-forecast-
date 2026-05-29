@@ -27,6 +27,7 @@
   .btn:hover{filter:brightness(1.1)}.btn:disabled{opacity:.5}.btn.ghost{background:var(--bg3);color:var(--acc);border:1px solid var(--acc)}
   table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:right;padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top}
   th{font-size:9px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;font-weight:400}td:first-child,th:first-child{text-align:left}
+  td.ctitle{white-space:normal;word-break:break-word;max-width:0;width:42%;line-height:1.35}
   .banner{font-size:11px;letter-spacing:1px;padding:8px 14px;border:1px solid var(--warn);color:var(--warn);background:rgba(226,194,91,.06);margin-bottom:14px;text-transform:uppercase}
   .banner.ok{border-color:var(--bull);color:var(--bull);background:rgba(93,207,126,.06)}
   .banner.err{border-color:var(--bear);color:var(--bear);background:rgba(232,92,92,.06)}
@@ -100,16 +101,16 @@
   </div>
 
   <div class="panel">
-    <h2>Channel scope <span class="num">what this engine sees \u2014 and doesn\u2019t</span></h2>
-    <div class="psub">The dual-channel model was validated against the current Iran/Hormuz arc. Silver is moved by multiple geopolitical regimes simultaneously, and this engine only models one of them. The others can offset or amplify it independently. Calls here are one channel\u2019s read, not a silver verdict.</div>
+    <h2>Channel scope <span class="num">what this engine sees — and doesn’t</span></h2>
+    <div class="psub">The dual-channel model was validated against the current Iran/Hormuz arc. Silver is moved by multiple geopolitical regimes simultaneously, and this engine only models one of them. The others can offset or amplify it independently. Calls here are one channel’s read, not a silver verdict.</div>
     <div class="thinking" style="margin-top:6px">
-      <p><b class="gold">\u2713 Modeled here: Iran / Hormuz / oil channel.</b> De-escalation \u2192 oil falls \u2192 real rates ease \u2192 silver rises (relief). Escalation \u2192 oil rises \u2192 stagflation \u2192 silver falls. The headline tilt above is this channel\u2019s read, anchored on the realized oil move and the deep deal-contract curve. Validated against this conflict\u2019s news archive.</p>
-      <p><b class="bear">\u2717 NOT modeled here \u2014 active but invisible to the engine:</b></p>
-      <p style="padding-left:14px;margin:4px 0"><b>Real-rate / Fed channel.</b> Silver pays no yield, so when real rates rise (Fed hawkish, dollar firm), silver falls <i>independent of geopolitics</i>. This is likely the biggest unmodeled driver. In 2022 the Fed hiking cycle dragged silver from $26 to $18 <i>while</i> Russia/Ukraine escalated \u2014 the macro channel completely overwhelmed any geopolitical bid. Recent confident-bullish reads losing against silver are most consistent with this channel quietly tightening.</p>
-      <p style="padding-left:14px;margin:4px 0"><b>Russia / Ukraine haven channel (smaller than I previously implied).</b> Honest empirical check: silver got a ~6% bid in the 2 weeks AFTER the Feb 2022 invasion, then mean-reverted hard. Subsequent escalations (mobilization, annexations, Poland missile, first Oreshnik) produced little measurable silver move. So this channel exists but is short-lived shock-bid, not a multi-quarter regime \u2014 less load-bearing for silver than for gold.</p>
-      <p style="padding-left:14px;margin:4px 0"><b>Structural fiat / reserve channel.</b> Slow multi-quarter: BRICS gold/silver accumulation, deficit trajectory, dollar reserve share. Probably the floor under silver\u2019s $70s coil \u2014 structural buying as base while tactical channels noise the daily move.</p>
+      <p><b class="gold">✓ Modeled here: Iran / Hormuz / oil channel.</b> De-escalation → oil falls → real rates ease → silver rises (relief). Escalation → oil rises → stagflation → silver falls. The headline tilt above is this channel’s read, anchored on the realized oil move and the deep deal-contract curve. Validated against this conflict’s news archive.</p>
+      <p><b class="bear">✗ NOT modeled here — active but invisible to the engine:</b></p>
+      <p style="padding-left:14px;margin:4px 0"><b>Real-rate / Fed channel.</b> Silver pays no yield, so when real rates rise (Fed hawkish, dollar firm), silver falls <i>independent of geopolitics</i>. This is likely the biggest unmodeled driver. In 2022 the Fed hiking cycle dragged silver from $26 to $18 <i>while</i> Russia/Ukraine escalated — the macro channel completely overwhelmed any geopolitical bid. Recent confident-bullish reads losing against silver are most consistent with this channel quietly tightening.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Russia / Ukraine haven channel (smaller than I previously implied).</b> Honest empirical check: silver got a ~6% bid in the 2 weeks AFTER the Feb 2022 invasion, then mean-reverted hard. Subsequent escalations (mobilization, annexations, Poland missile, first Oreshnik) produced little measurable silver move. So this channel exists but is short-lived shock-bid, not a multi-quarter regime — less load-bearing for silver than for gold.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Structural fiat / reserve channel.</b> Slow multi-quarter: BRICS gold/silver accumulation, deficit trajectory, dollar reserve share. Probably the floor under silver’s $70s coil — structural buying as base while tactical channels noise the daily move.</p>
       <p style="padding-left:14px;margin:4px 0"><b>Positioning / COT / gamma.</b> Speculative positioning and dealer hedging extremes that can move silver against fundamentals. Unmeasured.</p>
-      <p><b class="warn">Implication:</b> a bullish read on the Iran/oil channel does not equal a bullish silver outlook. If the Fed/real-rate channel is quietly firming (a dovish surprise priced out, or a strong dollar), silver can fall on falling oil because that macro channel loses more than the relief channel gains. The recent log pattern (confident bullish reads, silver down) is most consistent with that \u2014 the engine sees one channel and the tape is the sum of several, with the macro one likely dominant.</p>
+      <p><b class="warn">Implication:</b> a bullish read on the Iran/oil channel does not equal a bullish silver outlook. If the Fed/real-rate channel is quietly firming (a dovish surprise priced out, or a strong dollar), silver can fall on falling oil because that macro channel loses more than the relief channel gains. The recent log pattern (confident bullish reads, silver down) is most consistent with that — the engine sees one channel and the tape is the sum of several, with the macro one likely dominant.</p>
     </div>
   </div>
 
@@ -458,7 +459,7 @@ async function run(){
   const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
   const tb=$('dataTable').querySelector('tbody');tb.innerHTML='';
   d.contracts.forEach(c=>{const dcls=c.delta==null?'dim':c.delta>=0?'bull':'bear';const near=c.near;
-    tb.innerHTML+='<tr><td>'+c.title.slice(0,42)+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'</td><td class="'+(near?'warn':'dim')+'">'+(c.dte==null?'—':c.dte+'d')+'</td><td class="dim">$'+Math.round((c.vol||0)/1000)+'k</td><td><span class="rtag '+(roleClass[c.role]||'rt-context')+'">'+c.role+'</span></td></tr>';});
+    tb.innerHTML+='<tr><td class="ctitle" title="'+c.title.replace(/"/g,'&quot;')+'">'+c.title+'</td><td class="purp">'+(c.yes==null?'—':c.yes.toFixed(0)+'%')+'</td><td class="'+dcls+'">'+fmt(c.delta)+'</td><td class="'+(near?'warn':'dim')+'">'+(c.dte==null?'—':c.dte+'d')+'</td><td class="dim">$'+Math.round((c.vol||0)/1000)+'k</td><td><span class="rtag '+(roleClass[c.role]||'rt-context')+'">'+c.role+'</span></td></tr>';});
   $('dataMeta').innerHTML='Silver $'+d.spot.toFixed(2)+' ('+fmt(d.chg)+'%) · Brent '+(d.oilSp?'$'+d.oilSp.toFixed(2)+' ('+fmt(d.oilChg)+'%)':'n/a')+' · '+d.contracts.length+' live contracts';
   // verdict
   const tc=v.tilt==='bullish'?'bull':v.tilt==='bearish'?'bear':'dim';
