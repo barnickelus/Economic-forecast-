@@ -174,8 +174,14 @@ function reason(d){
     // a near-dated contract RISING hard is NOT decay — it's real repricing on news
     c.repriceUp=c.delta!=null&&Math.abs(c.delta)>=8&&!c.decay;
     const t=c.title.toLowerCase();
-    if(/peace|deal|ceasefire|agreement|returns to normal|restored|surrender|nuclear|diplomat/.test(t))c.escSign=+1;
-    else if(/blockade|airspace|strike|attack|invade|war|sink|missile/.test(t))c.escSign=-1;
+    // reversal/negation words that flip a threat-word into DE-escalation:
+    // "blockade ... LIFTED", "airspace ... REOPENED", "war ... ENDS", "traffic RETURNS to normal"
+    const reversal=/lifted|reopen|re-open|ends?|ended|ending|resolved|withdraw|withdrawn|returns? to normal|restored|normaliz|de-?escalat|stand[ -]?down|cease|halt(ed|s)?|truce/.test(t);
+    const threat=/blockade|airspace|strike|attack|invade|war|sink|missile|closure|closes|seize|shut/.test(t);
+    const dealish=/peace|deal|ceasefire|agreement|surrender|diplomat|nuclear (deal|agreement|talks|accord)/.test(t);
+    if(dealish||(threat&&reversal))c.escSign=+1;        // de-escalation: a deal, OR a threat being undone
+    else if(threat&&!reversal)c.escSign=-1;             // genuine escalation: threat word, no reversal
+    else if(reversal)c.escSign=+1;                       // reversal language alone (returns to normal etc.)
     else c.escSign=0;
     if(c.thin)c.role='thin';
     else if(c.decay)c.role='decay·excluded';
