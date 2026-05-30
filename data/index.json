@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T13:48:50.913Z",
+  "generatedAt": "2026-05-30T15:13:00.543Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -18,7 +18,7 @@
       "assetClass": "commodity",
       "spot": 4593,
       "changePct": 2.082550605204846,
-      "healthyCount": 2,
+      "healthyCount": 1,
       "totalCount": 3
     },
     {
@@ -42,23 +42,13 @@
       "totalCount": 2
     },
     {
-      "ticker": "TSLA",
-      "filename": "TSLA.json",
-      "name": "Tesla",
-      "assetClass": "equity",
-      "spot": 435.79,
-      "changePct": -1.4272802570462182,
-      "healthyCount": 2,
-      "totalCount": 2
-    },
-    {
       "ticker": "SPY",
       "filename": "SPY.json",
       "name": "S&P 500 ETF",
       "assetClass": "index",
       "spot": 756.48,
       "changePct": 0.24914185991096843,
-      "healthyCount": 2,
+      "healthyCount": 1,
       "totalCount": 2
     },
     {
@@ -76,8 +66,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 73669.2,
-      "changePct": 0.4043428637870297,
+      "spot": 73842.79,
+      "changePct": 0.6409300654632314,
       "healthyCount": 2,
       "totalCount": 2
     },
