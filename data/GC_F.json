@@ -7,14 +7,15 @@
     "spotSource": "XAU=X",
     "typicalVolAnnual": 0.15
   },
-  "fetchedAt": "2026-05-30T15:13:00.696Z",
+  "fetchedAt": "2026-05-30T16:34:01.204Z",
   "sources": {
-    "asset": "yahoo:GC=F"
+    "asset": "yahoo:GC=F",
+    "sector": "yahoo:GDX"
   },
   "log": [
     "✓ GC=F: $4593.00 (+2.08%)",
     "✓ GC=F history: 1257 bars (5.0y)",
-    "✗ sector GDX: HTTP 400",
+    "✓ sector GDX: $89.49 (+2.65%)",
     "✗ spot XAU=X: HTTP 404"
   ],
   "asset": {
@@ -11434,6 +11435,13 @@
     ],
     "bars": 1257
   },
+  "sector": {
+    "spot": 89.49,
+    "prev": 87.18000030517578,
+    "change": 2.3099996948242136,
+    "changePct": 2.64968993661161
+  },
+  "sectorName": "GDX",
   "display": {
     "spot": 4593,
     "prev": 4499.2998046875,
@@ -11442,7 +11450,7 @@
     "source": "GC=F"
   },
   "macro": {
-    "fetchedAt": "2026-05-30T15:13:00.057Z",
+    "fetchedAt": "2026-05-30T16:34:00.740Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11481,6 +11489,6 @@
       "changePct": -0.04489166644902401
     }
   },
-  "healthyCount": 1,
+  "healthyCount": 2,
   "totalCount": 3
 }
