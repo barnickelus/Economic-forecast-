@@ -6,21 +6,21 @@
     "sectorETF": "UUP",
     "typicalVolAnnual": 0.08
   },
-  "fetchedAt": "2026-05-31T17:12:15.050Z",
+  "fetchedAt": "2026-05-31T18:45:39.874Z",
   "sources": {
     "asset": "yahoo:DX-Y.NYB",
     "sector": "yahoo:UUP"
   },
   "log": [
-    "✓ DX-Y.NYB: $98.91 (-0.11%)",
+    "✓ DX-Y.NYB: $98.94 (-0.08%)",
     "✓ DX-Y.NYB history: 1257 bars (5.0y)",
     "✓ sector UUP: $27.66 (-0.14%)"
   ],
   "asset": {
-    "spot": 98.908,
+    "spot": 98.942,
     "prev": 99.0199966430664,
-    "change": -0.111996643066405,
-    "changePct": -0.11310507661408534
+    "change": -0.07799664306641318,
+    "changePct": -0.07876857777279543
   },
   "series": [
     98.37999725341797,
@@ -9697,14 +9697,14 @@
   },
   "sectorName": "UUP",
   "display": {
-    "spot": 98.908,
+    "spot": 98.942,
     "prev": 99.0199966430664,
-    "change": -0.111996643066405,
-    "changePct": -0.11310507661408534,
+    "change": -0.07799664306641318,
+    "changePct": -0.07876857777279543,
     "source": "DX-Y.NYB"
   },
   "macro": {
-    "fetchedAt": "2026-05-31T17:12:12.127Z",
+    "fetchedAt": "2026-05-31T18:45:37.808Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -9713,10 +9713,10 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 98.908,
+      "spot": 98.942,
       "prev": 99.0199966430664,
-      "change": -0.111996643066405,
-      "changePct": -0.11310507661408534
+      "change": -0.07799664306641318,
+      "changePct": -0.07876857777279543
     },
     "oil": {
       "spot": 87.36,
