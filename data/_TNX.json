@@ -6,7 +6,7 @@
     "sectorETF": "TLT",
     "typicalVolAnnual": 0.2
   },
-  "fetchedAt": "2026-06-08T00:13:39.938Z",
+  "fetchedAt": "2026-06-08T05:14:36.180Z",
   "sources": {
     "asset": "yahoo:^TNX",
     "sector": "yahoo:TLT"
@@ -11081,7 +11081,7 @@
     "source": "^TNX"
   },
   "macro": {
-    "fetchedAt": "2026-06-08T00:13:38.099Z",
+    "fetchedAt": "2026-06-08T05:14:32.132Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11090,16 +11090,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 100.074,
+      "spot": 100.008,
       "prev": 100.06999969482422,
-      "change": 0.004000305175779317,
-      "changePct": 0.003997506933125552
+      "change": -0.061999694824223184,
+      "changePct": -0.061956325585389105
     },
     "oil": {
-      "spot": 92.63,
+      "spot": 94.33,
       "prev": 90.54000091552734,
-      "change": 2.0899990844726517,
-      "changePct": 2.308370955753131
+      "change": 3.7899990844726545,
+      "changePct": 4.185994086755836
     },
     "vix": {
       "spot": 21.51,
