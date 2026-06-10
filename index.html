@@ -586,4 +586,361 @@ $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});
 $('run').addEventListener('click',run);
 restore();
 </script>
-</div></body></html>
+</div><!-- ═══════════════════════════════════════════════════════════════════════
+     REAL-RATE GATE — SHADOW MODE + PRE-EVENT CLAMP            v1.0
+     Paste this ENTIRE block immediately before </body> in the dashboard.
+     Purely additive: it never touches the engine's own storage or logic.
+     To uninstall, delete the block. State lives in localStorage keys
+     prefixed "rrGate." — clearing those resets the shadow system only.
+
+     WHAT IT DOES
+     · Every time "+ LOG VERDICT" is clicked, the newest engine log row is
+       parsed from the page and a parallel SHADOW entry is recorded: the
+       engine's verdict AND what the real-rate gate would have output.
+     · Gate states (set manually from rate-market reaction):
+           HOT    — hawkish surprise → force BEARISH
+           INLINE — no new info     → clamp confidence to 45–58
+           SOFT   — dovish surprise → bullish allowed, ceiling 75
+           SUSPEND— tier-1 shock    → no call
+     · Pre-event clamp: set the next binary (CPI / FOMC) date-time; inside
+       the window (default 36h before) confidence is capped at 55.
+     · Shadow entries self-score at +5d / +10d against the page's own log
+       prices (the log is the price tape), and an engine-vs-gate track
+       record renders head-to-head.
+
+     HONEST LIMITS
+     · Gate inputs (Δ2Y bp, Δhike-odds pp) are MANUAL — a static page
+       cannot fetch them. Enter them in the first 30–60 min after a print,
+       hit SUGGEST, confirm the state.
+     · Thresholds (±6bp / ±5pp / ±2% balanced band / 55 pre-event cap)
+       are the reasoned v1 spec, NOT backtested. The forward log is the
+       calibration instrument.
+     · Scoring matures only if you keep logging verdicts (or capturing),
+       because future prices come from later log rows.
+     ════════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+"use strict";
+
+/* ── constants ──────────────────────────────────────────────────────── */
+var LS_STATE = "rrGate.state";
+var LS_LOG   = "rrGate.shadowLog";
+var LS_EVENT = "rrGate.event";
+
+var CLAMP_LO = 45, CLAMP_HI = 58;   // INLINE confidence band
+var PRE_CAP  = 55;                  // pre-event confidence ceiling
+var SOFT_BULL_CEIL = 75;            // SOFT-state bullish ceiling
+var BAL_BAND = 2.0;                 // |ret| ≤ this % = BALANCED hit
+var HOT_BP   = 6,  HOT_PP  = 5;     // suggest thresholds (Δ2Y bp / Δodds pp)
+var DAY = 86400000;
+
+/* ── storage ────────────────────────────────────────────────────────── */
+function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+function save(k, v) { localStorage.setItem(k, JSON.stringify(v)); }
+
+var gate   = load(LS_STATE, { state: "UNSET", d2y: "", dOdds: "", note: "" });
+var shadow = load(LS_LOG, []);
+var evt    = load(LS_EVENT, { label: "CPI", when: "", windowH: 36 });
+
+/* ── gate logic (the spec) ──────────────────────────────────────────── */
+function suggestState(d2y, dOdds) {
+  if (d2y >= HOT_BP || dOdds >= HOT_PP)   return "HOT";
+  if (d2y <= -HOT_BP || dOdds <= -HOT_PP) return "SOFT";
+  return "INLINE";
+}
+function preEventActive() {
+  if (!evt.when) return false;
+  var t = new Date(evt.when).getTime();
+  if (isNaN(t)) return false;
+  var now = Date.now();
+  return now < t && (t - now) <= evt.windowH * 3600000;
+}
+function applyGate(verdict, conf) {
+  var tags = [], v = String(verdict).toUpperCase(), c = conf;
+  if (gate.state === "SUSPEND")
+    return { verdict: "SUSPENDED", conf: null, tags: ["tier-1 shock — no call"] };
+  if (gate.state === "HOT") {
+    if (v !== "BEARISH") tags.push("HOT: " + v + "→BEARISH");
+    v = "BEARISH";
+  } else if (gate.state === "INLINE") {
+    var c2 = Math.min(Math.max(c, CLAMP_LO), CLAMP_HI);
+    if (c2 !== c) tags.push("INLINE clamp " + c + "→" + c2);
+    c = c2;
+  } else if (gate.state === "SOFT") {
+    if (v === "BULLISH" && c > SOFT_BULL_CEIL) { tags.push("SOFT ceil " + c + "→" + SOFT_BULL_CEIL); c = SOFT_BULL_CEIL; }
+  } else {
+    tags.push("gate UNSET — passthrough");
+  }
+  if (preEventActive() && c != null && c > PRE_CAP) { tags.push("PRE-EVENT cap " + c + "→" + PRE_CAP); c = PRE_CAP; }
+  return { verdict: v, conf: c, tags: tags };
+}
+
+/* ── parse the engine's log rows out of the DOM ─────────────────────── */
+var ROW_RE = /(20\d\d-\d\d-\d\d \d\d:\d\d)\s*·\s*\$([\d,.]+)\s*·\s*(BULLISH|BEARISH|BALANCED)\s*@\s*(\d+)\s*%/;
+function parseMainLog() {
+  var best = {}; // ts -> {len, row}
+  var els = document.body.getElementsByTagName("*");
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    if (el.closest && el.closest("#rrg-panel")) continue;       // ignore our own UI
+    var t = (el.textContent || "").trim();
+    if (t.length > 400) continue;                               // skip big containers
+    var m = t.match(ROW_RE);
+    if (!m) continue;
+    var ts = m[1];
+    if (!best[ts] || t.length < best[ts].len)
+      best[ts] = { len: t.length, row: { ts: ts, price: parseFloat(m[2].replace(/,/g, "")), verdict: m[3], conf: +m[4] } };
+  }
+  var rows = Object.keys(best).map(function (k) { return best[k].row; });
+  rows.sort(function (a, b) { return b.ts.localeCompare(a.ts); });
+  return rows;
+}
+
+/* ── price tape & scoring ───────────────────────────────────────────── */
+function priceTape() {
+  var pts = parseMainLog().map(function (r) { return { t: new Date(r.ts).getTime(), p: r.price }; });
+  shadow.forEach(function (s) { pts.push({ t: new Date(s.ts).getTime(), p: s.price }); });
+  pts = pts.filter(function (x) { return !isNaN(x.t) && x.p > 0; });
+  pts.sort(function (a, b) { return a.t - b.t; });
+  return pts;
+}
+function retAfter(tape, t0, p0, days) {
+  var target = t0 + days * DAY;
+  for (var i = 0; i < tape.length; i++)
+    if (tape[i].t >= target) return (tape[i].p / p0 - 1) * 100;
+  return null; // not matured on tape yet
+}
+function isHit(verdict, ret) {
+  if (ret == null) return null;
+  if (verdict === "BULLISH")  return ret > 0;
+  if (verdict === "BEARISH")  return ret < 0;
+  if (verdict === "BALANCED") return Math.abs(ret) <= BAL_BAND;
+  return null; // SUSPENDED etc — excluded
+}
+function record(entries, side, horizon) { // side: "eng"|"gate"
+  var n = 0, hits = 0, sum = 0;
+  entries.forEach(function (e) {
+    var v = side === "eng" ? e.engV : e.gV;
+    if (v === "SUSPENDED") return;
+    var ret = horizon === 5 ? e.r5 : e.r10;
+    var h = isHit(v, ret);
+    if (h === null) return;
+    n++; if (h) hits++; sum += ret;
+  });
+  return n ? { n: n, hit: Math.round(100 * hits / n), avg: (sum / n).toFixed(1) } : null;
+}
+
+/* ── shadow capture ─────────────────────────────────────────────────── */
+function captureNewest(manual) {
+  var rows = parseMainLog();
+  if (!rows.length) { if (manual) flash("No engine log rows found on page"); return; }
+  var n = rows[0];
+  if (shadow.some(function (s) { return s.ts === n.ts; })) { if (manual) flash("Newest row already shadowed"); return; }
+  var g = applyGate(n.verdict, n.conf);
+  shadow.unshift({
+    ts: n.ts, price: n.price,
+    engV: n.verdict, engC: n.conf,
+    gV: g.verdict, gC: g.conf, tags: g.tags,
+    state: gate.state, d2y: gate.d2y, dOdds: gate.dOdds,
+    pre: preEventActive(), loggedAt: new Date().toISOString()
+  });
+  save(LS_LOG, shadow);
+  render();
+  flash("Shadowed " + n.ts + " — gate[" + gate.state + "]: " + g.verdict + (g.conf != null ? " @ " + g.conf + "%" : ""));
+}
+document.addEventListener("click", function (e) {
+  var b = e.target && e.target.closest ? e.target.closest("button, a, [role=button]") : null;
+  if (!b || (b.closest && b.closest("#rrg-panel"))) return;
+  if (/LOG\s*VERDICT/i.test(b.textContent || "")) setTimeout(function () { captureNewest(false); }, 700);
+}, true);
+
+/* ── CSV export ─────────────────────────────────────────────────────── */
+function exportCSV() {
+  var head = "ts,price,engine_verdict,engine_conf,gate_state,gate_verdict,gate_conf,pre_event,d2y_bp,dodds_pp,tags,ret5,ret10\n";
+  var tape = priceTape();
+  var lines = shadow.map(function (e) {
+    var t0 = new Date(e.ts).getTime();
+    var r5 = retAfter(tape, t0, e.price, 5), r10 = retAfter(tape, t0, e.price, 10);
+    return [e.ts, e.price, e.engV, e.engC, e.state, e.gV, e.gC == null ? "" : e.gC, e.pre ? 1 : 0,
+            e.d2y, e.dOdds, '"' + (e.tags || []).join("; ") + '"',
+            r5 == null ? "" : r5.toFixed(2), r10 == null ? "" : r10.toFixed(2)].join(",");
+  });
+  var blob = new Blob([head + lines.join("\n")], { type: "text/csv" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "gate_shadow_log.csv";
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+
+/* ── UI ─────────────────────────────────────────────────────────────── */
+var css = "" +
+"#rrg-panel{position:relative;margin:28px auto;max-width:1560px;padding:26px 30px;background:#0b0e13;" +
+"border:1px solid #262c38;color:#c8d0dc;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;line-height:1.55}" +
+"#rrg-panel:before,#rrg-panel:after{content:'';position:absolute;width:14px;height:14px;border-color:#c9a861;border-style:solid}" +
+"#rrg-panel:before{top:-1px;left:-1px;border-width:2px 0 0 2px}" +
+"#rrg-panel:after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}" +
+"#rrg-panel h2{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:500;font-size:22px;color:#e8edf4;margin:0 0 4px}" +
+".rrg-sub{color:#7b8494;font-style:italic;font-family:Georgia,serif;font-size:13px;margin-bottom:16px}" +
+".rrg-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0}" +
+".rrg-btn{background:transparent;border:1px solid #3a4252;color:#c8d0dc;padding:8px 14px;font:inherit;cursor:pointer;letter-spacing:.5px}" +
+".rrg-btn:hover{border-color:#c9a861}" +
+".rrg-state{border-width:1px}" +
+".rrg-state.on{border-color:#c9a861;color:#c9a861;box-shadow:0 0 0 1px #c9a861 inset}" +
+".rrg-hot.on{border-color:#ef6a6a;color:#ef6a6a;box-shadow:0 0 0 1px #ef6a6a inset}" +
+".rrg-soft.on{border-color:#5fd49a;color:#5fd49a;box-shadow:0 0 0 1px #5fd49a inset}" +
+".rrg-sus.on{border-color:#e8b339;color:#e8b339;box-shadow:0 0 0 1px #e8b339 inset}" +
+"#rrg-panel input{background:#11151d;border:1px solid #3a4252;color:#e8edf4;padding:7px 9px;font:inherit;width:110px}" +
+"#rrg-panel input[type=datetime-local]{width:200px}" +
+".rrg-badge{padding:3px 9px;border:1px solid;font-size:11px;letter-spacing:1px}" +
+".rrg-badge.armed{border-color:#e8b339;color:#e8b339}" +
+".rrg-badge.idle{border-color:#3a4252;color:#7b8494}" +
+".rrg-rec{margin:14px 0;padding:10px 12px;border:1px dashed #3a4252;color:#e8b339}" +
+".rrg-list{border-top:1px solid #262c38;margin-top:8px}" +
+".rrg-e{padding:9px 0;border-bottom:1px solid #1a1f29}" +
+".rrg-bull{color:#5fd49a}.rrg-bear{color:#ef6a6a}.rrg-bal{color:#8a93a6}.rrg-sush{color:#e8b339}" +
+".rrg-dim{color:#7b8494}.rrg-tag{color:#c9a861}" +
+".rrg-ok{color:#5fd49a}.rrg-x{color:#ef6a6a}" +
+"#rrg-flash{position:fixed;bottom:18px;right:18px;background:#11151d;border:1px solid #c9a861;color:#e8edf4;" +
+"padding:10px 16px;font-family:ui-monospace,monospace;font-size:12px;z-index:9999;display:none}";
+
+var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+
+var panel = document.createElement("section");
+panel.id = "rrg-panel";
+panel.innerHTML =
+  "<h2>Real-rate gate</h2>" +
+  "<div class='rrg-sub'>Shadow mode — records what the gate <i>would</i> have said beside every engine verdict. The forward log arbitrates engine vs gate; nothing here alters the engine.</div>" +
+  "<div class='rrg-row' id='rrg-states'>" +
+    "<span class='rrg-dim'>STATE</span>" +
+    "<button class='rrg-btn rrg-state rrg-hot' data-s='HOT'>HOT</button>" +
+    "<button class='rrg-btn rrg-state' data-s='INLINE'>INLINE</button>" +
+    "<button class='rrg-btn rrg-state rrg-soft' data-s='SOFT'>SOFT</button>" +
+    "<button class='rrg-btn rrg-state rrg-sus' data-s='SUSPEND'>SUSPEND</button>" +
+    "<button class='rrg-btn rrg-state' data-s='UNSET'>UNSET</button>" +
+    "<span id='rrg-statenote' class='rrg-tag'></span>" +
+  "</div>" +
+  "<div class='rrg-row'>" +
+    "<span class='rrg-dim'>REACTION</span>" +
+    "Δ2Y <input id='rrg-d2y' placeholder='bp' inputmode='numeric'>" +
+    "Δhike-odds <input id='rrg-dodds' placeholder='pp' inputmode='numeric'>" +
+    "<button class='rrg-btn' id='rrg-suggest'>SUGGEST</button>" +
+    "<input id='rrg-note' placeholder='note' style='width:220px'>" +
+  "</div>" +
+  "<div class='rrg-row'>" +
+    "<span class='rrg-dim'>NEXT BINARY</span>" +
+    "<input id='rrg-elabel' style='width:90px'>" +
+    "<input id='rrg-ewhen' type='datetime-local'>" +
+    "window <input id='rrg-ewin' style='width:60px' inputmode='numeric'> h" +
+    "<button class='rrg-btn' id='rrg-esave'>SET</button>" +
+    "<span id='rrg-ebadge' class='rrg-badge idle'>NO EVENT</span>" +
+  "</div>" +
+  "<div class='rrg-row'>" +
+    "<button class='rrg-btn' id='rrg-cap'>+ CAPTURE LATEST ROW</button>" +
+    "<button class='rrg-btn' id='rrg-csv'>⤓ CSV</button>" +
+    "<button class='rrg-btn' id='rrg-clear' style='border-color:#5a3a3a;color:#ef6a6a'>× CLEAR SHADOW</button>" +
+  "</div>" +
+  "<div class='rrg-rec' id='rrg-rec'>No shadow entries yet.</div>" +
+  "<div class='rrg-list' id='rrg-list'></div>";
+
+/* insert after the Reasoning log section if findable, else append */
+(function place() {
+  var heads = document.querySelectorAll("h1,h2,h3");
+  for (var i = 0; i < heads.length; i++) {
+    if (/reasoning log/i.test(heads[i].textContent)) {
+      var sec = heads[i].closest("section,div") || heads[i].parentElement;
+      if (sec && sec.parentElement) { sec.parentElement.insertBefore(panel, sec.nextSibling); return; }
+    }
+  }
+  document.body.appendChild(panel);
+})();
+
+var flashEl = document.createElement("div"); flashEl.id = "rrg-flash"; document.body.appendChild(flashEl);
+function flash(msg) {
+  flashEl.textContent = msg; flashEl.style.display = "block";
+  clearTimeout(flash._t); flash._t = setTimeout(function () { flashEl.style.display = "none"; }, 3500);
+}
+
+/* ── wiring ─────────────────────────────────────────────────────────── */
+function $(id) { return document.getElementById(id); }
+
+$("rrg-states").addEventListener("click", function (e) {
+  var b = e.target.closest(".rrg-state"); if (!b) return;
+  gate.state = b.dataset.s;
+  gate.d2y = $("rrg-d2y").value; gate.dOdds = $("rrg-dodds").value; gate.note = $("rrg-note").value;
+  save(LS_STATE, gate); render();
+});
+$("rrg-suggest").addEventListener("click", function () {
+  var d2y = parseFloat($("rrg-d2y").value), dOdds = parseFloat($("rrg-dodds").value);
+  if (isNaN(d2y) && isNaN(dOdds)) { flash("Enter Δ2Y and/or Δodds first"); return; }
+  gate.state = suggestState(isNaN(d2y) ? 0 : d2y, isNaN(dOdds) ? 0 : dOdds);
+  gate.d2y = $("rrg-d2y").value; gate.dOdds = $("rrg-dodds").value; gate.note = $("rrg-note").value;
+  save(LS_STATE, gate); render();
+  flash("Suggested state: " + gate.state + " — confirm or override");
+});
+$("rrg-esave").addEventListener("click", function () {
+  evt = { label: $("rrg-elabel").value || "EVENT", when: $("rrg-ewhen").value, windowH: parseFloat($("rrg-ewin").value) || 36 };
+  save(LS_EVENT, evt); render(); flash("Event set: " + evt.label + " @ " + evt.when);
+});
+$("rrg-cap").addEventListener("click", function () { captureNewest(true); });
+$("rrg-csv").addEventListener("click", exportCSV);
+$("rrg-clear").addEventListener("click", function () {
+  if (confirm("Clear ALL shadow entries? Engine log untouched.")) { shadow = []; save(LS_LOG, shadow); render(); }
+});
+
+/* ── render ─────────────────────────────────────────────────────────── */
+function vClass(v) { return v === "BULLISH" ? "rrg-bull" : v === "BEARISH" ? "rrg-bear" : v === "SUSPENDED" ? "rrg-sush" : "rrg-bal"; }
+function fmtScore(label, ret, hit) {
+  if (ret == null) return "<span class='rrg-dim'>[" + label + " pending]</span>";
+  var mark = hit === null ? "" : hit ? " <span class='rrg-ok'>✓</span>" : " <span class='rrg-x'>✗</span>";
+  return "<span class='rrg-dim'>[" + label + " " + (ret >= 0 ? "+" : "") + ret.toFixed(1) + "%" + mark + "]</span>";
+}
+function render() {
+  /* state buttons */
+  var btns = panel.querySelectorAll(".rrg-state");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].dataset.s === gate.state);
+  $("rrg-statenote").textContent = gate.state === "UNSET" ? "set after the print — read the 2Y, not the headline" : "";
+  $("rrg-d2y").value = gate.d2y || ""; $("rrg-dodds").value = gate.dOdds || ""; $("rrg-note").value = gate.note || "";
+  /* event */
+  $("rrg-elabel").value = evt.label || ""; $("rrg-ewhen").value = evt.when || ""; $("rrg-ewin").value = evt.windowH;
+  var badge = $("rrg-ebadge");
+  if (preEventActive()) {
+    var hrs = ((new Date(evt.when).getTime() - Date.now()) / 3600000).toFixed(1);
+    badge.className = "rrg-badge armed"; badge.textContent = "PRE-EVENT CLAMP ARMED — " + evt.label + " in " + hrs + "h · conf ≤ " + PRE_CAP;
+  } else if (evt.when && new Date(evt.when).getTime() > Date.now()) {
+    badge.className = "rrg-badge idle"; badge.textContent = evt.label + " set — clamp arms " + evt.windowH + "h out";
+  } else { badge.className = "rrg-badge idle"; badge.textContent = "NO EVENT ARMED"; }
+  /* scoring */
+  var tape = priceTape();
+  shadow.forEach(function (e) {
+    var t0 = new Date(e.ts).getTime();
+    e.r5 = retAfter(tape, t0, e.price, 5);
+    e.r10 = retAfter(tape, t0, e.price, 10);
+  });
+  var e5 = record(shadow, "eng", 5), g5 = record(shadow, "gate", 5);
+  var e10 = record(shadow, "eng", 10), g10 = record(shadow, "gate", 10);
+  function rec(r) { return r ? r.hit + "% hit (" + r.n + ", avg " + r.avg + "%)" : "—"; }
+  $("rrg-rec").innerHTML = shadow.length
+    ? "Head-to-head · +5d&nbsp; ENGINE " + rec(e5) + " vs GATE " + rec(g5) +
+      "&nbsp;·&nbsp; +10d&nbsp; ENGINE " + rec(e10) + " vs GATE " + rec(g10) +
+      (g5 && e5 && g5.n !== e5.n ? " <span class='rrg-dim'>(counts differ: SUSPENDED excluded from gate)</span>" : "")
+    : "No shadow entries yet — click + LOG VERDICT in the engine, or CAPTURE LATEST ROW.";
+  /* list */
+  $("rrg-list").innerHTML = shadow.map(function (e) {
+    return "<div class='rrg-e'>" +
+      "<span class='rrg-dim'>" + e.ts + " · $" + e.price.toFixed(2) + "</span> · " +
+      "ENGINE <span class='" + vClass(e.engV) + "'>" + e.engV + "</span> @ " + e.engC + "% " +
+      fmtScore("+5d", e.r5, isHit(e.engV, e.r5)) + " " + fmtScore("+10d", e.r10, isHit(e.engV, e.r10)) +
+      "<br>&nbsp;&nbsp;→ GATE[" + e.state + (e.pre ? " · PRE" : "") + "] " +
+      "<span class='" + vClass(e.gV) + "'>" + e.gV + "</span>" + (e.gC != null ? " @ " + e.gC + "%" : "") + " " +
+      (e.gV === "SUSPENDED" ? "<span class='rrg-dim'>[excluded]</span>"
+        : fmtScore("+5d", e.r5, isHit(e.gV, e.r5)) + " " + fmtScore("+10d", e.r10, isHit(e.gV, e.r10))) +
+      (e.tags && e.tags.length ? " <span class='rrg-tag'>· " + e.tags.join(" · ") + "</span>" : "") +
+      "</div>";
+  }).join("");
+}
+render();
+setInterval(render, 60000); // keep countdown + pending scores fresh
+})();
+</script>
+</body></html>
