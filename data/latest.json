@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-06-13T11:18:47.741Z",
+  "fetchedAt": "2026-06-13T13:06:24.293Z",
   "ticker": "SI=F",
   "sources": {
     "asset": "yahoo:SI=F",
@@ -26,10 +26,10 @@
   },
   "gold": null,
   "dxy": {
-    "spot": 99.75,
+    "spot": 99.807,
     "prev": 99.86000061035156,
-    "change": -0.1100006103515625,
-    "changePct": -0.11015482643624154
+    "change": -0.05300061035156034,
+    "changePct": -0.05307491490848865
   },
   "copper": null,
   "oil": {
