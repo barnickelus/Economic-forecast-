@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T13:06:24.293Z",
+  "generatedAt": "2026-06-13T15:17:51.740Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -18,7 +18,7 @@
       "assetClass": "commodity",
       "spot": 4238.8,
       "changePct": 3.6305393100542966,
-      "healthyCount": 2,
+      "healthyCount": 1,
       "totalCount": 3
     },
     {
@@ -28,16 +28,6 @@
       "assetClass": "equity",
       "spot": 291.13,
       "changePct": -1.5221746130255969,
-      "healthyCount": 2,
-      "totalCount": 2
-    },
-    {
-      "ticker": "NVDA",
-      "filename": "NVDA.json",
-      "name": "Nvidia",
-      "assetClass": "equity",
-      "spot": 205.19,
-      "changePct": 0.15619899957992972,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +66,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 64100.05,
-      "changePct": 0.8763341916937829,
+      "spot": 64264.42,
+      "changePct": 1.1350086085013864,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +96,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 99.807,
-      "changePct": -0.05307491490848865,
+      "spot": 99.75,
+      "changePct": -0.11015482643624154,
       "healthyCount": 2,
       "totalCount": 2
     }
