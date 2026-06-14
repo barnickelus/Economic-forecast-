@@ -6,7 +6,7 @@
     "sectorETF": "TLT",
     "typicalVolAnnual": 0.2
   },
-  "fetchedAt": "2026-06-14T01:56:00.530Z",
+  "fetchedAt": "2026-06-14T06:48:09.376Z",
   "sources": {
     "asset": "yahoo:^TNX",
     "sector": "yahoo:TLT"
@@ -11081,7 +11081,7 @@
     "source": "^TNX"
   },
   "macro": {
-    "fetchedAt": "2026-06-14T01:55:58.475Z",
+    "fetchedAt": "2026-06-14T06:48:07.524Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
