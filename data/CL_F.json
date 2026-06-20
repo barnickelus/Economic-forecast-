@@ -6,7 +6,7 @@
     "sectorETF": "XLE",
     "typicalVolAnnual": 0.4
   },
-  "fetchedAt": "2026-06-20T01:36:17.235Z",
+  "fetchedAt": "2026-06-20T06:26:03.654Z",
   "sources": {
     "asset": "yahoo:CL=F",
     "sector": "yahoo:XLE"
@@ -11459,7 +11459,7 @@
     "source": "CL=F"
   },
   "macro": {
-    "fetchedAt": "2026-06-20T01:36:15.225Z",
+    "fetchedAt": "2026-06-20T06:26:01.685Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11481,9 +11481,9 @@
     },
     "vix": {
       "spot": 16.78,
-      "prev": 16.399999618530273,
-      "change": 0.3800003814697277,
-      "changePct": 2.3170755506626186
+      "prev": 18.440000534057617,
+      "change": -1.660000534057616,
+      "changePct": -9.00217183286785
     },
     "spx": {
       "spot": 7500.58,
