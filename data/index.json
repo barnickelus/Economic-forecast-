@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T06:23:16.628Z",
+  "generatedAt": "2026-06-28T09:42:30.069Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -27,7 +27,7 @@
       "name": "Apple",
       "assetClass": "equity",
       "spot": 283.78,
-      "changePct": -3.1731905958623097,
+      "changePct": 3.1364733036346486,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -47,7 +47,7 @@
       "name": "Tesla",
       "assetClass": "equity",
       "spot": 379.71,
-      "changePct": 1.1130938232073804,
+      "changePct": 1.2236097628916214,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 59832.19,
-      "changePct": -0.18002582656577648,
+      "spot": 60285.06,
+      "changePct": 0.5755118146925945,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -97,7 +97,7 @@
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
       "spot": 4.372,
-      "changePct": -2.0389832929629734,
+      "changePct": -0.4553779021163691,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -107,7 +107,7 @@
       "name": "US Dollar Index",
       "assetClass": "macro",
       "spot": 101.366,
-      "changePct": -0.2401344443321509,
+      "changePct": -0.06309800353270409,
       "healthyCount": 2,
       "totalCount": 2
     }
