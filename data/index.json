@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T18:15:20.007Z",
+  "generatedAt": "2026-07-03T19:57:55.350Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 62117.96,
-      "changePct": 1.0289601103210821,
+      "spot": 62165.16,
+      "changePct": 1.105726425847342,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 100.833,
-      "changePct": -0.026770384878217958,
+      "spot": 100.857,
+      "changePct": -0.002975025117395469,
       "healthyCount": 2,
       "totalCount": 2
     }
