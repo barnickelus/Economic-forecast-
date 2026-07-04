@@ -7,7 +7,7 @@
     "spotSource": "XAG=X",
     "typicalVolAnnual": 0.32
   },
-  "fetchedAt": "2026-07-04T09:37:14.316Z",
+  "fetchedAt": "2026-07-04T11:36:02.508Z",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
@@ -11450,7 +11450,7 @@
     "source": "SI=F"
   },
   "macro": {
-    "fetchedAt": "2026-07-04T09:37:14.043Z",
+    "fetchedAt": "2026-07-04T11:36:02.101Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
