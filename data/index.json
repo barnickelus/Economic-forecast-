@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T19:45:34.296Z",
+  "generatedAt": "2026-07-04T21:02:32.138Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 63279.15,
-      "changePct": 1.1750902408702868,
+      "spot": 63159,
+      "changePct": 0.9829860945212807,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -97,7 +97,7 @@
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
       "spot": 4.4849997,
-      "changePct": 0,
+      "changePct": 2.1174748960707923,
       "healthyCount": 2,
       "totalCount": 2
     },
