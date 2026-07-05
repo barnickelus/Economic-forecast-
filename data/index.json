@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T11:55:30.496Z",
+  "generatedAt": "2026-07-05T13:50:55.590Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 62609.06,
-      "changePct": 0.1037039118898067,
+      "spot": 62733.44,
+      "changePct": 0.3025712753761986,
       "healthyCount": 2,
       "totalCount": 2
     },
