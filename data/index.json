@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-05T16:35:30.215Z",
+  "generatedAt": "2026-07-05T18:07:03.674Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -66,8 +66,8 @@
       "filename": "QQQ.json",
       "name": "Nasdaq 100",
       "assetClass": "index",
-      "spot": 712.6,
-      "changePct": -1.7333843383467191,
+      "spot": 712.6044,
+      "changePct": -1.7327775840541082,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 62594.83,
-      "changePct": -0.7821967794892621,
+      "spot": 62619.48,
+      "changePct": -0.7431245613941618,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -96,8 +96,8 @@
       "filename": "_TNX.json",
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
-      "spot": 4.4849997,
-      "changePct": 0.22345911911819508,
+      "spot": 4.485,
+      "changePct": 0.2234658230289514,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 100.857,
-      "changePct": -0.5256922702998413,
+      "spot": 100.879,
+      "changePct": -0.5039938778228298,
       "healthyCount": 2,
       "totalCount": 2
     }
