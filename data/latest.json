@@ -1,27 +1,27 @@
 {
-  "fetchedAt": "2026-07-18T04:06:31.222Z",
+  "fetchedAt": "2026-07-18T06:28:44.557Z",
   "ticker": "SI=F",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
   },
   "log": [
-    "✓ SI=F: $56.22 (+0.58%)",
+    "✓ SI=F: $56.33 (+0.77%)",
     "✓ SI=F history: 1257 bars (5.0y)",
     "✓ sector SIL: $71.74 (-0.24%)",
     "✗ spot XAG=X: HTTP 404"
   ],
   "silver": {
-    "spot": 56.22,
+    "spot": 56.326,
     "prev": 55.89799880981445,
-    "change": 0.32200119018554574,
-    "changePct": 0.5760513740055565
+    "change": 0.4280011901855474,
+    "changePct": 0.7656824918576509
   },
   "silverDisplay": {
-    "spot": 56.22,
+    "spot": 56.326,
     "prev": 55.89799880981445,
-    "change": 0.32200119018554574,
-    "changePct": 0.5760513740055565,
+    "change": 0.4280011901855474,
+    "changePct": 0.7656824918576509,
     "source": "SI=F"
   },
   "gold": null,
@@ -33,10 +33,10 @@
   },
   "copper": null,
   "oil": {
-    "spot": 81.77,
+    "spot": 81.78,
     "prev": 78.94999694824219,
-    "change": 2.8200030517578085,
-    "changePct": 3.5718849408018825
+    "change": 2.8300030517578136,
+    "changePct": 3.584551185750012
   },
   "vix": {
     "spot": 18.77,

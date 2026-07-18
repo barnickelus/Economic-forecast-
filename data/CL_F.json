@@ -6,21 +6,21 @@
     "sectorETF": "XLE",
     "typicalVolAnnual": 0.4
   },
-  "fetchedAt": "2026-07-18T04:06:32.786Z",
+  "fetchedAt": "2026-07-18T06:28:45.915Z",
   "sources": {
     "asset": "yahoo:CL=F",
     "sector": "yahoo:XLE"
   },
   "log": [
-    "✓ CL=F: $81.77 (+3.57%)",
+    "✓ CL=F: $81.78 (+3.58%)",
     "✓ CL=F history: 1257 bars (5.0y)",
     "✓ sector XLE: $57.68 (+1.16%)"
   ],
   "asset": {
-    "spot": 81.77,
+    "spot": 81.78,
     "prev": 78.94999694824219,
-    "change": 2.8200030517578085,
-    "changePct": 3.5718849408018825
+    "change": 2.8300030517578136,
+    "changePct": 3.584551185750012
   },
   "series": [
     89.61000061035156,
@@ -11440,14 +11440,14 @@
   },
   "sectorName": "XLE",
   "display": {
-    "spot": 81.77,
+    "spot": 81.78,
     "prev": 78.94999694824219,
-    "change": 2.8200030517578085,
-    "changePct": 3.5718849408018825,
+    "change": 2.8300030517578136,
+    "changePct": 3.584551185750012,
     "source": "CL=F"
   },
   "macro": {
-    "fetchedAt": "2026-07-18T04:06:30.921Z",
+    "fetchedAt": "2026-07-18T06:28:44.303Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11462,10 +11462,10 @@
       "changePct": 0.024815489162476133
     },
     "oil": {
-      "spot": 81.77,
+      "spot": 81.78,
       "prev": 78.94999694824219,
-      "change": 2.8200030517578085,
-      "changePct": 3.5718849408018825
+      "change": 2.8300030517578136,
+      "changePct": 3.584551185750012
     },
     "vix": {
       "spot": 18.77,
