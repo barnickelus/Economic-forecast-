@@ -6,7 +6,7 @@
     "sectorETF": "SMH",
     "typicalVolAnnual": 0.5
   },
-  "fetchedAt": "2026-07-18T17:34:19.480Z",
+  "fetchedAt": "2026-07-18T19:10:21.832Z",
   "sources": {
     "asset": "yahoo:NVDA",
     "sector": "yahoo:SMH"
@@ -11453,7 +11453,7 @@
     "source": "NVDA"
   },
   "macro": {
-    "fetchedAt": "2026-07-18T17:34:18.462Z",
+    "fetchedAt": "2026-07-18T19:10:18.713Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
