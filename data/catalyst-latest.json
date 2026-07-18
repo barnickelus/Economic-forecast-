@@ -1,0 +1,217 @@
+{
+  "fetchedAt": "2026-07-18T19:43:41.587Z",
+  "oil": {
+    "brent": {
+      "spot": 88.1,
+      "changePct": 4.59
+    },
+    "wti": {
+      "spot": 81.78,
+      "changePct": 3.58
+    }
+  },
+  "contracts": [
+    {
+      "q": "iran",
+      "title": "Will the U.S. invade Iran before 2027?",
+      "slug": "will-the-us-invade-iran-before-2027",
+      "yes": 30.5,
+      "vol24": 478776.7669659996,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "iran",
+      "title": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
+      "slug": "will-mojtaba-khamenei-be-head-of-state-in-iran-end-of-2026",
+      "yes": 76.5,
+      "vol24": 239113.48643999547,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "iran",
+      "title": "Will Iran announce withdrawal from MOU negotiations by July 31?",
+      "slug": "will-iran-announce-withdrawal-from-mou-negotiations-by-july-31-20260622191733846-586-829-787",
+      "yes": 18,
+      "vol24": 212792.5367619998,
+      "endDate": "2026-07-31T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "iran",
+      "title": "US x Iran Effective Ceasefire by July 24?",
+      "slug": "us-x-iran-effective-ceasfire-by-july-24-20260715194822044",
+      "yes": 11.5,
+      "vol24": 151911.21862000003,
+      "endDate": "2026-07-24T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "iran",
+      "title": "Will Iran announce withdrawal from MOU negotiations by July 24?",
+      "slug": "will-iran-announce-withdrawal-from-mou-negotiations-by-july-24",
+      "yes": 12.5,
+      "vol24": 146204.00465500003,
+      "endDate": "2026-07-24T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "hormuz",
+      "title": "Strait of Hormuz traffic returns to normal by July 31?",
+      "slug": "strait-of-hormuz-traffic-returns-to-normal-by-july-31",
+      "yes": 1.15,
+      "vol24": 138487.3002459999,
+      "endDate": "2026-07-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "hormuz",
+      "title": "Strait of Hormuz traffic returns to normal by December 31?",
+      "slug": "strait-of-hormuz-traffic-returns-to-normal-by-december-31",
+      "yes": 52.5,
+      "vol24": 26039.193219999997,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "hormuz",
+      "title": "Will 40 ships transit the Strait of Hormuz on any day by July 31, 2026?",
+      "slug": "will-40-ships-transit-the-strait-of-hormuz-on-any-day-by-july-31-2026",
+      "yes": 8.5,
+      "vol24": 9925.227377000001,
+      "endDate": "2026-07-31T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "hormuz",
+      "title": "Will 30 ships transit the Strait of Hormuz on any day by July 31, 2026?",
+      "slug": "will-30-ships-transit-the-strait-of-hormuz-on-any-day-by-july-31-2026",
+      "yes": 15.75,
+      "vol24": 8792.801329000002,
+      "endDate": "2026-07-31T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "hormuz",
+      "title": "Will there be between 40 and 60 average daily transits of the Strait of Hormuz on July 31?",
+      "slug": "will-there-be-between-40-and-60-average-daily-transits-of-the-strait-of-hormuz-on-july-31-20260626153158276",
+      "yes": 3.05,
+      "vol24": 4972.205823999999,
+      "endDate": "2026-07-31T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "fed rate",
+      "title": "Will no Fed rate cuts happen in 2026?",
+      "slug": "will-no-fed-rate-cuts-happen-in-2026",
+      "yes": 84.15,
+      "vol24": 9905.630587,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "fed rate",
+      "title": "Fed Rate Hike by September 2026 Meeting?",
+      "slug": "fed-rate-hike-by-september-2026-meeting",
+      "yes": 34.5,
+      "vol24": 3885.328179,
+      "endDate": "2026-12-09T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "fed rate",
+      "title": "Fed Rate Hike by October 2026 Meeting?",
+      "slug": "fed-rate-hike-by-october-2026-meeting",
+      "yes": 44.5,
+      "vol24": 3816.396994,
+      "endDate": "2026-12-09T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "fed rate",
+      "title": "Fed Rate Hike by July 2026 Meeting?",
+      "slug": "fed-rate-hike-by-july-2026-meeting",
+      "yes": 5.05,
+      "vol24": 3546.356344,
+      "endDate": "2026-12-09T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "fed rate",
+      "title": "Will 1 Fed rate cut happen in 2026?",
+      "slug": "will-1-fed-rate-cut-happen-in-2026",
+      "yes": 11.5,
+      "vol24": 2396.077427,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "israel",
+      "title": "Israel x Iran ceasefire continues through July 18?",
+      "slug": "israel-x-iran-ceasefire-continues-through-july-18-20260716224448964",
+      "yes": 97.6,
+      "vol24": 66693.56828099999,
+      "endDate": "2026-07-18T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "israel",
+      "title": "Israel closes its airspace by July 31?",
+      "slug": "israel-closes-its-airspace-by-july-31-287",
+      "yes": 25.5,
+      "vol24": 53760.620229999986,
+      "endDate": "2026-07-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "israel",
+      "title": "Will Benjamin Netanyahu be the next Prime Minister of Israel?",
+      "slug": "will-benjamin-netanyahu-be-the-next-prime-minister-of-israel",
+      "yes": 34.5,
+      "vol24": 36130.16320599999,
+      "endDate": "2026-12-31T00:00:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "israel",
+      "title": "Israel x Iran ceasefire continues through July 20?",
+      "slug": "israel-x-iran-ceasefire-continues-through-july-20-20260716224448965",
+      "yes": 84,
+      "vol24": 33016.952233,
+      "endDate": "2026-07-20T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    },
+    {
+      "q": "israel",
+      "title": "Israel x Iran ceasefire continues through July 31?",
+      "slug": "israel-x-iran-ceasefire-continues-through-july-31-20260716224448968",
+      "yes": 51,
+      "vol24": 26586.741134000004,
+      "endDate": "2026-07-31T23:59:00Z",
+      "deltaVsPriorDay": null,
+      "priorDate": null
+    }
+  ],
+  "logRows": 20,
+  "logDays": 1
+}
