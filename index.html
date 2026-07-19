@@ -200,7 +200,10 @@ function reason(d){
   let regimeLevel=null,sw=0,sv=0;
   anchors.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});
   if(sw>0)regimeLevel=sv/sw;
-  if(regimeLevel==null){const med=C.filter(c=>c.escSign===+1&&!c.near&&!c.thin&&c.yes!=null);med.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});if(sw>0)regimeLevel=sv/sw;}
+  // No fallback to mid-dated contracts when there are zero deep anchors: averaging
+  // near/mid-dated noise into "regimeLevel" while still labeling it "0 deep anchors"
+  // self-contradicts the displayed text and quietly leaks a phantom signal into the
+  // tilt and confidence math. Zero anchors means no regime read, full stop.
   let regimeTilt=regimeLevel!=null?Math.max(-1,Math.min(1,(regimeLevel-50)/40)):0;
   const esc=C.filter(c=>c.escSign===-1&&!c.thin&&c.yes!=null);
   let escLevel=esc.length?Math.max(...esc.map(c=>c.yes)):0;
@@ -459,7 +462,7 @@ async function run(){
   $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
   let d;try{d=await gatherData();}catch(e){$('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return;}
   lastSpot=d.spot;
-  scoreLog(d.spot); persist(); render();
+  await scoreLog(); persist(); render();
   const v=reason(d);
   // data table with role tags
   const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
@@ -519,23 +522,45 @@ async function restore(){
   let loaded=false;
   try{ const ls=localStorage.getItem('v13_log'); if(ls){LOG=JSON.parse(ls);loaded=true;} }catch(e){}
   if(!loaded&&window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}
-  render();
+  await scoreLog(); persist(); render();
 }
-// FORWARD-FILL SCORING: when a logged entry is +5d or +10d old, fill in silver's price then,
-// and score whether the call was right. This is the validation accruing in time — without it,
-// the log is a list of guesses; with it, it's a measurable backtest.
-function scoreLog(currentSpot){
-  if(!LOG.length||currentSpot==null)return;
-  const now=new Date();
+// FORWARD-FILL SCORING: when a logged entry is +5/+10/+20 TRADING DAYS old, fill in
+// silver's committed close at that exact horizon and score whether the call was right.
+// MUST read from data/SI_F.json -> historical.ohlc, never from a live spot at whatever
+// moment the page happens to be open — that bug stamped one arbitrary page-load price
+// into all three horizons for stale entries (e.g. the June-10 entry showing -13.3% on
+// every horizon because nobody opened the page between June 10 and July 18). A horizon
+// only gets scored once a committed close actually exists that far out.
+let SI_HIST=null;
+async function loadHistOHLC(){
+  if(SI_HIST)return SI_HIST;
+  try{
+    const r=await fetch('data/SI_F.json',{cache:'no-cache'});
+    if(r.ok){const j=await r.json();SI_HIST=(j?.historical?.ohlc||[]).slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);}
+  }catch(e){}
+  return SI_HIST||[];
+}
+function closeNTradingDaysAfter(ohlc,entryDateStr,n){
+  const idx=ohlc.findIndex(b=>b.date>=entryDateStr);
+  if(idx<0)return null;
+  const target=idx+n;
+  return target<ohlc.length?ohlc[target].c:null;
+}
+async function scoreLog(){
+  if(!LOG.length)return;
+  const ohlc=await loadHistOHLC();
+  if(!ohlc.length)return;
+  const horizons=[[5,'p5','pct5','hit5'],[10,'p10','pct10','hit10'],[20,'p20','pct20','hit20']];
   LOG.forEach(r=>{
-    const logTime=new Date(r.t.replace(' ','T'));
-    const daysSince=(now-logTime)/86400000;
-    if(r.p5==null&&daysSince>=5){r.p5=currentSpot; r.pct5=((currentSpot-r.spot)/r.spot)*100;
-      r.hit5=(r.tilt==='bullish'&&r.pct5>0)||(r.tilt==='bearish'&&r.pct5<0)||(r.tilt==='balanced'&&Math.abs(r.pct5)<2);}
-    if(r.p10==null&&daysSince>=10){r.p10=currentSpot; r.pct10=((currentSpot-r.spot)/r.spot)*100;
-      r.hit10=(r.tilt==='bullish'&&r.pct10>0)||(r.tilt==='bearish'&&r.pct10<0)||(r.tilt==='balanced'&&Math.abs(r.pct10)<2);}
-    if(r.p20==null&&daysSince>=20){r.p20=currentSpot; r.pct20=((currentSpot-r.spot)/r.spot)*100;
-      r.hit20=(r.tilt==='bullish'&&r.pct20>0)||(r.tilt==='bearish'&&r.pct20<0)||(r.tilt==='balanced'&&Math.abs(r.pct20)<2);}
+    const entryDateStr=r.t.slice(0,10);
+    horizons.forEach(([n,pk,pctk,hitk])=>{
+      if(r[pk]!=null&&r.scoredFrom==='ohlc')return; // already correctly scored — leave it
+      const c=closeNTradingDaysAfter(ohlc,entryDateStr,n);
+      if(c==null)return; // no committed close that far out yet — do not guess from live spot
+      r[pk]=c; r[pctk]=((c-r.spot)/r.spot)*100;
+      r[hitk]=(r.tilt==='bullish'&&r[pctk]>0)||(r.tilt==='bearish'&&r[pctk]<0)||(r.tilt==='balanced'&&Math.abs(r[pctk])<2);
+    });
+    r.scoredFrom='ohlc';
   });
 }
 function hitRate(){
