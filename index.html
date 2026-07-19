@@ -94,6 +94,13 @@
   </div>
 
   <div class="panel">
+    <h2>Oil-regime discriminator <span class="num">hypothesis-generating · NOT wired into tilt</span></h2>
+    <div class="psub">Repairs the falsified oil-sign mapping by adding the CAUSE of the oil move. Ten-trading-day co-movement of oil + copper + 10y yields, read from committed data files (no live quotes, no proxies). All three falling together = demand destruction (May–Jun 2026: oil fell 25% and silver fell WITH it). Oil down while copper and yields hold = supply relief (the only regime where "oil down → silver up" ever held).</div>
+    <div id="regimeDiscBox" style="margin:10px 0"><span class="dim" style="font-size:11px">Loading committed series…</span></div>
+    <div class="note"><b>Pre-committed hypothesis (stated 2026-07-19, before any scoring):</b> conditioning the 20-day oil→silver signal on this discriminator improves it — in SUPPLY RELIEF regimes oil-down predicts silver-up at t+20; in DEMAND DESTRUCTION regimes oil-down predicts silver-down at t+20. <b>Falsifier:</b> after ≥30 regime-tagged trading days with scoreable t+20 outcomes, if the regime-conditioned mapping fails to beat the unconditioned oil signal's directional hit rate by ≥10 percentage points, the discriminator is falsified and gets retired to the falsified list. Thresholds fixed in code: flat = |Δ| &lt; 1.5% (oil, copper), &lt; 8bp (10y yield). Until that test passes, this panel is context only and feeds NOTHING downstream.</div>
+  </div>
+
+  <div class="panel">
     <h2>Reasoning log <span class="num">self-scoring</span></h2>
     <div class="psub">Each analysis logs the verdict + silver price + timestamp. The engine improves interpretation; the log does the validating. Over weeks it shows whether the curve-regime read actually led price.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
@@ -200,7 +207,10 @@ function reason(d){
   let regimeLevel=null,sw=0,sv=0;
   anchors.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});
   if(sw>0)regimeLevel=sv/sw;
-  if(regimeLevel==null){const med=C.filter(c=>c.escSign===+1&&!c.near&&!c.thin&&c.yes!=null);med.forEach(c=>{const w=Math.min(1,c.vol/1000000);sw+=w;sv+=c.yes*w;});if(sw>0)regimeLevel=sv/sw;}
+  // No fallback to mid-dated contracts when there are zero deep anchors: averaging
+  // near/mid-dated noise into "regimeLevel" while still labeling it "0 deep anchors"
+  // self-contradicts the displayed text and quietly leaks a phantom signal into the
+  // tilt and confidence math. Zero anchors means no regime read, full stop.
   let regimeTilt=regimeLevel!=null?Math.max(-1,Math.min(1,(regimeLevel-50)/40)):0;
   const esc=C.filter(c=>c.escSign===-1&&!c.thin&&c.yes!=null);
   let escLevel=esc.length?Math.max(...esc.map(c=>c.yes)):0;
@@ -210,7 +220,10 @@ function reason(d){
   let oilTilt=d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null;
   let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
   const contradiction=oilTilt!=null&&Math.sign(contractTilt)!==Math.sign(oilTilt)&&Math.abs(contractTilt)>0.35&&Math.abs(oilTilt)>0.25;
-  let conf=22+Math.min(20,anchors.length*6)+((oilTilt!=null&&Math.abs(oilTilt)>0.3)?18:0)+((oilTilt!=null&&Math.sign(contractTilt)===Math.sign(oilTilt))?12:0);
+  // the +12 agreement bonus is documented as "oil agrees with the REGIME read" — it must not
+  // fire when there is no regime read (regimeLevel null), or a lone one-day oil move plus
+  // escalation/repricing scraps can still reach 52% confidence with zero structural anchors
+  let conf=22+Math.min(20,anchors.length*6)+((oilTilt!=null&&Math.abs(oilTilt)>0.3)?18:0)+((oilTilt!=null&&regimeLevel!=null&&Math.sign(contractTilt)===Math.sign(oilTilt))?12:0);
   // PRICED-IN PENALTY: when relief is already consensus (far-dated odds high), the channel may
   // have already fired; sell-the-news risk is elevated. Cap confidence on bullish calls accordingly.
   // Rationale: silver fell across multiple confident bullish reads while the regime sat at 57-79%.
@@ -251,11 +264,15 @@ function reason(d){
   else if(tilt==='bullish')headline='Iran/oil channel only: relief tilt, '+(d.oilChg!=null&&d.oilChg<-1?'oil falling '+fmt(d.oilChg)+'% ':'')+'into a '+regimeWord+' regime. One channel\u2019s read — see scope note before treating as a silver verdict.';
   else if(tilt==='bearish')headline='Iran/oil channel only: stagflation tilt, '+(d.oilChg!=null&&d.oilChg>1?'oil rising '+fmt(d.oilChg)+'% ':'')+'with '+regimeWord+'. One channel\u2019s read \u2014 other channels not modeled here.';
   else headline='Iran/oil channel: balanced \u2014 no decisive lean. Other channels not modeled here.';
-  const reg='Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.'+(pricedIn?' <b class="warn">CAUTION:</b> regime is already at consensus — relief is the priced view, not a surprise. Sell-the-news risk material; confidence capped accordingly.':'');
+  const reg=regimeLevel==null
+    ?'<b class="dim">NO REGIME READ</b> — 0 contracts qualify as deep anchors today, so this component is dropped from tilt and confidence entirely. Near-dated noise is NOT substituted in its place; the verdict below rests on the remaining components (mostly oil) with correspondingly less structural grounding.'
+    :'Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+Math.round(regimeLevel)+'% on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.'+(pricedIn?' <b class="warn">CAUTION:</b> regime is already at consensus — relief is the priced view, not a surprise. Sell-the-news risk material; confidence capped accordingly.':'');
   const decTxt=decayed.length?decayed.length+' near-dated contract'+(decayed.length===1?'':'s')+' bleeding toward zero on calendar decay (e.g. "'+decayed[0].title.slice(0,40)+'" '+fmt(decayed[0].delta)+'pt at '+decayed[0].dte+'d) — excluded from direction. These deadline-failures are NOT escalation.':'No near-dated decay distortion today.';
-  const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.'));
+  const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(regimeLevel==null?'is the dominant vote (no regime read to corroborate).':(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.')));
   const points=[];
-  points.push('Regime (deep curve): '+regimeWord+' at ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+' deal odds — the de-escalation backdrop that drives silver via oil.');
+  points.push(regimeLevel!=null
+    ?'Regime (deep curve): '+regimeWord+' at ~'+Math.round(regimeLevel)+'% deal odds — the de-escalation backdrop that drives silver via oil.'
+    :'Regime (deep curve): no read — zero qualifying deep anchors; component excluded rather than approximated from near-dated contracts.');
   if(pricedIn)points.push('PRICED-IN check fired: regime at '+Math.round(pricedInLevel)+'% means relief is consensus, not surprise. Room to upside-disappoint > room to upside-surprise. Confidence capped — this addresses the failure mode where confident bullish reads preceded silver DOWN-days.');
   if(decayed.length)points.push('Calendar decay disarmed: '+decayed.length+' near-dated drop'+(decayed.length===1?'':'s')+' correctly read as deadline-lapse, not escalation (the trap that fooled the arithmetic engine).');
   if(standout&&Math.abs(standout.delta)>=5)points.push('Standout real move: "'+standout.title.slice(0,40)+'" '+fmt(standout.delta)+'pt — '+(standout.escSign>0?'de-escalation/normalization signal':standout.escSign<0?'escalation signal':'notable repricing')+', not decay.');
@@ -459,7 +476,7 @@ async function run(){
   $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
   let d;try{d=await gatherData();}catch(e){$('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return;}
   lastSpot=d.spot;
-  scoreLog(d.spot); persist(); render();
+  await scoreLog(); persist(); render();
   const v=reason(d);
   // data table with role tags
   const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
@@ -519,24 +536,113 @@ async function restore(){
   let loaded=false;
   try{ const ls=localStorage.getItem('v13_log'); if(ls){LOG=JSON.parse(ls);loaded=true;} }catch(e){}
   if(!loaded&&window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}
-  render();
+  await scoreLog(); persist(); render();
+  regimeDiscriminator(); // display-only, reads committed files — fire and forget
 }
-// FORWARD-FILL SCORING: when a logged entry is +5d or +10d old, fill in silver's price then,
-// and score whether the call was right. This is the validation accruing in time — without it,
-// the log is a list of guesses; with it, it's a measurable backtest.
-function scoreLog(currentSpot){
-  if(!LOG.length||currentSpot==null)return;
-  const now=new Date();
+// FORWARD-FILL SCORING: when a logged entry is +5/+10/+20 TRADING DAYS old, fill in
+// silver's committed close at that exact horizon and score whether the call was right.
+// MUST read from data/SI_F.json -> historical.ohlc, never from a live spot at whatever
+// moment the page happens to be open — that bug stamped one arbitrary page-load price
+// into all three horizons for stale entries (e.g. the June-10 entry showing -13.3% on
+// every horizon because nobody opened the page between June 10 and July 18). A horizon
+// only gets scored once a committed close actually exists that far out.
+let SI_HIST=null;
+async function loadHistOHLC(){
+  if(SI_HIST)return SI_HIST;
+  try{
+    const r=await fetch('data/SI_F.json',{cache:'no-cache'});
+    if(r.ok){const j=await r.json();SI_HIST=(j?.historical?.ohlc||[]).slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);}
+  }catch(e){}
+  return SI_HIST||[];
+}
+function closeNTradingDaysAfter(ohlc,entryDateStr,n){
+  const idx=ohlc.findIndex(b=>b.date>=entryDateStr);
+  if(idx<0)return null;
+  const target=idx+n;
+  return target<ohlc.length?ohlc[target].c:null;
+}
+async function scoreLog(){
+  if(!LOG.length)return;
+  const ohlc=await loadHistOHLC();
+  if(!ohlc.length)return;
+  const horizons=[[5,'p5','pct5','hit5'],[10,'p10','pct10','hit10'],[20,'p20','pct20','hit20']];
   LOG.forEach(r=>{
-    const logTime=new Date(r.t.replace(' ','T'));
-    const daysSince=(now-logTime)/86400000;
-    if(r.p5==null&&daysSince>=5){r.p5=currentSpot; r.pct5=((currentSpot-r.spot)/r.spot)*100;
-      r.hit5=(r.tilt==='bullish'&&r.pct5>0)||(r.tilt==='bearish'&&r.pct5<0)||(r.tilt==='balanced'&&Math.abs(r.pct5)<2);}
-    if(r.p10==null&&daysSince>=10){r.p10=currentSpot; r.pct10=((currentSpot-r.spot)/r.spot)*100;
-      r.hit10=(r.tilt==='bullish'&&r.pct10>0)||(r.tilt==='bearish'&&r.pct10<0)||(r.tilt==='balanced'&&Math.abs(r.pct10)<2);}
-    if(r.p20==null&&daysSince>=20){r.p20=currentSpot; r.pct20=((currentSpot-r.spot)/r.spot)*100;
-      r.hit20=(r.tilt==='bullish'&&r.pct20>0)||(r.tilt==='bearish'&&r.pct20<0)||(r.tilt==='balanced'&&Math.abs(r.pct20)<2);}
+    const entryDateStr=r.t.slice(0,10);
+    const idx=ohlc.findIndex(b=>b.date>=entryDateStr);
+    // MOMENTUM BASELINE: sign of the trailing 20-trading-day return at entry.
+    // Mild momentum is the one validated effect in silver — it is the reigning
+    // champion every tilt must beat, scored on identical entries and horizons.
+    if(r.momoDir===undefined) r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
+    horizons.forEach(([n,pk,pctk,hitk])=>{
+      if(r[pk]!=null&&r.scoredFrom==='ohlc')return; // already correctly scored — leave it
+      const target=idx<0?-1:idx+n;
+      const c=(target>=0&&target<ohlc.length)?ohlc[target].c:null;
+      if(c==null)return; // no committed close that far out yet — do not guess from live spot
+      r[pk]=c; r[pctk]=((c-r.spot)/r.spot)*100;
+      r[hitk]=(r.tilt==='bullish'&&r[pctk]>0)||(r.tilt==='bearish'&&r[pctk]<0)||(r.tilt==='balanced'&&Math.abs(r[pctk])<2);
+    });
+    // momentum hits piggyback on the same scored moves (identical entries/horizons)
+    if(r.momoDir){
+      [['hit5','pct5','momoHit5'],['hit10','pct10','momoHit10'],['hit20','pct20','momoHit20']].forEach(([hk,pk2,mk])=>{
+        if(r[hk]!=null&&r[mk]==null)r[mk]=(r.momoDir==='bullish')?r[pk2]>0:r[pk2]<0;
+      });
+    }
+    r.scoredFrom='ohlc';
   });
+}
+// CALIBRATION + BRIER: hit/miss alone throws away the confidence number — and the
+// confidence number is this engine's documented failure mode (anti-correlated with
+// outcomes). Brier = (stated p − outcome)²: being 70% confident and wrong costs far
+// more than being 55% and wrong. Balanced verdicts are abstains — no directional
+// probability to calibrate — so they're excluded from calls but not from momentum.
+function calibration(){
+  const calls=[],momo=[];
+  LOG.forEach(r=>{
+    ['5','10','20'].forEach(h=>{
+      if(r['hit'+h]!=null&&(r.tilt==='bullish'||r.tilt==='bearish')&&r.confidence!=null)
+        calls.push({p:r.confidence/100,hit:r['hit'+h]?1:0});
+      if(r['momoHit'+h]!=null)momo.push(r['momoHit'+h]?1:0);
+    });
+  });
+  if(!calls.length)return null;
+  return {
+    n:calls.length,
+    stated:calls.reduce((a,c)=>a+c.p,0)/calls.length*100,
+    realized:calls.reduce((a,c)=>a+c.hit,0)/calls.length*100,
+    brier:calls.reduce((a,c)=>a+Math.pow(c.p-c.hit,2),0)/calls.length,
+    momoN:momo.length,
+    momoRate:momo.length?momo.reduce((a,b)=>a+b,0)/momo.length*100:null
+  };
+}
+// ---- OIL-REGIME DISCRIMINATOR (display-only; falsifier pre-committed in the panel) ----
+// Reads committed data files same-origin. Never wired into tilt until the falsifier test passes.
+async function regimeDiscriminator(){
+  const box=$('regimeDiscBox'); if(!box)return;
+  async function last11(file){
+    try{const r=await fetch('data/'+file,{cache:'no-cache'});if(!r.ok)return null;
+      const j=await r.json();const o=j?.historical?.ohlc;if(!o||o.length<11)return null;
+      return o.slice(-11);}catch(e){return null;}
+  }
+  const [oil,cop,tnx]=await Promise.all([last11('CL_F.json'),last11('HG_F.json'),last11('_TNX.json')]);
+  if(!cop){box.innerHTML='<span class="dim" style="font-size:11px">Copper series (data/HG_F.json) not yet committed — HG=F was added to tickers.json and the next fetch-data Actions run will backfill 5y. Discriminator offline until then.</span>';return;}
+  if(!oil||!tnx){box.innerHTML='<span class="dim" style="font-size:11px">Missing committed oil or 10y series — discriminator offline.</span>';return;}
+  const pct=s=>((s[s.length-1].c-s[0].c)/s[0].c)*100;
+  const oilD=pct(oil),copD=pct(cop),yldD=tnx[tnx.length-1].c-tnx[0].c;
+  const sgn=(v,f)=>v>f?1:v<-f?-1:0;
+  const so=sgn(oilD,1.5),sc=sgn(copD,1.5),sy=sgn(yldD,0.08);
+  let regime,cls,implication;
+  if(so<0&&sc<0&&sy<0){regime='DEMAND DESTRUCTION';cls='bear';implication='all three falling together — oil-down is a demand signal here, and silver historically fell WITH it (May–Jun 2026). The relief mapping does NOT apply.';}
+  else if(so<0&&sc>=0&&sy>=0){regime='SUPPLY RELIEF';cls='bull';implication='oil down while copper and yields hold — the only regime where "oil down → silver up" ever held. Still unproven as a conditioner; see falsifier below.';}
+  else if(so>0&&sc>0){regime='DEMAND / REFLATION';cls='warn';implication='oil and copper rising together — industrial bid context.';}
+  else if(so>0&&sc<0){regime='SUPPLY SHOCK';cls='bear';implication='oil up while copper falls — stagflationary mix, historically hostile to silver via the hawkish-Fed/dollar channel.';}
+  else{regime='MIXED / NO READ';cls='dim';implication='co-movement matches no committed regime signature — no read is the honest output.';}
+  const fs2=(v,d=1)=>(v>=0?'+':'')+v.toFixed(d);
+  box.innerHTML='<div style="font-size:12px;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px">'
+    +'<span>Oil (CL) 10d: <b class="purp">'+fs2(oilD)+'%</b></span>'
+    +'<span>Copper (HG) 10d: <b class="purp">'+fs2(copD)+'%</b></span>'
+    +'<span>10y yield 10d: <b class="purp">'+fs2(yldD*100,0)+'bp</b></span>'
+    +'<span class="dim">as of '+oil[oil.length-1].date+' (committed closes)</span></div>'
+    +'<div class="read"><b class="'+cls+'">'+regime+'</b> — '+implication+'</div>';
 }
 function hitRate(){
   const s5=LOG.filter(r=>r.hit5!=null);const s10=LOG.filter(r=>r.hit10!=null);const s20=LOG.filter(r=>r.hit20!=null);
@@ -558,6 +664,10 @@ function render(){
     if(hr.n10)scoreLine+=' \u00b7 <b class="'+(hr.hit10>=55?'bull':hr.hit10<=45?'bear':'dim')+'">+10d: '+hr.hit10+'% hit ('+hr.n10+' scored, avg '+(hr.avg10>=0?'+':'')+hr.avg10.toFixed(1)+'%)</b>';
     if(hr.n20)scoreLine+=' \u00b7 <b class="'+(hr.hit20>=55?'bull':hr.hit20<=45?'bear':'dim')+'">+20d: '+hr.hit20+'% hit ('+hr.n20+' scored, avg '+(hr.avg20>=0?'+':'')+hr.avg20.toFixed(1)+'%) \u2190 oil-horizon</b>';
     scoreLine+='</div>';
+    const cal=calibration();
+    if(cal){
+      scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries \u2014 the bar any tilt must beat':'')+'</div>';
+    }
   }
   b.innerHTML=scoreLine+LOG.slice(-30).reverse().map(r=>{
     let scoreTag='';

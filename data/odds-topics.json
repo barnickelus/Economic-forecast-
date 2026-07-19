@@ -1,0 +1,14 @@
+{
+  "topics": [
+    "iran",
+    "hormuz",
+    "fed rate",
+    "israel",
+    "oil price"
+  ],
+  "kalshiSeries": [
+    "KXFEDDECISION",
+    "KXFED",
+    "KXCPIYOY"
+  ]
+}

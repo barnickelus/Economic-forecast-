@@ -271,8 +271,32 @@ function exportCSV(){
   const csv=rows.map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='catalyst-log.csv';a.click();
 }
-async function persist(){ if(window.storage){try{await window.storage.set('catalyst_log',JSON.stringify(LOG));}catch(e){}} }
-async function restore(){ if(window.storage){try{const r=await window.storage.get('catalyst_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}} renderLog(); }
+// FIXED: previous version used window.storage, which only exists inside Claude
+// artifacts — on GitHub Pages it silently did nothing, so every logged snapshot
+// died on page reload. localStorage is the real browser persistence.
+function persist(){ try{localStorage.setItem('catalyst_log',JSON.stringify(LOG));}catch(e){} }
+async function restore(){
+  try{const v=localStorage.getItem('catalyst_log');if(v)LOG=JSON.parse(v);}catch(e){}
+  // merge in the AUTOMATED log committed by GitHub Actions (data/catalyst-log.json)
+  // — that series accumulates with zero human effort and is the real backtest file.
+  try{
+    const r=await fetch('data/catalyst-log.json',{cache:'no-cache'});
+    if(r.ok){
+      const auto=await r.json();
+      for(const row of auto){
+        if(!LOG.some(x=>x.date===row.date&&x.title===row.title))
+          LOG.push({date:row.date,title:row.title,yes:row.yes,brent:row.brent});
+      }
+      LOG.sort((a,b)=>a.date<b.date?-1:1);
+      const days=new Set(auto.map(r=>r.date)).size;
+      const lastAuto=auto.length?auto[auto.length-1].date:null;
+      $('logStatus').textContent=LOG.length+' rows · automated log: '+days+' days'+(lastAuto?(' (last '+lastAuto+')'):'');
+    } else {
+      $('logStatus').textContent=LOG.length+' rows · ⚠ no automated log found — is the fetch-odds workflow deployed?';
+    }
+  }catch(e){}
+  renderLog();
+}
 
 $('fetchBtn').addEventListener('click',doFetch);
 $('logBtn').addEventListener('click',logSnapshot);
