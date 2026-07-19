@@ -6,7 +6,7 @@
     "sectorETF": "XLK",
     "typicalVolAnnual": 0.25
   },
-  "fetchedAt": "2026-07-19T14:02:25.972Z",
+  "fetchedAt": "2026-07-19T15:31:28.622Z",
   "sources": {
     "asset": "yahoo:AAPL",
     "sector": "yahoo:XLK"
@@ -11453,7 +11453,7 @@
     "source": "AAPL"
   },
   "macro": {
-    "fetchedAt": "2026-07-19T14:02:25.101Z",
+    "fetchedAt": "2026-07-19T15:31:26.819Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
