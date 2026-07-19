@@ -114,11 +114,19 @@ async function fetchKalshiSeries(seriesList) {
       // and with a result cap that buries every market that actually trades
       markets.sort((a, b) => String(a.close_time || a.closeTime || '') < String(b.close_time || b.closeTime || '') ? -1 : 1);
       const pick = (m, ...names) => { for (const n of names) if (m[n] != null) return m[n]; return null; };
+      // live API returns dollar-STRING fields ("0.0600" = 6¢ = 6%) instead of the
+      // documented integer-cent fields — verified from a raw sample in the Actions
+      // log on 2026-07-19. Support both shapes.
+      const cents = (m, base) => {
+        if (m[base] != null && m[base] !== 0) return +m[base];
+        if (m[base + '_dollars'] != null) { const v = parseFloat(m[base + '_dollars']) * 100; return isNaN(v) ? null : v; }
+        return m[base] != null ? +m[base] : null;
+      };
       let quoted = 0;
       for (const m of markets) {
-        // Kalshi prices are in cents (0-100). Mid of bid/ask when both exist, else last.
-        const bid = pick(m, 'yes_bid', 'yesBid'), ask = pick(m, 'yes_ask', 'yesAsk');
-        const last = pick(m, 'last_price', 'lastPrice');
+        // Kalshi prices normalize to cents (0-100). Mid of bid/ask when both exist, else last.
+        const bid = cents(m, 'yes_bid'), ask = cents(m, 'yes_ask');
+        const last = cents(m, 'last_price');
         let yes = null;
         if (bid != null && ask != null && ask > 0) yes = (bid + ask) / 2;
         else if (last != null && last > 0) yes = last;
