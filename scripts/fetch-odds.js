@@ -108,26 +108,36 @@ async function fetchKalshiSeries(seriesList) {
       const j = await fetchJSON(
         'https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=' + encodeURIComponent(st) + '&status=open&limit=50'
       );
-      const markets = j.markets || [];
+      let markets = j.markets || [];
       if (!markets.length) { console.log('⚠ kalshi "' + st + '": 0 open markets — wrong series ticker? Edit kalshiSeries in data/odds-topics.json'); continue; }
+      // near-dated meetings first — the API can return distant dead markets first,
+      // and with a result cap that buries every market that actually trades
+      markets.sort((a, b) => String(a.close_time || a.closeTime || '') < String(b.close_time || b.closeTime || '') ? -1 : 1);
+      const pick = (m, ...names) => { for (const n of names) if (m[n] != null) return m[n]; return null; };
+      let quoted = 0;
       for (const m of markets) {
         // Kalshi prices are in cents (0-100). Mid of bid/ask when both exist, else last.
+        const bid = pick(m, 'yes_bid', 'yesBid'), ask = pick(m, 'yes_ask', 'yesAsk');
+        const last = pick(m, 'last_price', 'lastPrice');
         let yes = null;
-        if (m.yes_bid != null && m.yes_ask != null && m.yes_ask > 0) yes = (m.yes_bid + m.yes_ask) / 2;
-        else if (m.last_price != null) yes = m.last_price;
+        if (bid != null && ask != null && ask > 0) yes = (bid + ask) / 2;
+        else if (last != null && last > 0) yes = last;
+        if (yes == null) continue; // dead market, no order book — logging it teaches nothing
+        quoted++;
+        if (quoted > 15) break;   // cap per series: the near-dated quoted markets are the signal
         out.push({
           series: st,
           ticker: m.ticker,
           title: m.title || m.subtitle || m.ticker,
-          yes: yes == null ? null : +(+yes).toFixed(2),
-          yesBid: m.yes_bid != null ? m.yes_bid : null,
-          yesAsk: m.yes_ask != null ? m.yes_ask : null,
-          vol24: m.volume_24h != null ? m.volume_24h : (m.volume != null ? m.volume : null),
-          openInterest: m.open_interest != null ? m.open_interest : null,
-          closeTime: m.close_time || null,
+          yes: +(+yes).toFixed(2),
+          yesBid: bid, yesAsk: ask,
+          vol24: pick(m, 'volume_24h', 'volume24h', 'volume'),
+          openInterest: pick(m, 'open_interest', 'openInterest'),
+          closeTime: pick(m, 'close_time', 'closeTime'),
         });
       }
-      console.log('✓ kalshi "' + st + '": ' + markets.length + ' open markets');
+      console.log('✓ kalshi "' + st + '": ' + markets.length + ' open, ' + Math.min(quoted, 15) + ' quoted+logged');
+      if (!quoted) console.log('⚠ kalshi "' + st + '": zero quoted markets — raw field sample: ' + JSON.stringify(markets[0]).slice(0, 400));
     } catch (e) {
       console.log('✗ kalshi "' + st + '": ' + e.message);
     }
