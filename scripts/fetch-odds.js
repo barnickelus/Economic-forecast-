@@ -25,8 +25,15 @@ const DATA_DIR = path.join(__dirname, '..', 'data');
 const TOPICS_FILE = path.join(DATA_DIR, 'odds-topics.json');
 const LOG_FILE = path.join(DATA_DIR, 'catalyst-log.json');
 const LATEST_FILE = path.join(DATA_DIR, 'catalyst-latest.json');
+const KALSHI_LOG_FILE = path.join(DATA_DIR, 'kalshi-log.json');
 
 const DEFAULT_TOPICS = ['iran', 'hormuz', 'fed rate', 'israel', 'oil price'];
+// Kalshi series to log daily — the Fed-channel instrument the tilt engine lacks.
+// Purpose: build a daily market-implied rate-path series so the "hawkish shift
+// should cap bullish confidence" hypothesis can eventually be TESTED, not assumed.
+// Editable in data/odds-topics.json under "kalshiSeries"; unknown tickers just
+// warn in the Actions log so wrong guesses are visible, not silent.
+const DEFAULT_KALSHI_SERIES = ['KXFEDDECISION', 'KXFED', 'KXCPIYOY'];
 
 async function fetchJSON(url) {
   const ctl = new AbortController();
@@ -50,14 +57,82 @@ function marketToRow(m, term) {
     if (op && op.length) yes = parseFloat(op[0]) * 100;
   } catch (e) {}
   if (yes == null && m.lastTradePrice != null) yes = parseFloat(m.lastTradePrice) * 100;
+  // book depth/quality fields: thin or wide-spread books mean the "odds" are
+  // noise regardless of level — log them so the backtest can condition on quality
+  let spread = null;
+  if (m.bestBid != null && m.bestAsk != null) spread = +((parseFloat(m.bestAsk) - parseFloat(m.bestBid)) * 100).toFixed(2);
   return {
     q: term,
     title: m.question || m.title || m.groupItemTitle || term,
     slug: m.slug || null,
+    conditionId: m.conditionId || null,
     yes: yes == null || isNaN(yes) ? null : +yes.toFixed(2),
     vol24: +(m.volume24hr || m.volume24hrClob || 0),
+    liquidity: m.liquidityNum != null ? +m.liquidityNum : (m.liquidity != null ? +m.liquidity : null),
+    spreadPts: spread,
     endDate: m.endDate || m.end_date_iso || null,
   };
+}
+
+// Trade count over the last 24h from the Polymarket data-api. Distinguishes
+// "odds moved on one whale" from "odds moved on broad flow" — a whale-only
+// reprice and a crowd reprice are different signals even at identical deltas.
+// Best-effort: any failure returns null rather than blocking the log.
+async function fetchTradeCount24h(conditionId) {
+  if (!conditionId) return null;
+  try {
+    const trades = await fetchJSON(
+      'https://data-api.polymarket.com/trades?market=' + encodeURIComponent(conditionId) + '&limit=500'
+    );
+    if (!Array.isArray(trades)) return null;
+    const cutoff = Date.now() / 1000 - 86400;
+    let n = 0;
+    for (const t of trades) {
+      const ts = +(t.timestamp || t.matchTime || 0);
+      if (ts >= cutoff) n++;
+    }
+    // 500 recent trades all inside 24h means we undercounted — mark as ">=500"
+    return trades.length >= 500 && n >= 500 ? 500 : n;
+  } catch (e) {
+    return null;
+  }
+}
+
+// ---------- Kalshi (regulated US exchange — Fed/CPI markets, public API) ----------
+async function fetchKalshiSeries(seriesList) {
+  const out = [];
+  for (const series of seriesList) {
+    const st = String(series).trim();
+    if (!st) continue;
+    try {
+      const j = await fetchJSON(
+        'https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=' + encodeURIComponent(st) + '&status=open&limit=50'
+      );
+      const markets = j.markets || [];
+      if (!markets.length) { console.log('⚠ kalshi "' + st + '": 0 open markets — wrong series ticker? Edit kalshiSeries in data/odds-topics.json'); continue; }
+      for (const m of markets) {
+        // Kalshi prices are in cents (0-100). Mid of bid/ask when both exist, else last.
+        let yes = null;
+        if (m.yes_bid != null && m.yes_ask != null && m.yes_ask > 0) yes = (m.yes_bid + m.yes_ask) / 2;
+        else if (m.last_price != null) yes = m.last_price;
+        out.push({
+          series: st,
+          ticker: m.ticker,
+          title: m.title || m.subtitle || m.ticker,
+          yes: yes == null ? null : +(+yes).toFixed(2),
+          yesBid: m.yes_bid != null ? m.yes_bid : null,
+          yesAsk: m.yes_ask != null ? m.yes_ask : null,
+          vol24: m.volume_24h != null ? m.volume_24h : (m.volume != null ? m.volume : null),
+          openInterest: m.open_interest != null ? m.open_interest : null,
+          closeTime: m.close_time || null,
+        });
+      }
+      console.log('✓ kalshi "' + st + '": ' + markets.length + ' open markets');
+    } catch (e) {
+      console.log('✗ kalshi "' + st + '": ' + e.message);
+    }
+  }
+  return out;
 }
 
 function matchesTerm(title, term) {
@@ -127,18 +202,26 @@ async function fetchOilQuote(sym) {
 (async function main() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 
-  let topics = DEFAULT_TOPICS;
+  let topics = DEFAULT_TOPICS, kalshiSeries = DEFAULT_KALSHI_SERIES;
   if (fs.existsSync(TOPICS_FILE)) {
-    try { topics = JSON.parse(fs.readFileSync(TOPICS_FILE, 'utf8')).topics || DEFAULT_TOPICS; } catch (e) {}
+    try {
+      const cfg = JSON.parse(fs.readFileSync(TOPICS_FILE, 'utf8'));
+      topics = cfg.topics || DEFAULT_TOPICS;
+      kalshiSeries = cfg.kalshiSeries || DEFAULT_KALSHI_SERIES;
+    } catch (e) {}
   } else {
-    fs.writeFileSync(TOPICS_FILE, JSON.stringify({ topics: DEFAULT_TOPICS }, null, 2));
+    fs.writeFileSync(TOPICS_FILE, JSON.stringify({ topics: DEFAULT_TOPICS, kalshiSeries: DEFAULT_KALSHI_SERIES }, null, 2));
   }
 
-  const [contracts, brent, wti] = await Promise.all([
+  const [contracts, kalshiRows, brent, wti] = await Promise.all([
     fetchContracts(topics),
+    fetchKalshiSeries(kalshiSeries),
     fetchOilQuote('BZ=F'),
     fetchOilQuote('CL=F'),
   ]);
+
+  // per-contract 24h trade counts (sequential — small N, be polite to the API)
+  for (const c of contracts) c.trades24h = await fetchTradeCount24h(c.conditionId);
 
   // load existing log
   let log = [];
@@ -166,22 +249,40 @@ async function fetchOilQuote(sym) {
     const row = {
       date: today, fetchedAt: nowIso, title: c.title, slug: c.slug,
       yes: c.yes, vol24: c.vol24, endDate: c.endDate,
+      liquidity: c.liquidity, spreadPts: c.spreadPts, trades24h: c.trades24h,
       brent: brent ? brent.spot : null, wti: wti ? wti.spot : null,
       brentChangePct: brent ? brent.changePct : null,
     };
     if (idx >= 0) log[idx] = row; else { log.push(row); appended++; }
   }
 
+  // Kalshi daily log — same one-row-per-market-per-day pattern (later run wins)
+  let klog = [];
+  if (fs.existsSync(KALSHI_LOG_FILE)) {
+    try { klog = JSON.parse(fs.readFileSync(KALSHI_LOG_FILE, 'utf8')); } catch (e) { klog = []; }
+  }
+  let kAppended = 0;
+  for (const k of kalshiRows) {
+    const idx = klog.findIndex(r => r.date === today && r.ticker === k.ticker);
+    const row = { date: today, fetchedAt: nowIso, ...k };
+    if (idx >= 0) klog[idx] = row; else { klog.push(row); kAppended++; }
+  }
+  fs.writeFileSync(KALSHI_LOG_FILE, JSON.stringify(klog, null, 1));
+
   fs.writeFileSync(LOG_FILE, JSON.stringify(log, null, 1));
   fs.writeFileSync(LATEST_FILE, JSON.stringify({
     fetchedAt: nowIso,
     oil: { brent, wti },
     contracts: latestRows,
+    kalshi: kalshiRows,
     logRows: log.length,
     logDays: new Set(log.map(r => r.date)).size,
+    kalshiLogRows: klog.length,
   }, null, 2));
 
   console.log('✓ log: ' + log.length + ' rows across ' + new Set(log.map(r => r.date)).size +
-    ' days (+' + appended + ' new today) · ' + latestRows.length + ' live contracts');
+    ' days (+' + appended + ' new today) · ' + latestRows.length + ' live contracts' +
+    ' · kalshi: ' + klog.length + ' rows (+' + kAppended + ' today)');
   if (!contracts.length) console.log('⚠ zero contracts matched — check data/odds-topics.json terms');
+  if (!kalshiRows.length) console.log('⚠ zero kalshi markets — check kalshiSeries tickers in data/odds-topics.json');
 })().catch(e => { console.error('FATAL', e); process.exit(1); });

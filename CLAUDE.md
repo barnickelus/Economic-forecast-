@@ -63,8 +63,19 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   `data/SI_F.json → historical.ohlc`).
 - `scripts/fetch-odds.js` + `.github/workflows/fetch-odds.yml` — catalyst odds
   logger, 2x daily, appends `data/catalyst-log.json` (one row per contract per
-  day: yes%, vol, Brent/WTI). THIS FILE IS THE FUTURE BACKTEST DATASET.
-  Topics editable in `data/odds-topics.json`.
+  day: yes%, vol, liquidity, spread, 24h trade count, Brent/WTI). THIS FILE IS
+  THE FUTURE BACKTEST DATASET. Also appends `data/kalshi-log.json` (Kalshi
+  Fed/CPI markets — the Fed-channel series the tilt engine lacks; series
+  tickers in `data/odds-topics.json → kalshiSeries`, unverified guesses warn
+  in the Actions log). Topics editable in `data/odds-topics.json`.
+- Scoring (index.html): forward log scores from committed `SI_F.json` OHLC at
+  exact t+5/10/20 trading days (never live spot). Shows calibration (stated vs
+  realized), Brier (0.25 = always-50% baseline), and a momentum baseline
+  (trailing 20d sign — the reigning champion any tilt must beat).
+- Oil-regime discriminator (index.html): 10d co-movement of CL + HG + ^TNX from
+  committed files. DISPLAY-ONLY with pre-committed falsifier (panel text, dated
+  2026-07-19): regime-conditioned t+20 oil signal must beat unconditioned by
+  ≥10pts after ≥30 tagged days, else retire it. NOT wired into tilt.
 
 ## Known pitfalls (each cost us a debugging session)
 - Polymarket Gamma `/markets?search=` silently IGNORES the search param and
@@ -79,11 +90,25 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 - Contracts with past resolution dates settle at 0/100 — filter by endDate.
 
 ## Work queue
-1. Verify odds logger deployed + first run produced sane `data/catalyst-log.json`.
+1. ~~Verify odds logger deployed~~ DONE 2026-07-19: first run committed 20 sane
+   rows to `data/catalyst-log.json`.
 2. Build server-side tilt scorer: `data/tilt-log.json` + Actions step that fills
    t+5/10/20 from committed OHLC. Import the 5 historical v13 entries with their
-   TRUE scores (computed 2026-07-18, listed above).
-3. Build the oil-regime discriminator (demand vs supply-relief) with a
-   pre-committed falsifier before wiring it into any tilt.
+   TRUE scores (computed 2026-07-18, listed above). (Client-side scoring in
+   index.html now reads committed OHLC correctly, but the log still lives in
+   browser localStorage — server-side is the durable fix.)
+3. ~~Build the oil-regime discriminator~~ BUILT 2026-07-19 as display-only panel
+   with pre-committed falsifier. Copper (HG=F) added to tickers.json — verify
+   first `data/HG_F.json` commit has 5y backfill. REMAINING: after ≥30 tagged
+   days, run the falsifier test before any wiring into tilt.
 4. Migrate remaining CORS-proxy fetches to same-origin `data/` reads.
 5. After ~90 days of odds history: run Link 1 test (odds lead/lag vs oil tape).
+6. Verify Kalshi series tickers on first Actions run (log warns if a series
+   returns 0 markets — fix `kalshiSeries` in `data/odds-topics.json` via web UI).
+7. After ~60 days of `kalshi-log.json`: test the Fed-conflict hypothesis —
+   "hawkish weekly shift in Kalshi rate-path odds should have capped bullish
+   confidence." State exact threshold BEFORE scoring.
+8. Smart-wallet layer (unbuilt): Polymarket data-api exposes per-wallet trades +
+   leaderboard P&L. Hypothesis to spec before building: calibrated-wallet-
+   weighted odds lead the mid. `trades24h` field (now logging) is the cheap
+   precursor — whale-vs-crowd repricing.
