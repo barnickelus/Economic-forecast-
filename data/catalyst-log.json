@@ -526,7 +526,7 @@
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will the U.S. invade Iran before 2027?",
   "slug": "will-the-us-invade-iran-before-2027",
   "yes": 29.5,
@@ -535,13 +535,13 @@
   "liquidity": 455923.7835,
   "spreadPts": 1,
   "trades24h": 500,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
   "slug": "will-mojtaba-khamenei-be-head-of-state-in-iran-end-of-2026",
   "yes": 73.3,
@@ -550,13 +550,13 @@
   "liquidity": 79163.93897,
   "spreadPts": 0.8,
   "trades24h": 500,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Israel x Iran ceasefire continues through July 20?",
   "slug": "israel-x-iran-ceasefire-continues-through-july-20-20260716224448965",
   "yes": 94.5,
@@ -565,13 +565,13 @@
   "liquidity": 29563.833,
   "spreadPts": 1,
   "trades24h": 327,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will Iran announce withdrawal from MOU negotiations by July 31?",
   "slug": "will-iran-announce-withdrawal-from-mou-negotiations-by-july-31-20260622191733846-586-829-787",
   "yes": 15,
@@ -580,13 +580,13 @@
   "liquidity": 85879.1786,
   "spreadPts": 2,
   "trades24h": 266,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Iran full airspace closure by July 31?",
   "slug": "iran-full-airspace-closure-by-july-31-20260625195254150-838",
   "yes": 37.5,
@@ -595,13 +595,13 @@
   "liquidity": 27394.4046,
   "spreadPts": 1,
   "trades24h": 189,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Strait of Hormuz traffic returns to normal by July 31?",
   "slug": "strait-of-hormuz-traffic-returns-to-normal-by-july-31",
   "yes": 1.75,
@@ -610,13 +610,13 @@
   "liquidity": 499726.63705,
   "spreadPts": 0.1,
   "trades24h": 500,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Strait of Hormuz traffic returns to normal by August 31?",
   "slug": "strait-of-hormuz-traffic-returns-to-normal-by-august-31-20260702154212320",
   "yes": 13.5,
@@ -624,14 +624,14 @@
   "endDate": "2026-08-31T00:00:00Z",
   "liquidity": 204674.1288,
   "spreadPts": 1,
-  "trades24h": 214,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "trades24h": 218,
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Strait of Hormuz traffic returns to normal by December 31?",
   "slug": "strait-of-hormuz-traffic-returns-to-normal-by-december-31",
   "yes": 53,
@@ -639,14 +639,14 @@
   "endDate": "2026-12-31T00:00:00Z",
   "liquidity": 220169.634,
   "spreadPts": 2,
-  "trades24h": 148,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "trades24h": 149,
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will 30 ships transit the Strait of Hormuz on any day by July 31, 2026?",
   "slug": "will-30-ships-transit-the-strait-of-hormuz-on-any-day-by-july-31-2026",
   "yes": 15,
@@ -655,13 +655,13 @@
   "liquidity": 33589.52282,
   "spreadPts": 1.4,
   "trades24h": 26,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will 60 ships transit the Strait of Hormuz on any day by July 31, 2026?",
   "slug": "will-60-ships-transit-the-strait-of-hormuz-on-any-day-by-july-31-2026-20260626152655082-171-832",
   "yes": 3.1,
@@ -670,13 +670,13 @@
   "liquidity": 56332.14055,
   "spreadPts": 1.4,
   "trades24h": 12,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will 3 Fed rate cuts happen in 2026?",
   "slug": "will-3-fed-rate-cuts-happen-in-2026",
   "yes": 1.1,
@@ -685,13 +685,13 @@
   "liquidity": 132487.86309,
   "spreadPts": 0.2,
   "trades24h": 55,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will 2 Fed rate cuts happen in 2026?",
   "slug": "will-2-fed-rate-cuts-happen-in-2026",
   "yes": 2,
@@ -699,14 +699,14 @@
   "endDate": "2026-12-31T00:00:00Z",
   "liquidity": 62190.35254,
   "spreadPts": 0.2,
-  "trades24h": 54,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "trades24h": 57,
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will no Fed rate cuts happen in 2026?",
   "slug": "will-no-fed-rate-cuts-happen-in-2026",
   "yes": 84.55,
@@ -715,13 +715,13 @@
   "liquidity": 173545.57073,
   "spreadPts": 0.1,
   "trades24h": 77,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Will 1 Fed rate cut happen in 2026?",
   "slug": "will-1-fed-rate-cut-happen-in-2026",
   "yes": 11.5,
@@ -730,13 +730,13 @@
   "liquidity": 103060.6176,
   "spreadPts": 1,
   "trades24h": 58,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Fed rate hike in 2026?",
   "slug": "fed-rate-hike-in-2026",
   "yes": 53.5,
@@ -745,13 +745,13 @@
   "liquidity": 154848.7201,
   "spreadPts": 1,
   "trades24h": 19,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Israel closes its airspace by July 31?",
   "slug": "israel-closes-its-airspace-by-july-31-287",
   "yes": 30,
@@ -760,13 +760,13 @@
   "liquidity": 71500.7458,
   "spreadPts": 2,
   "trades24h": 201,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Israel x Iran ceasefire continues through July 31?",
   "slug": "israel-x-iran-ceasefire-continues-through-july-31-20260716224448968",
   "yes": 57,
@@ -775,13 +775,13 @@
   "liquidity": 42291.2819,
   "spreadPts": 2,
   "trades24h": 253,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Israel x Iran ceasefire continues through July 22?",
   "slug": "israel-x-iran-ceasefire-continues-through-july-22-20260716224448966",
   "yes": 78.5,
@@ -790,13 +790,13 @@
   "liquidity": 15984.4778,
   "spreadPts": 1,
   "trades24h": 245,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  },
  {
   "date": "2026-07-20",
-  "fetchedAt": "2026-07-20T00:23:39.603Z",
+  "fetchedAt": "2026-07-20T00:24:58.434Z",
   "title": "Israel closes its airspace by July 24?",
   "slug": "israel-closes-its-airspace-by-july-24",
   "yes": 15,
@@ -805,8 +805,8 @@
   "liquidity": 29054.7051,
   "spreadPts": 2,
   "trades24h": 204,
-  "brent": 90.52,
-  "wti": 83.68,
-  "brentChangePct": 2.75
+  "brent": 90.48,
+  "wti": 83.66,
+  "brentChangePct": 2.7
  }
 ]
