@@ -103,7 +103,8 @@
   <div class="panel">
     <h2>Reasoning log <span class="num">self-scoring</span></h2>
     <div class="psub">Each analysis logs the verdict + silver price + timestamp. The engine improves interpretation; the log does the validating. Over weeks it shows whether the curve-regime read actually led price.</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="syncBtn">⬆ Commit log to repo</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
+    <div id="tiltCommit" style="margin-top:8px;font-size:12px"></div>
     <div id="logBox" style="margin-top:10px"></div>
   </div>
 
@@ -536,8 +537,35 @@ async function restore(){
   let loaded=false;
   try{ const ls=localStorage.getItem('v13_log'); if(ls){LOG=JSON.parse(ls);loaded=true;} }catch(e){}
   if(!loaded&&window.storage){try{const r=await window.storage.get('v13_log');if(r&&r.value)LOG=JSON.parse(r.value);}catch(e){}}
-  await scoreLog(); persist(); render();
+  // merge the DURABLE server-side log (data/tilt-log.json, committed + scored by
+  // Actions) — localStorage is device-local and dies with cleared browser data
+  try{
+    const r=await fetch('data/tilt-log.json',{cache:'no-cache'});
+    if(r.ok){const srv=await r.json();
+      if(Array.isArray(srv)){
+        SERVER_TS=new Set(srv.map(s=>s.t));
+        for(const s of srv){const i=LOG.findIndex(x=>x.t===s.t); if(i>=0)LOG[i]=s; else LOG.push(s);}
+        LOG.sort((a,b)=>a.t<b.t?-1:1);
+      }
+    }
+  }catch(e){}
+  await scoreLog(); persist(); render(); renderTiltSync();
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
+}
+// ---- durable-log plumbing: verdicts flow to data/tilt-log.json via a prefilled
+// GitHub issue; log-tilt.yml (owner-gated) appends, scores, and commits ----
+let SERVER_TS=new Set();
+const REPO_ISSUES='https://github.com/barnickelus/Economic-forecast-/issues/new';
+function tiltIssueUrl(entries,label){
+  const payload=entries.map(e=>({t:e.t,spot:e.spot,tilt:e.tilt,confidence:e.confidence,headline:(e.headline||'').slice(0,140)}));
+  const body='```json\n'+JSON.stringify(payload.length===1?payload[0]:payload,null,1)+'\n```\n\nSubmit this issue to commit the verdict(s) to `data/tilt-log.json` (scored server-side from committed closes).';
+  return REPO_ISSUES+'?title='+encodeURIComponent('TILT: '+label)+'&body='+encodeURIComponent(body);
+}
+function renderTiltSync(){
+  const unsynced=LOG.filter(r=>!SERVER_TS.has(r.t));
+  const el=$('tiltCommit'); if(!el)return;
+  if(!unsynced.length){el.innerHTML=LOG.length?'<span class="dim">✓ all '+LOG.length+' entries in the repo log (durable)</span>':'';return;}
+  el.innerHTML='<a class="warn" style="text-decoration:underline" target="_blank" href="'+tiltIssueUrl(unsynced,unsynced.length+' entr'+(unsynced.length===1?'y':'ies')+' sync')+'">⚠ '+unsynced.length+' entr'+(unsynced.length===1?'y':'ies')+' only in this browser — tap to commit to the repo log</a>';
 }
 // FORWARD-FILL SCORING: when a logged entry is +5/+10/+20 TRADING DAYS old, fill in
 // silver's committed close at that exact horizon and score whether the call was right.
@@ -689,7 +717,12 @@ $('logBtn').addEventListener('click',()=>{
       if(!proceed)return;
     }
   }
-  LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,p5:null,pct5:null,hit5:null,p10:null,pct10:null,hit10:null,p20:null,pct20:null,hit20:null,...lastVerdict});persist();render();
+  LOG.push({t:new Date().toISOString().slice(0,16).replace('T',' '),spot:lastSpot,p5:null,pct5:null,hit5:null,p10:null,pct10:null,hit10:null,p20:null,pct20:null,hit20:null,...lastVerdict});persist();render();renderTiltSync();
+});
+$('syncBtn').addEventListener('click',()=>{
+  const unsynced=LOG.filter(r=>!SERVER_TS.has(r.t));
+  if(!unsynced.length){$('tiltCommit').innerHTML='<span class="dim">✓ nothing to sync — repo log already has every entry</span>';return;}
+  window.open(tiltIssueUrl(unsynced,unsynced.length+' entr'+(unsynced.length===1?'y':'ies')+' sync'),'_blank');
 });
 $('expBtn').addEventListener('click',()=>{const rows=[['time','spot','tilt','confidence','p5','pct5','hit5','p10','pct10','hit10','p20','pct20','hit20','headline']].concat(LOG.map(r=>[r.t,r.spot,r.tilt,r.confidence,r.p5||'',r.pct5||'',r.hit5==null?'':r.hit5,r.p10||'',r.pct10||'',r.hit10==null?'':r.hit10,r.p20||'',r.pct20||'',r.hit20==null?'':r.hit20,'"'+(r.headline||'').replace(/"/g,"'")+'"']));const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(x=>x.join(',')).join('\n'));a.download='v13-log.csv';a.click();});
 $('clrBtn').addEventListener('click',()=>{LOG=[];persist();render();});

@@ -72,6 +72,12 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   exact t+5/10/20 trading days (never live spot). Shows calibration (stated vs
   realized), Brier (0.25 = always-50% baseline), and a momentum baseline
   (trailing 20d sign — the reigning champion any tilt must beat).
+- Durable tilt log: `data/tilt-log.json`, scored 2x daily by
+  `scripts/score-tilt.js` in the fetch-odds workflow. Verdicts arrive via
+  owner-gated GitHub issues ("TILT:" title + fenced json block) parsed by
+  `scripts/log-tilt.js` / `.github/workflows/log-tilt.yml`; the dashboard's
+  log/sync buttons prefill the issue. Browser localStorage is now just a
+  cache — the page merges the server log on load and flags unsynced entries.
 - Oil-regime discriminator (index.html): 10d co-movement of CL + HG + ^TNX from
   committed files. DISPLAY-ONLY with pre-committed falsifier (panel text, dated
   2026-07-19): regime-conditioned t+20 oil signal must beat unconditioned by
@@ -92,11 +98,12 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 ## Work queue
 1. ~~Verify odds logger deployed~~ DONE 2026-07-19: first run committed 20 sane
    rows to `data/catalyst-log.json`.
-2. Build server-side tilt scorer: `data/tilt-log.json` + Actions step that fills
-   t+5/10/20 from committed OHLC. Import the 5 historical v13 entries with their
-   TRUE scores (computed 2026-07-18, listed above). (Client-side scoring in
-   index.html now reads committed OHLC correctly, but the log still lives in
-   browser localStorage — server-side is the durable fix.)
+2. ~~Build server-side tilt scorer~~ BUILT 2026-07-20: `data/tilt-log.json` +
+   `scripts/score-tilt.js` (runs in fetch-odds workflow) + issue-driven inbox
+   (`log-tilt.yml`, owner-gated: dashboard buttons open a prefilled "TILT:"
+   issue; submitting commits + scores it). REMAINING: Chris must tap
+   "⬆ Commit log to repo" on the iPad once — that syncs the real v13
+   localStorage entries (true timestamps/spots) into the durable log.
 3. ~~Build the oil-regime discriminator~~ BUILT 2026-07-19 as display-only panel
    with pre-committed falsifier. Copper (HG=F) added to tickers.json — verify
    first `data/HG_F.json` commit has 5y backfill. REMAINING: after ≥30 tagged

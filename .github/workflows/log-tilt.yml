@@ -1,0 +1,60 @@
+name: Log Tilt Verdict
+
+# Inbox for the durable forward log. The dashboard's log/sync buttons open a
+# prefilled issue titled "TILT: ..."; submitting it lands the verdict in
+# data/tilt-log.json, scored server-side from committed OHLC.
+#
+# Owner-gated: the repo is public, and the forward log is the project's
+# ground truth — only issues opened by the repository owner are processed.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: tilt-log
+  cancel-in-progress: false
+
+jobs:
+  log-tilt:
+    if: startsWith(github.event.issue.title, 'TILT:') && github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Append verdict from issue
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: node scripts/log-tilt.js
+
+      - name: Score horizons from committed OHLC
+        run: node scripts/score-tilt.js
+
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/tilt-log.json
+          if git diff --staged --quiet; then
+            echo "no changes — skipping commit"
+          else
+            git commit -m "tilt: verdict(s) from issue #${{ github.event.issue.number }}"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi
+
+      - name: Close issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue close ${{ github.event.issue.number }} --comment "Logged to data/tilt-log.json and queued for t+5/10/20 scoring against committed closes. ✓"
