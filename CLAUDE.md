@@ -119,3 +119,14 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    leaderboard P&L. Hypothesis to spec before building: calibrated-wallet-
    weighted odds lead the mid. `trades24h` field (now logging) is the cheap
    precursor — whale-vs-crowd repricing.
+9. Physical layer (logging since 2026-07-21): `data/physical-log.json` — silver
+   curve spread (SI=F front vs deferred, tickers in `odds-topics.json →
+   silverCurve`, ROLL THEM as contracts expire; backwardation = physical
+   stress) + best-effort SLV ounces (field names self-diagnose in Actions log).
+   Hypothesis to spec BEFORE using either as a signal. Lease rates and Shanghai
+   premium have no free source — still blind there.
+10. Verdict hygiene (built 2026-07-21): logBtn warns when a directional call
+   merely extrapolates a ≥3% 5-session move (the May failure pattern, 20% hit
+   rate). The Fed-channel text in Channel Scope now carries the falsified-as-
+   general-driver caveat — hawkish repricing is NOT automatically bearish
+   until the item-7 test says so.

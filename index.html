@@ -114,7 +114,7 @@
     <div class="thinking" style="margin-top:6px">
       <p><b class="gold">✓ Modeled here: Iran / Hormuz / oil channel.</b> De-escalation → oil falls → real rates ease → silver rises (relief). Escalation → oil rises → stagflation → silver falls. The headline tilt above is this channel’s read, anchored on the realized oil move and the deep deal-contract curve. Validated against this conflict’s news archive.</p>
       <p><b class="bear">✗ NOT modeled here — active but invisible to the engine:</b></p>
-      <p style="padding-left:14px;margin:4px 0"><b>Real-rate / Fed channel.</b> Silver pays no yield, so when real rates rise (Fed hawkish, dollar firm), silver falls <i>independent of geopolitics</i>. This is likely the biggest unmodeled driver. In 2022 the Fed hiking cycle dragged silver from $26 to $18 <i>while</i> Russia/Ukraine escalated — the macro channel completely overwhelmed any geopolitical bid. Recent confident-bullish reads losing against silver are most consistent with this channel quietly tightening.</p>
+      <p style="padding-left:14px;margin:4px 0"><b>Real-rate / Fed channel.</b> Silver pays no yield, so when real rates rise (Fed hawkish, dollar firm), silver falls <i>independent of geopolitics</i>. In 2022 the Fed hiking cycle dragged silver from $26 to $18 <i>while</i> Russia/Ukraine escalated — the macro channel completely overwhelmed any geopolitical bid. <b class="warn">Honesty check:</b> "recent confident-bullish losses were the Fed channel" is a plausible NARRATIVE, not a measured result — and this channel was FALSIFIED as a general driver: in the broader sample, rising yields preceded <i>stronger</i> forward silver. It appears regime-dependent (sign flips by timescale). Treating hawkish repricing as automatically bearish re-proposes a falsified hypothesis. The Kalshi rate-path log is accumulating the data to test it properly (pre-committed test after ~60 days); until that runs, this channel is a hypothesis under observation, not a bearish input.</p>
       <p style="padding-left:14px;margin:4px 0"><b>Russia / Ukraine haven channel (smaller than I previously implied).</b> Honest empirical check: silver got a ~6% bid in the 2 weeks AFTER the Feb 2022 invasion, then mean-reverted hard. Subsequent escalations (mobilization, annexations, Poland missile, first Oreshnik) produced little measurable silver move. So this channel exists but is short-lived shock-bid, not a multi-quarter regime — less load-bearing for silver than for gold.</p>
       <p style="padding-left:14px;margin:4px 0"><b>Structural fiat / reserve channel.</b> Slow multi-quarter: BRICS gold/silver accumulation, deficit trajectory, dollar reserve share. Probably the floor under silver’s $70s coil — structural buying as base while tactical channels noise the daily move.</p>
       <p style="padding-left:14px;margin:4px 0"><b>Positioning / COT / gamma.</b> Speculative positioning and dealer hedging extremes that can move silver against fundamentals. Unmeasured.</p>
@@ -705,8 +705,24 @@ function render(){
     return '<div class="logrow">'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
   }).join('');
 }
-$('logBtn').addEventListener('click',()=>{
+$('logBtn').addEventListener('click',async()=>{
   if(!lastVerdict){alert('Analyze first');return;}
+  // TAPE-CHASING GUARD: verdicts that merely extrapolate the recent move are the
+  // engine's measured failure mode — the May-2026 70% bullish calls came after a
+  // run-up, near the top, and that pattern scored 20%. Warn before logging one.
+  if(lastVerdict.tilt==='bullish'||lastVerdict.tilt==='bearish'){
+    try{
+      const ohlc=await loadHistOHLC();
+      if(ohlc.length>=6){
+        const move5=((ohlc[ohlc.length-1].c-ohlc[ohlc.length-6].c)/ohlc[ohlc.length-6].c)*100;
+        const chasing=(lastVerdict.tilt==='bullish'&&move5>=3)||(lastVerdict.tilt==='bearish'&&move5<=-3);
+        if(chasing){
+          const ok=confirm('TAPE-CHASING CHECK\n\nThis '+lastVerdict.tilt.toUpperCase()+' call points the same way silver just moved ('+(move5>=0?'+':'')+move5.toFixed(1)+'% over 5 sessions). Extrapolating the recent tape is exactly the pattern behind the failed May calls (20% hit rate).\n\nIf the call rests on something the tape hasn’t priced, log it. If it’s mostly the tape talking, consider BALANCED/abstain — the log’s best-scoring entry was a 28% abstain.\n\nLog it anyway?');
+          if(!ok)return;
+        }
+      }
+    }catch(e){}
+  }
   // Guard against duplicate same-day entries that would inflate the +5d/+10d sample.
   // Independent daily observations are what the hit-rate needs; clustered re-runs are one observation.
   if(LOG.length){

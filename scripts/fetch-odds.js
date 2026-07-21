@@ -216,19 +216,72 @@ async function fetchOilQuote(sym) {
   }
 }
 
+// ---------- Physical layer: silver futures curve + SLV ounces ----------
+// Backwardation (deferred trading BELOW front) is the cleanest free signal of
+// physical tightness — bullion-bank stress shows up in the curve before it
+// shows up anywhere else that's freely observable. Deferred contract tickers
+// live in data/odds-topics.json -> silverCurve and need rolling as they expire
+// (a dead ticker warns in the Actions log, same pattern as Kalshi series).
+const DEFAULT_SILVER_CURVE = ['SIZ26.CMX', 'SIH27.CMX'];
+
+async function fetchFuturesClose(sym) {
+  try {
+    const j = await fetchJSON(
+      'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?interval=1d&range=5d'
+    );
+    const res = j?.chart?.result?.[0];
+    const meta = res?.meta;
+    if (!meta) return null;
+    const closes = (res?.indicators?.quote?.[0]?.close || []).filter(v => v != null);
+    const px = meta.regularMarketPrice ?? (closes.length ? closes[closes.length - 1] : null);
+    return px != null ? +(+px).toFixed(3) : null;
+  } catch (e) {
+    console.log('✗ curve ' + sym + ': ' + e.message);
+    return null;
+  }
+}
+
+// SLV ounces-in-trust: best-effort against the iShares product-data endpoint.
+// Field names unverified — on failure this logs the top-level keys it found so
+// the real shape is visible in the Actions log (the Kalshi lesson, applied).
+async function fetchSlvOunces() {
+  try {
+    const j = await fetchJSON('https://www.ishares.com/us/products/239855/ishares-silver-trust-fund/1467271812596.ajax?tab=all&fileType=json');
+    const hits = [];
+    (function walk(o, path) {
+      if (!o || typeof o !== 'object' || path.length > 4) return;
+      for (const k of Object.keys(o)) {
+        if (/ounce/i.test(k)) hits.push([path.concat(k).join('.'), o[k]]);
+        walk(o[k], path.concat(k));
+      }
+    })(j, []);
+    if (hits.length) {
+      const v = hits[0][1];
+      const num = typeof v === 'number' ? v : parseFloat(String(typeof v === 'object' ? (v.r ?? v.d ?? '') : v).replace(/,/g, ''));
+      if (!isNaN(num) && num > 0) { console.log('✓ SLV ounces via "' + hits[0][0] + '"'); return num; }
+    }
+    console.log('⚠ SLV: no ounce-like field found — top-level keys: ' + Object.keys(j || {}).slice(0, 12).join(','));
+    return null;
+  } catch (e) {
+    console.log('✗ SLV ounces: ' + e.message);
+    return null;
+  }
+}
+
 // ---------- main ----------
 (async function main() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 
-  let topics = DEFAULT_TOPICS, kalshiSeries = DEFAULT_KALSHI_SERIES;
+  let topics = DEFAULT_TOPICS, kalshiSeries = DEFAULT_KALSHI_SERIES, silverCurve = DEFAULT_SILVER_CURVE;
   if (fs.existsSync(TOPICS_FILE)) {
     try {
       const cfg = JSON.parse(fs.readFileSync(TOPICS_FILE, 'utf8'));
       topics = cfg.topics || DEFAULT_TOPICS;
       kalshiSeries = cfg.kalshiSeries || DEFAULT_KALSHI_SERIES;
+      silverCurve = cfg.silverCurve || DEFAULT_SILVER_CURVE;
     } catch (e) {}
   } else {
-    fs.writeFileSync(TOPICS_FILE, JSON.stringify({ topics: DEFAULT_TOPICS, kalshiSeries: DEFAULT_KALSHI_SERIES }, null, 2));
+    fs.writeFileSync(TOPICS_FILE, JSON.stringify({ topics: DEFAULT_TOPICS, kalshiSeries: DEFAULT_KALSHI_SERIES, silverCurve: DEFAULT_SILVER_CURVE }, null, 2));
   }
 
   const [contracts, kalshiRows, brent, wti] = await Promise.all([
@@ -240,6 +293,27 @@ async function fetchOilQuote(sym) {
 
   // per-contract 24h trade counts (sequential — small N, be polite to the API)
   for (const c of contracts) c.trades24h = await fetchTradeCount24h(c.conditionId);
+
+  // physical layer: front + deferred silver, SLV ounces
+  const silverFront = await fetchFuturesClose('SI=F');
+  const curve = [];
+  for (const sym of silverCurve) {
+    const px = await fetchFuturesClose(sym);
+    if (px == null) { console.log('⚠ curve "' + sym + '": no price — expired contract? Roll silverCurve in data/odds-topics.json'); continue; }
+    curve.push({ sym, price: px, spreadPct: silverFront ? +(((px - silverFront) / silverFront) * 100).toFixed(2) : null });
+  }
+  const slvOunces = await fetchSlvOunces();
+  const PHYS_FILE = path.join(DATA_DIR, 'physical-log.json');
+  let plog = [];
+  if (fs.existsSync(PHYS_FILE)) { try { plog = JSON.parse(fs.readFileSync(PHYS_FILE, 'utf8')); } catch (e) { plog = []; } }
+  {
+    const today0 = new Date().toISOString().slice(0, 10);
+    const row = { date: today0, fetchedAt: new Date().toISOString(), front: silverFront, curve, slvOunces };
+    const pi = plog.findIndex(r => r.date === today0);
+    if (pi >= 0) plog[pi] = row; else plog.push(row);
+    fs.writeFileSync(PHYS_FILE, JSON.stringify(plog, null, 1));
+    console.log('✓ physical: front ' + silverFront + ' · curve [' + curve.map(c => c.sym + ' ' + (c.spreadPct >= 0 ? '+' : '') + c.spreadPct + '%').join(', ') + ']' + (slvOunces ? ' · SLV ' + Math.round(slvOunces / 1e6) + 'M oz' : ''));
+  }
 
   // load existing log
   let log = [];
