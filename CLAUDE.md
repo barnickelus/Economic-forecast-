@@ -130,3 +130,8 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    rate). The Fed-channel text in Channel Scope now carries the falsified-as-
    general-driver caveat — hawkish repricing is NOT automatically bearish
    until the item-7 test says so.
+11. One-observation-per-day rule (built 2026-07-21): the FIRST entry of each
+   calendar day is the scored commitment; later same-day entries are post-tape
+   revisions — kept in the log and scored individually, but flagged `dup` and
+   excluded from hit rate, calibration, Brier, and momentum aggregates, on
+   both the server scorer and the dashboard. Never delete log rows.
