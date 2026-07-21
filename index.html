@@ -625,7 +625,9 @@ async function scoreLog(){
 // probability to calibrate — so they're excluded from calls but not from momentum.
 function calibration(){
   const calls=[],momo=[];
+  const prim=primaryTs();
   LOG.forEach(r=>{
+    if(!prim.has(r.t))return; // same-day dup — excluded from aggregates
     ['5','10','20'].forEach(h=>{
       if(r['hit'+h]!=null&&(r.tilt==='bullish'||r.tilt==='bearish')&&r.confidence!=null)
         calls.push({p:r.confidence/100,hit:r['hit'+h]?1:0});
@@ -672,8 +674,22 @@ async function regimeDiscriminator(){
     +'<span class="dim">as of '+oil[oil.length-1].date+' (committed closes)</span></div>'
     +'<div class="read"><b class="'+cls+'">'+regime+'</b> — '+implication+'</div>';
 }
+// ONE OBSERVATION PER DAY: the first entry of each calendar day is the scored
+// commitment; later same-day entries are post-tape revisions — kept and scored
+// individually, but excluded from all aggregates. Computed fresh each call so
+// unsynced local entries obey the same rule as server rows.
+function primaryTs(){
+  const seenDay=new Set(),prim=new Set();
+  for(const r of [...LOG].sort((a,b)=>a.t<b.t?-1:1)){
+    const d=r.t.slice(0,10);
+    if(!seenDay.has(d)){seenDay.add(d);prim.add(r.t);}
+  }
+  return prim;
+}
 function hitRate(){
-  const s5=LOG.filter(r=>r.hit5!=null);const s10=LOG.filter(r=>r.hit10!=null);const s20=LOG.filter(r=>r.hit20!=null);
+  const prim=primaryTs();
+  const P=LOG.filter(r=>prim.has(r.t));
+  const s5=P.filter(r=>r.hit5!=null);const s10=P.filter(r=>r.hit10!=null);const s20=P.filter(r=>r.hit20!=null);
   return {n5:s5.length,hit5:s5.length?Math.round(s5.filter(r=>r.hit5).length/s5.length*100):null,
           n10:s10.length,hit10:s10.length?Math.round(s10.filter(r=>r.hit10).length/s10.length*100):null,
           n20:s20.length,hit20:s20.length?Math.round(s20.filter(r=>r.hit20).length/s20.length*100):null,
@@ -697,12 +713,14 @@ function render(){
       scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries \u2014 the bar any tilt must beat':'')+'</div>';
     }
   }
+  const prim=primaryTs();
   b.innerHTML=scoreLine+LOG.slice(-30).reverse().map(r=>{
     let scoreTag='';
     if(r.hit5!=null)scoreTag+=' <span class="'+(r.hit5?'bull':'bear')+'" style="font-size:10px">[+5d '+(r.pct5>=0?'+':'')+r.pct5.toFixed(1)+'% '+(r.hit5?'\u2713':'\u2717')+']</span>';
     if(r.hit10!=null)scoreTag+=' <span class="'+(r.hit10?'bull':'bear')+'" style="font-size:10px">[+10d '+(r.pct10>=0?'+':'')+r.pct10.toFixed(1)+'% '+(r.hit10?'\u2713':'\u2717')+']</span>';
     if(r.hit20!=null)scoreTag+=' <span class="'+(r.hit20?'bull':'bear')+'" style="font-size:10px">[+20d '+(r.pct20>=0?'+':'')+r.pct20.toFixed(1)+'% '+(r.hit20?'\u2713':'\u2717')+']</span>';
-    return '<div class="logrow">'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
+    const dupTag=prim.has(r.t)?'':' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Later same-day entry \u2014 scored for reference but excluded from hit rate, calibration, and Brier (first entry of the day is the commitment)">dup\u00b7not counted</span>';
+    return '<div class="logrow"'+(prim.has(r.t)?'':' style="opacity:0.55"')+'>'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+dupTag+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
   }).join('');
 }
 $('logBtn').addEventListener('click',async()=>{

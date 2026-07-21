@@ -12,6 +12,7 @@ on:
   push:
     paths:
       - 'scripts/fetch-odds.js'
+      - 'scripts/score-tilt.js'
       - '.github/workflows/fetch-odds.yml'
       - 'data/odds-topics.json'
 

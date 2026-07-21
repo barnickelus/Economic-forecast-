@@ -34,6 +34,21 @@ if (ohlc.length < 30) { console.log('SI_F.json historical.ohlc missing/short —
 const HORIZONS = [[5, 'p5', 'pct5', 'hit5'], [10, 'p10', 'pct10', 'hit10'], [20, 'p20', 'pct20', 'hit20']];
 let filled = 0;
 
+// ONE OBSERVATION PER DAY: the FIRST entry of each calendar day is the scored
+// commitment; later same-day entries are revisions made after seeing more tape,
+// so they stay in the log (nothing is ever deleted) and get scored for
+// reference, but are flagged dup and excluded from every aggregate. Recomputed
+// deterministically each run so out-of-order arrivals settle correctly.
+log.sort((a, b) => a.t < b.t ? -1 : 1);
+{
+  const seenDay = new Set();
+  for (const r of log) {
+    const day = String(r.t).slice(0, 10);
+    r.dup = seenDay.has(day);
+    seenDay.add(day);
+  }
+}
+
 for (const r of log) {
   if (!r || !r.t || r.spot == null || !r.tilt) continue;
   const entryDate = String(r.t).slice(0, 10);
@@ -59,14 +74,19 @@ for (const r of log) {
 
 fs.writeFileSync(TILT_FILE, JSON.stringify(log, null, 1));
 
-// summary — directional calls only (balanced = abstain, no probability to calibrate)
+// summary — directional calls only (balanced = abstain, no probability to
+// calibrate), and only the primary entry per day (dup entries excluded)
 const calls = [], momo = [];
-for (const r of log) for (const h of ['5', '10', '20']) {
-  if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish') && r.confidence != null)
-    calls.push({ p: r.confidence / 100, hit: r['hit' + h] ? 1 : 0 });
-  if (r['momoHit' + h] != null) momo.push(r['momoHit' + h] ? 1 : 0);
+for (const r of log) {
+  if (r.dup) continue;
+  for (const h of ['5', '10', '20']) {
+    if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish') && r.confidence != null)
+      calls.push({ p: r.confidence / 100, hit: r['hit' + h] ? 1 : 0 });
+    if (r['momoHit' + h] != null) momo.push(r['momoHit' + h] ? 1 : 0);
+  }
 }
-console.log('✓ tilt-log: ' + log.length + ' entries, +' + filled + ' horizon-scores filled this run');
+const dups = log.filter(r => r.dup).length;
+console.log('✓ tilt-log: ' + log.length + ' entries (' + (log.length - dups) + ' primary, ' + dups + ' same-day dup' + (dups === 1 ? '' : 's') + ' excluded from aggregates), +' + filled + ' horizon-scores filled this run');
 if (calls.length) {
   const stated = calls.reduce((a, c) => a + c.p, 0) / calls.length * 100;
   const realized = calls.reduce((a, c) => a + c.hit, 0) / calls.length * 100;
