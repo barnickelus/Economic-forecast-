@@ -55,18 +55,18 @@
  },
  {
   "date": "2026-07-24",
-  "fetchedAt": "2026-07-24T15:03:58.861Z",
-  "front": 58.585,
+  "fetchedAt": "2026-07-24T22:15:54.959Z",
+  "front": 58.49,
   "curve": [
    {
     "sym": "SIZ26.CMX",
-    "price": 59.225,
-    "spreadPct": 1.09
+    "price": 59.135,
+    "spreadPct": 1.1
    },
    {
     "sym": "SIH27.CMX",
-    "price": 59.55,
-    "spreadPct": 1.65
+    "price": 59.795,
+    "spreadPct": 2.23
    }
   ],
   "slvOunces": null
