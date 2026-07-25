@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-25T19:13:33.669Z",
+  "generatedAt": "2026-07-25T20:28:15.712Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -27,7 +27,7 @@
       "name": "Apple",
       "assetClass": "equity",
       "spot": 333.02,
-      "changePct": 3.53167823433336,
+      "changePct": 2.187850204386944,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -37,7 +37,7 @@
       "name": "Nvidia",
       "assetClass": "equity",
       "spot": 206.84,
-      "changePct": -0.9197138136411778,
+      "changePct": -2.4615663579602853,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -47,7 +47,7 @@
       "name": "Tesla",
       "assetClass": "equity",
       "spot": 313.03,
-      "changePct": -2.0832689138056306,
+      "changePct": -16.304379073661266,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -57,7 +57,7 @@
       "name": "S&P 500 ETF",
       "assetClass": "index",
       "spot": 738.93,
-      "changePct": 0.10160222867867856,
+      "changePct": -1.134581213688391,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -67,7 +67,7 @@
       "name": "Nasdaq 100",
       "assetClass": "index",
       "spot": 684.23,
-      "changePct": -1.1171197362846628,
+      "changePct": -2.994254812072974,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 64378.96,
-      "changePct": 0.4375514611759294,
+      "spot": 64306.11,
+      "changePct": 0.323898248636514,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -97,7 +97,7 @@
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
       "spot": 4.679,
-      "changePct": -0.5103140190122407,
+      "changePct": 0.4724057299504473,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -107,7 +107,7 @@
       "name": "US Dollar Index",
       "assetClass": "macro",
       "spot": 101.465,
-      "changePct": 0.03450625526857678,
+      "changePct": 0.32133736633661614,
       "healthyCount": 2,
       "totalCount": 2
     },
