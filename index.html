@@ -600,7 +600,10 @@ async function scoreLog(){
     // MOMENTUM BASELINE: sign of the trailing 20-trading-day return at entry.
     // Mild momentum is the one validated effect in silver — it is the reigning
     // champion every tilt must beat, scored on identical entries and horizons.
-    if(r.momoDir===undefined) r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
+    // == null, not === undefined: a weekend/after-hours entry is scored before
+    // any bar exists at-or-after its date (idx -1), so momoDir lands null and
+    // must stay eligible for recompute or it drops out of the baseline forever
+    if(r.momoDir==null) r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
     horizons.forEach(([n,pk,pctk,hitk])=>{
       if(r[pk]!=null&&r.scoredFrom==='ohlc')return; // already correctly scored — leave it
       const target=idx<0?-1:idx+n;
