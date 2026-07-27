@@ -1,13 +1,13 @@
 {
-  "fetchedAt": "2026-07-27T16:57:39.668Z",
+  "fetchedAt": "2026-07-27T16:58:01.602Z",
   "oil": {
     "brent": {
       "spot": 89.16,
       "changePct": -7.87
     },
     "wti": {
-      "spot": 82.86,
-      "changePct": -7.22
+      "spot": 82.93,
+      "changePct": -7.14
     }
   },
   "contracts": [
