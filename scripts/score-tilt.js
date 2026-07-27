@@ -53,7 +53,11 @@ for (const r of log) {
   if (!r || !r.t || r.spot == null || !r.tilt) continue;
   const entryDate = String(r.t).slice(0, 10);
   const idx = ohlc.findIndex(b => b.date >= entryDate);
-  if (r.momoDir === undefined) r.momoDir = (idx >= 20) ? (ohlc[idx].c >= ohlc[idx - 20].c ? 'bullish' : 'bearish') : null;
+  // == null (not === undefined): an entry logged on a weekend/after-hours is
+  // scored before any bar exists at-or-after its date, so idx is -1 and momoDir
+  // lands as null. It must stay eligible for recomputation once the bar
+  // commits, or that entry is silently dropped from the momentum baseline.
+  if (r.momoDir == null) r.momoDir = (idx >= 20) ? (ohlc[idx].c >= ohlc[idx - 20].c ? 'bullish' : 'bearish') : null;
   for (const [n, pk, pctk, hitk] of HORIZONS) {
     if (r[pk] != null && r.scoredFrom === 'ohlc') continue;
     const target = idx < 0 ? -1 : idx + n;

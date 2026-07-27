@@ -253,7 +253,7 @@
   "pct20": null,
   "hit20": null,
   "dup": false,
-  "momoDir": null,
+  "momoDir": "bearish",
   "scoredFrom": "ohlc"
  },
  {
