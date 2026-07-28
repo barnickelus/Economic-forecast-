@@ -163,9 +163,9 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 57.37,
+  "pct5": -3.23,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -174,7 +174,8 @@
   "hit20": null,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
-  "dup": false
+  "dup": false,
+  "momoHit5": true
  },
  {
   "t": "2026-07-21 19:08",
@@ -183,9 +184,9 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 57.37,
+  "pct5": -3.03,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -194,7 +195,8 @@
   "hit20": null,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
-  "dup": true
+  "dup": true,
+  "momoHit5": true
  },
  {
   "t": "2026-07-22 17:40",
