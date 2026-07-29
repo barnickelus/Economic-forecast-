@@ -205,9 +205,9 @@
   "confidence": 58,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +3.2% with escalation-leaning. One channel’s read — other channels not modeled here.",
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 57.2,
+  "pct5": -5.13,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -216,7 +216,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc",
+  "momoHit5": true
  },
  {
   "t": "2026-07-23 18:43",
