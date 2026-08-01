@@ -7671,7 +7671,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-26DEC-H26",
   "title": "Will the Federal Reserve Hike rates by >25bps at their December 2026 meeting?",
@@ -7684,12 +7684,12 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-26DEC-H25",
   "title": "Will the Federal Reserve Hike rates by 25bps at their December 2026 meeting?",
-  "yes": 35.5,
-  "yesBid": 34,
+  "yes": 36,
+  "yesBid": 35,
   "yesAsk": 37,
   "vol24": null,
   "openInterest": null,
@@ -7697,7 +7697,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-26DEC-H0",
   "title": "Will the Federal Reserve Hike rates by 0bps at their December 2026 meeting?",
@@ -7710,7 +7710,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-26DEC-C26",
   "title": "Will the Federal Reserve Cut rates by >25bps at their December 2026 meeting?",
@@ -7723,7 +7723,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-26DEC-C25",
   "title": "Will the Federal Reserve Cut rates by 25bps at their December 2026 meeting?",
@@ -7736,7 +7736,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27JAN-H26",
   "title": "Will the Federal Reserve Hike rates by >25bps at their January 2027 meeting?",
@@ -7749,20 +7749,20 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27JAN-H25",
   "title": "Will the Federal Reserve Hike rates by 25bps at their January 2027 meeting?",
-  "yes": 15.5,
-  "yesBid": 15,
-  "yesAsk": 16,
+  "yes": 13.5,
+  "yesBid": 13,
+  "yesAsk": 14.000000000000002,
   "vol24": null,
   "openInterest": null,
   "closeTime": "2027-01-27T18:59:00Z"
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27JAN-H0",
   "title": "Will the Federal Reserve Hike rates by 0bps at their January 2027 meeting?",
@@ -7775,20 +7775,20 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27JAN-C26",
   "title": "Will the Federal Reserve Cut rates by >25bps at their January 2027 meeting?",
-  "yes": 2,
+  "yes": 1.5,
   "yesBid": 1,
-  "yesAsk": 3,
+  "yesAsk": 2,
   "vol24": null,
   "openInterest": null,
   "closeTime": "2027-01-27T18:59:00Z"
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27JAN-C25",
   "title": "Will the Federal Reserve Cut rates by 25bps at their January 2027 meeting?",
@@ -7801,7 +7801,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27MAR-H26",
   "title": "Will the Federal Reserve Hike rates by >25bps at their March 2027 meeting?",
@@ -7814,7 +7814,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27MAR-H25",
   "title": "Will the Federal Reserve Hike rates by 25bps at their March 2027 meeting?",
@@ -7827,12 +7827,12 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27MAR-H0",
   "title": "Will the Federal Reserve Hike rates by 0bps at their March 2027 meeting?",
-  "yes": 71.5,
-  "yesBid": 70,
+  "yes": 71,
+  "yesBid": 69,
   "yesAsk": 73,
   "vol24": null,
   "openInterest": null,
@@ -7840,7 +7840,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27MAR-C26",
   "title": "Will the Federal Reserve Cut rates by >25bps at their March 2027 meeting?",
@@ -7853,7 +7853,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFEDDECISION",
   "ticker": "KXFEDDECISION-27MAR-C25",
   "title": "Will the Federal Reserve Cut rates by 25bps at their March 2027 meeting?",
@@ -7866,7 +7866,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T4.25",
   "title": "Will the upper bound of the federal funds rate be above 4.25% following the Fed's Jan 27, 2027 meeting?",
@@ -7879,7 +7879,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T4.00",
   "title": "Will the upper bound of the federal funds rate be above 4.00% following the Fed's Jan 27, 2027 meeting?",
@@ -7892,7 +7892,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T3.75",
   "title": "Will the upper bound of the federal funds rate be above 3.75% following the Fed's Jan 27, 2027 meeting?",
@@ -7905,7 +7905,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T3.50",
   "title": "Will the upper bound of the federal funds rate be above 3.50% following the Fed's Jan 27, 2027 meeting?",
@@ -7918,20 +7918,20 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T3.25",
   "title": "Will the upper bound of the federal funds rate be above 3.25% following the Fed's Jan 27, 2027 meeting?",
-  "yes": 76,
-  "yesBid": 70,
-  "yesAsk": 82,
+  "yes": 78.5,
+  "yesBid": 65,
+  "yesAsk": 92,
   "vol24": null,
   "openInterest": null,
   "closeTime": "2027-01-27T18:55:00Z"
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T3.00",
   "title": "Will the upper bound of the federal funds rate be above 3.00% following the Fed's Jan 27, 2027 meeting?",
@@ -7944,7 +7944,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T2.75",
   "title": "Will the upper bound of the federal funds rate be above 2.75% following the Fed's Jan 27, 2027 meeting?",
@@ -7957,7 +7957,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T2.50",
   "title": "Will the upper bound of the federal funds rate be above 2.50% following the Fed's Jan 27, 2027 meeting?",
@@ -7970,7 +7970,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T2.25",
   "title": "Will the upper bound of the federal funds rate be above 2.25% following the Fed's Jan 27, 2027 meeting?",
@@ -7983,7 +7983,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T2.00",
   "title": "Will the upper bound of the federal funds rate be above 2.00% following the Fed's Jan 27, 2027 meeting?",
@@ -7996,7 +7996,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T1.75",
   "title": "Will the upper bound of the federal funds rate be above 1.75% following the Fed's Jan 27, 2027 meeting?",
@@ -8009,7 +8009,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T1.50",
   "title": "Will the upper bound of the federal funds rate be above 1.50% following the Fed's Jan 27, 2027 meeting?",
@@ -8022,7 +8022,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T1.25",
   "title": "Will the upper bound of the federal funds rate be above 1.25% following the Fed's Jan 27, 2027 meeting?",
@@ -8035,7 +8035,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27JAN-T1.00",
   "title": "Will the upper bound of the federal funds rate be above 1.00% following the Fed's Jan 27, 2027 meeting?",
@@ -8048,7 +8048,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXFED",
   "ticker": "KXFED-27MAR-T4.25",
   "title": "Will the upper bound of the federal funds rate be above 4.25% following the Fed's Mar 17, 2027 meeting?",
@@ -8061,7 +8061,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T2.5",
   "title": "Will the rate of CPI inflation be above 2.5% for the year ending in August 2026?",
@@ -8074,7 +8074,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T2.6",
   "title": "Will the rate of CPI inflation be above 2.6% for the year ending in August 2026?",
@@ -8087,7 +8087,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T2.7",
   "title": "Will the rate of CPI inflation be above 2.7% for the year ending in August 2026?",
@@ -8100,7 +8100,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T2.8",
   "title": "Will the rate of CPI inflation be above 2.8% for the year ending in August 2026?",
@@ -8113,7 +8113,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T2.9",
   "title": "Will the rate of CPI inflation be above 2.9% for the year ending in August 2026?",
@@ -8126,7 +8126,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T5.0",
   "title": "Will the rate of CPI inflation be above 5.0% for the year ending in August 2026?",
@@ -8139,7 +8139,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T4.9",
   "title": "Will the rate of CPI inflation be above 4.9% for the year ending in August 2026?",
@@ -8152,7 +8152,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26AUG-T4.8",
   "title": "Will the rate of CPI inflation be above 4.8% for the year ending in August 2026?",
@@ -8165,7 +8165,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T5.0",
   "title": "Will the rate of CPI inflation be above 5.0% for the year ending in September 2026?",
@@ -8178,7 +8178,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.9",
   "title": "Will the rate of CPI inflation be above 4.9% for the year ending in September 2026?",
@@ -8191,7 +8191,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.8",
   "title": "Will the rate of CPI inflation be above 4.8% for the year ending in September 2026?",
@@ -8204,7 +8204,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.7",
   "title": "Will the rate of CPI inflation be above 4.7% for the year ending in September 2026?",
@@ -8217,7 +8217,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.6",
   "title": "Will the rate of CPI inflation be above 4.6% for the year ending in September 2026?",
@@ -8230,7 +8230,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.5",
   "title": "Will the rate of CPI inflation be above 4.5% for the year ending in September 2026?",
@@ -8243,7 +8243,7 @@
  },
  {
   "date": "2026-08-01",
-  "fetchedAt": "2026-08-01T14:39:08.371Z",
+  "fetchedAt": "2026-08-01T22:08:25.459Z",
   "series": "KXCPIYOY",
   "ticker": "KXCPIYOY-26SEP-T4.4",
   "title": "Will the rate of CPI inflation be above 4.4% for the year ending in September 2026?",
