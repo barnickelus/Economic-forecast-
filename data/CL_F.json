@@ -6,7 +6,7 @@
     "sectorETF": "XLE",
     "typicalVolAnnual": 0.4
   },
-  "fetchedAt": "2026-08-02T20:11:54.234Z",
+  "fetchedAt": "2026-08-02T21:26:02.238Z",
   "sources": {
     "asset": "yahoo:CL=F",
     "sector": "yahoo:XLE"
@@ -11447,7 +11447,7 @@
     "source": "CL=F"
   },
   "macro": {
-    "fetchedAt": "2026-08-02T20:11:52.272Z",
+    "fetchedAt": "2026-08-02T21:26:00.381Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
