@@ -18,6 +18,12 @@ on:
 permissions:
   contents: write
 
+# without this, a dispatched run and a push-triggered run race each other and
+# the loser's push is rejected (seen live 2026-08-03: both committed, one failed)
+concurrency:
+  group: fetch-data
+  cancel-in-progress: false
+
 concurrency:
   group: fetch-data
   cancel-in-progress: false
@@ -49,5 +55,7 @@ jobs:
           else
             COUNT=$(jq -r '.tickers | length' data/index.json 2>/dev/null || echo "?")
             git commit -m "data: $(date -u +%Y-%m-%dT%H:%MZ) — $COUNT tickers"
+            # rebase in case anything landed on the branch while we fetched
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
             git push
           fi
