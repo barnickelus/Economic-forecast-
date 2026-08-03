@@ -24,10 +24,6 @@ concurrency:
   group: fetch-data
   cancel-in-progress: false
 
-concurrency:
-  group: fetch-data
-  cancel-in-progress: false
-
 jobs:
   fetch:
     runs-on: ubuntu-latest
