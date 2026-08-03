@@ -75,6 +75,7 @@
     <div class="tiltbar"><div class="marker" id="tiltMark" style="left:50%"></div></div>
     <div id="reasonBox" class="reason"></div>
     <div id="falsifyBox"></div>
+    <div id="flagBox"></div>
   </div>
 
   <div class="panel">
@@ -292,7 +293,7 @@ function reason(d){
   fals.push('Deep deal odds (now ~'+(regimeLevel!=null?Math.round(regimeLevel)+'%':'n/a')+') breaking '+(regimeLevel!=null&&regimeLevel>=50?'below 50% — de-escalation regime failing.':'above 50% — de-escalation taking hold.'));
   fals.push('An escalation contract (blockade/airspace) spiking high on real news rather than calendar noise.');
   if(pricedIn)fals.push('Silver continuing to ignore relief signals — would confirm sell-the-news regime; downgrade the channel until proven otherwise.');
-  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction,pricedIn,regimeLevel};
+  return {tilt,confidence:Math.round(conf),dir,headline,regime:reg,decay_caught:decTxt,oil_check:oilTxt,timeline:timelineTxt,key_points:points,falsifiers:fals,contradiction,pricedIn,regimeLevel,dealCurve,oilTilt};
 }
 
 // ===== MULTI-TIMESCALE TRENDLINE GEOMETRY =====
@@ -530,6 +531,7 @@ async function run(){
   // apex × catalyst convergence
   try{ const apex=projectApex(d.spot); renderConvergence(d,apex); }catch(e){ $('apexBox').innerHTML='<div class="apexline dim">Convergence calc error: '+(e.message||e)+'</div>'; }
   lastVerdict={tilt:v.tilt,confidence:v.confidence,headline:v.headline};
+  try{const activeFlags=await computeFlags(d,v);lastVerdict.flags=activeFlags.map(f=>f.id);renderFlags(activeFlags);}catch(e){lastVerdict.flags=[];}
   $('banner').className='banner ok';$('banner').innerHTML='● <span class="pulse"></span>analyzed — silver $'+d.spot.toFixed(2)+' · '+v.tilt.toUpperCase()+' @ '+v.confidence+'% · '+new Date().toLocaleTimeString();
   $('run').textContent='▶ Re-analyze';$('run').disabled=false;
 }
@@ -560,6 +562,111 @@ async function restore(){
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
   physicalLayer();       // display-only, reads committed files — fire and forget
 }
+// ---- CONTRADICTION LEDGER ----------------------------------------------------
+// Flags fire when two instruments disagree. They are LOGGED WITH EVERY VERDICT
+// and WIRED INTO NOTHING: confidence is untouched. The wiring test is
+// pre-committed (2026-08-03, before any flag has been logged): a flag earns a
+// confidence-damping role only if, after ≥20 scored primary directional
+// horizon-calls of which ≥5 carry that flag, the flagged calls' hit rate is
+// ≥15 percentage points WORSE than the unflagged calls'. Until then this is a
+// hypothesis-generating annotation layer. Thresholds below are fixed here, now.
+let DISC_STATE=null,PHYS_STATE=null,GOLD_HIST=null,KALSHI_CACHE=null;
+async function loadGoldOHLC(){
+  if(GOLD_HIST)return GOLD_HIST;
+  try{
+    const r=await fetch('data/GC_F.json',{cache:'no-cache'});
+    if(r.ok){const j=await r.json();GOLD_HIST=(j?.historical?.ohlc||[]).slice().sort((a,b)=>a.date<b.date?-1:1);}
+  }catch(e){}
+  return GOLD_HIST||[];
+}
+async function loadKalshiLog(){
+  if(KALSHI_CACHE)return KALSHI_CACHE;
+  try{const r=await fetch('data/kalshi-log.json',{cache:'no-cache'});if(r.ok)KALSHI_CACHE=await r.json();}catch(e){}
+  return Array.isArray(KALSHI_CACHE)?KALSHI_CACHE:[];
+}
+// ratio 20-trading-day change, from committed closes on matched dates
+async function ratio20dChangePct(){
+  const si=await loadHistOHLC(), gc=await loadGoldOHLC();
+  if(!si.length||!gc.length)return null;
+  const g={};gc.forEach(b=>g[b.date]=b.c);
+  const pairs=si.filter(b=>g[b.date]!=null).map(b=>g[b.date]/b.c);
+  if(pairs.length<21)return null;
+  return (pairs[pairs.length-1]/pairs[pairs.length-21]-1)*100;
+}
+// Kalshi hawk-minus-cut drift for the nearest Fed meeting over the last 5 logged days
+async function kalshiHawkDrift5(){
+  const k=await loadKalshiLog();
+  const dec=k.filter(r=>r.series==='KXFEDDECISION'&&r.yes!=null&&r.closeTime);
+  if(!dec.length)return null;
+  const days=[...new Set(dec.map(r=>r.date))].sort();
+  if(days.length<2)return null;
+  const lastDay=days[days.length-1], refDay=days[Math.max(0,days.length-6)];
+  const meeting=dec.filter(r=>r.date===lastDay).map(r=>r.closeTime).sort()[0];
+  function hawkMinusCut(day){
+    const rows=dec.filter(r=>r.date===day&&r.closeTime===meeting);
+    if(!rows.length)return null;
+    let hawk=0,cut=0;
+    rows.forEach(r=>{
+      if(/Hike rates by (>?25)/.test(r.title))hawk+=r.yes;
+      else if(/Cut rates by/.test(r.title))cut+=r.yes;
+    });
+    return hawk-cut;
+  }
+  const a=hawkMinusCut(refDay),b=hawkMinusCut(lastDay);
+  return (a==null||b==null)?null:+(b-a).toFixed(1);
+}
+async function computeFlags(d,v){
+  const flags=[];
+  const directional=v.tilt==='bullish'||v.tilt==='bearish';
+  // 1. oil-premise: discriminator says the oil drop is DEMAND DESTRUCTION while
+  //    the engine is reading that same drop as bullish relief — the May failure
+  //    mechanism, contradicted by our own instrument
+  if(DISC_STATE&&DISC_STATE.regime==='DEMAND DESTRUCTION'&&v.oilTilt!=null&&v.oilTilt>0.25)
+    flags.push({id:'oil-premise',note:'Discriminator reads DEMAND DESTRUCTION but the engine is treating oil-down as bullish relief — the exact falsified mapping (May–Jun 2026).'});
+  // 2. ratio-confirmer (validated as confirmer): expansion >+2%/20d refuses to
+  //    confirm a bullish industrial-impulse call; compression <-2%/20d refuses
+  //    to confirm bearish-via-industrial-weakness
+  if(directional){
+    const rc=await ratio20dChangePct();
+    if(rc!=null&&v.tilt==='bullish'&&rc>2)
+      flags.push({id:'ratio-confirmer',note:'Gold/silver ratio EXPANDING '+rc.toFixed(1)+'%/20d (monetary signature, industrial half lagging) — the confirmer is not confirming a bullish industrial-impulse call.'});
+    if(rc!=null&&v.tilt==='bearish'&&rc<-2)
+      flags.push({id:'ratio-confirmer',note:'Gold/silver ratio COMPRESSING '+rc.toFixed(1)+'%/20d (industrial bid) — contradicts bearish-via-industrial-weakness.'});
+  }
+  // 3. curve-incoherent: dated deal contracts must be monotonic in horizon;
+  //    a nearer contract priced >3pts above a farther one = the contract layer
+  //    is noise today (PolySwarm negation-pair check, applied to our curve)
+  if(v.dealCurve&&v.dealCurve.length>=2){
+    for(let i=0;i<v.dealCurve.length-1;i++){
+      const a=v.dealCurve[i],b=v.dealCurve[i+1];
+      if(a.yes>b.yes+3){
+        flags.push({id:'curve-incoherent',note:'Deal curve incoherent: P(by '+a.dte+'d)='+Math.round(a.yes)+'% exceeds P(by '+b.dte+'d)='+Math.round(b.yes)+'% — logically impossible; contract layer is noisy today.'});
+        break;
+      }
+    }
+  }
+  // 4. kalshi-conflict (item-7 hypothesis — logged only, test pending):
+  //    hawk-minus-cut odds for the nearest meeting drifted ≥+5pp over ~5 logged
+  //    days against a bullish call
+  if(v.tilt==='bullish'){
+    const drift=await kalshiHawkDrift5();
+    if(drift!=null&&drift>=5)
+      flags.push({id:'kalshi-conflict',note:'Kalshi rate path drifted hawkish +'+drift+'pp over ~5 logged days against a bullish call (item-7 hypothesis — annotation only until its test runs).'});
+  }
+  // 5. physical-stress (its own falsifier pending): squeeze signature against a
+  //    bearish call
+  if(v.tilt==='bearish'&&PHYS_STATE&&(PHYS_STATE.stress||PHYS_STATE.backwardated))
+    flags.push({id:'physical-stress',note:(PHYS_STATE.backwardated?'Curve BACKWARDATED':'Implied lease stress ('+(PHYS_STATE.maxLease!=null?PHYS_STATE.maxLease.toFixed(2)+'%':'')+')')+' against a bearish call — squeeze-blindside warning.'});
+  return flags;
+}
+function renderFlags(flags){
+  const el=$('flagBox'); if(!el)return;
+  if(!flags.length){
+    el.innerHTML='<div class="note" style="margin-top:8px"><b class="dim">CONTRADICTION LEDGER: 0 active flags</b> — no instrument disagrees with this verdict today. (Flags are logged with every verdict and wired into nothing; each earns confidence-damping only by the pre-committed test in CLAUDE.md.)</div>';
+    return;
+  }
+  el.innerHTML='<div class="falsify" style="margin-top:8px"><b class="warn">CONTRADICTION LEDGER: '+flags.length+' active flag'+(flags.length===1?'':'s')+'</b> <span class="dim" style="font-size:10px">logged with the verdict · wired into nothing until each passes its pre-committed test</span><br>'+flags.map(f=>'• <b>'+f.id+'</b> — '+f.note).join('<br>')+'</div>';
+}
 // ---- PHYSICAL LAYER (display-only; stress thresholds pre-committed in the panel) ----
 async function physicalLayer(){
   const box=$('physBox'); if(!box)return;
@@ -578,6 +685,7 @@ async function physicalLayer(){
   }
   const stress=maxLease!=null&&(maxLease>2.0||(d10!=null&&d10>=1.0));
   const backwardated=(last.curve||[]).some(c=>c.spreadPct!=null&&c.spreadPct<0);
+  PHYS_STATE={stress,backwardated,maxLease,d10}; // cached for the contradiction ledger
   const f=(v,d=2)=>v==null?'—':(v>=0?'+':'')+v.toFixed(d);
   let rows='<div style="font-size:12px;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px">'
     +'<span>Front <b class="purp">$'+(last.front!=null?last.front.toFixed(2):'—')+'</b></span>'
@@ -596,7 +704,7 @@ async function physicalLayer(){
 let SERVER_TS=new Set();
 const REPO_ISSUES='https://github.com/barnickelus/Economic-forecast-/issues/new';
 function tiltIssueUrl(entries,label){
-  const payload=entries.map(e=>({t:e.t,spot:e.spot,tilt:e.tilt,confidence:e.confidence,headline:(e.headline||'').slice(0,140)}));
+  const payload=entries.map(e=>({t:e.t,spot:e.spot,tilt:e.tilt,confidence:e.confidence,headline:(e.headline||'').slice(0,140),flags:(Array.isArray(e.flags)&&e.flags.length)?e.flags:undefined}));
   const body='```json\n'+JSON.stringify(payload.length===1?payload[0]:payload,null,1)+'\n```\n\nSubmit this issue to commit the verdict(s) to `data/tilt-log.json` (scored server-side from committed closes).';
   return REPO_ISSUES+'?title='+encodeURIComponent('TILT: '+label)+'&body='+encodeURIComponent(body);
 }
@@ -708,6 +816,7 @@ async function regimeDiscriminator(){
   else if(so>0&&sc>0){regime='DEMAND / REFLATION';cls='warn';implication='oil and copper rising together — industrial bid context.';}
   else if(so>0&&sc<0){regime='SUPPLY SHOCK';cls='bear';implication='oil up while copper falls — stagflationary mix, historically hostile to silver via the hawkish-Fed/dollar channel.';}
   else{regime='MIXED / NO READ';cls='dim';implication='co-movement matches no committed regime signature — no read is the honest output.';}
+  DISC_STATE={regime,oilD,copD,yldD}; // cached for the contradiction ledger
   const fs2=(v,d=1)=>(v>=0?'+':'')+v.toFixed(d);
   box.innerHTML='<div style="font-size:12px;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px">'
     +'<span>Oil (CL) 10d: <b class="purp">'+fs2(oilD)+'%</b></span>'
@@ -762,7 +871,8 @@ function render(){
     if(r.hit10!=null)scoreTag+=' <span class="'+(r.hit10?'bull':'bear')+'" style="font-size:10px">[+10d '+(r.pct10>=0?'+':'')+r.pct10.toFixed(1)+'% '+(r.hit10?'\u2713':'\u2717')+']</span>';
     if(r.hit20!=null)scoreTag+=' <span class="'+(r.hit20?'bull':'bear')+'" style="font-size:10px">[+20d '+(r.pct20>=0?'+':'')+r.pct20.toFixed(1)+'% '+(r.hit20?'\u2713':'\u2717')+']</span>';
     const dupTag=prim.has(r.t)?'':' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Later same-day entry \u2014 scored for reference but excluded from hit rate, calibration, and Brier (first entry of the day is the commitment)">dup\u00b7not counted</span>';
-    return '<div class="logrow"'+(prim.has(r.t)?'':' style="opacity:0.55"')+'>'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+dupTag+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
+    const flagTag=(Array.isArray(r.flags)&&r.flags.length)?' <span class="warn" style="font-size:9px" title="Contradiction flags active when this verdict was logged \u2014 annotations for the flagged-vs-unflagged test, wired into nothing">\u2691'+r.flags.length+' '+r.flags.join(',')+'</span>':'';
+    return '<div class="logrow"'+(prim.has(r.t)?'':' style="opacity:0.55"')+'>'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+dupTag+flagTag+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
   }).join('');
 }
 $('logBtn').addEventListener('click',async()=>{

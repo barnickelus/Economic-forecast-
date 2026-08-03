@@ -43,12 +43,20 @@ for (const c of candidates) {
   }
   if (seen.has(t)) { console.log('· duplicate t=' + t + ' — already logged'); skipped++; continue; }
   seen.add(t);
+  // contradiction-ledger annotations: whitelist-validated, capped, optional.
+  // They ride along for the retrospective flagged-vs-unflagged scoring test
+  // and influence nothing at intake.
+  let flags = [];
+  if (Array.isArray(c.flags)) {
+    flags = c.flags.filter(f => typeof f === 'string' && /^[a-z][a-z0-9-]{2,23}$/.test(f)).slice(0, 8);
+  }
   log.push({
     t,
     spot,
     tilt,
     confidence,
     headline: typeof c.headline === 'string' ? c.headline.slice(0, 140) : '',
+    flags,
     source: 'issue',
     p5: null, pct5: null, hit5: null,
     p10: null, pct10: null, hit10: null,

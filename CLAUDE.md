@@ -142,3 +142,21 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    revisions — kept in the log and scored individually, but flagged `dup` and
    excluded from hit rate, calibration, Brier, and momentum aggregates, on
    both the server scorer and the dashboard. Never delete log rows.
+12. Contradiction ledger (built 2026-08-03): five cross-instrument disagreement
+   flags computed at analyze time, displayed under the verdict, and stamped
+   into each logged entry (`flags` array; whitelist-validated at issue intake).
+   WIRED INTO NOTHING. Pre-committed wiring test (stated before any flag was
+   logged): a flag earns confidence-damping only if, after ≥20 scored primary
+   directional horizon-calls of which ≥5 carry that flag, flagged hit rate is
+   ≥15pp worse than unflagged. Flags + fixed thresholds:
+   - `oil-premise`: discriminator=DEMAND DESTRUCTION while oilTilt>+0.25
+     (engine reading oil-down as relief — the falsified May mapping).
+   - `ratio-confirmer`: ratio 20d change >+2% vs bullish, or <−2% vs bearish
+     (validated confirmer refusing to confirm).
+   - `curve-incoherent`: nearer deal contract >3pts above a farther one
+     (logically impossible; contract layer is noise that day).
+   - `kalshi-conflict`: hawk-minus-cut for nearest Fed meeting drifted ≥+5pp
+     over ~5 logged days vs bullish (item-7 hypothesis, annotation only).
+   - `physical-stress`: lease stress or backwardation vs bearish.
+   The one pre-existing WIRED damper (oil-vs-contracts `contradiction` →
+   conf ≤28) predates the ledger and stays as-is.
