@@ -101,6 +101,13 @@
   </div>
 
   <div class="panel">
+    <h2>Physical layer <span class="num">hypothesis-generating · NOT wired into tilt</span></h2>
+    <div class="psub">The squeeze detector. Implied lease rate derived from the futures curve via cost-of-carry (lease ≈ 13-week bill − annualized contango); level reads ~0.3–0.5%/yr high because storage cost is unobservable — irrelevant, because the signal is the SPIKE: lease jumping toward 2%+ is bullion banks scrambling for physical metal, historically preceding violent upside. Backwardation (negative spread) is the acute form. Logged 2x daily from committed files; no free source exists for actual lease fixings, Shanghai premium, or COMEX warehouse flows — this curve read is the one physical-stress window we have.</div>
+    <div id="physBox" style="margin:10px 0"><span class="dim" style="font-size:11px">Loading physical log…</span></div>
+    <div class="note"><b>Pre-committed stress definition (stated 2026-08-03, before any event has occurred):</b> a STRESS event = implied lease &gt; 2.0% absolute, OR a rise of ≥ 100bp within 10 logged days. <b>Hypothesis:</b> t+20 forward silver return following a stress event exceeds the unconditional t+20 return. <b>Test:</b> after ≥5 distinct stress events (an episode ends when lease falls back under 1.5%). This is a rare-event indicator — the clock may run for months without an event, and that is fine. Until the test passes, display-only, feeds NOTHING downstream.</div>
+  </div>
+
+  <div class="panel">
     <h2>Reasoning log <span class="num">self-scoring</span></h2>
     <div class="psub">Each analysis logs the verdict + silver price + timestamp. The engine improves interpretation; the log does the validating. Over weeks it shows whether the curve-regime read actually led price.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="syncBtn">⬆ Commit log to repo</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
@@ -551,6 +558,38 @@ async function restore(){
   }catch(e){}
   await scoreLog(); persist(); render(); renderTiltSync();
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
+  physicalLayer();       // display-only, reads committed files — fire and forget
+}
+// ---- PHYSICAL LAYER (display-only; stress thresholds pre-committed in the panel) ----
+async function physicalLayer(){
+  const box=$('physBox'); if(!box)return;
+  let plog=null;
+  try{const r=await fetch('data/physical-log.json',{cache:'no-cache'});if(r.ok)plog=await r.json();}catch(e){}
+  if(!Array.isArray(plog)||!plog.length){box.innerHTML='<span class="dim" style="font-size:11px">No physical log yet — first fetch-odds run pending.</span>';return;}
+  const last=plog[plog.length-1];
+  const leases=(last.curve||[]).filter(c=>c.impliedLeasePct!=null);
+  const maxLease=leases.length?Math.max(...leases.map(c=>c.impliedLeasePct)):null;
+  // 10-logged-day change for the spike condition
+  let d10=null;
+  if(maxLease!=null&&plog.length>=11){
+    const prev=plog[plog.length-11];
+    const pl=(prev.curve||[]).filter(c=>c.impliedLeasePct!=null);
+    if(pl.length)d10=+(maxLease-Math.max(...pl.map(c=>c.impliedLeasePct))).toFixed(2);
+  }
+  const stress=maxLease!=null&&(maxLease>2.0||(d10!=null&&d10>=1.0));
+  const backwardated=(last.curve||[]).some(c=>c.spreadPct!=null&&c.spreadPct<0);
+  const f=(v,d=2)=>v==null?'—':(v>=0?'+':'')+v.toFixed(d);
+  let rows='<div style="font-size:12px;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px">'
+    +'<span>Front <b class="purp">$'+(last.front!=null?last.front.toFixed(2):'—')+'</b></span>'
+    +(last.curve||[]).map(c=>'<span>'+c.sym.replace('.CMX','')+' <b class="purp">'+f(c.spreadPct)+'%</b>'+(c.impliedLeasePct!=null?' <span class="dim">lease~'+c.impliedLeasePct.toFixed(2)+'%</span>':'')+'</span>').join('')
+    +(last.shortRatePct!=null?'<span class="dim">13wk bill '+last.shortRatePct.toFixed(2)+'%</span>':'<span class="dim">bill rate pending (_IRX.json)</span>')
+    +(last.slvOunces?'<span class="dim">SLV '+(last.slvOunces/1e6).toFixed(0)+'M oz</span>':'')
+    +'<span class="dim">'+last.date+' · '+plog.length+' logged day'+(plog.length===1?'':'s')+'</span></div>';
+  let read;
+  if(backwardated)read='<b class="bear">BACKWARDATION</b> — deferred trading below front: acute physical stress signature. (Still display-only; see falsifier.)';
+  else if(stress)read='<b class="warn">STRESS EVENT</b> — implied lease '+(maxLease!=null?maxLease.toFixed(2)+'%':'')+(d10!=null?' (Δ10d '+f(d10)+'pp)':'')+' crossed the pre-committed threshold. Logged; the t+20 test accrues.';
+  else read='<b class="dim">QUIET</b> — implied lease '+(maxLease!=null?'~'+maxLease.toFixed(2)+'%':'unavailable')+(d10!=null?' (Δ10d '+f(d10)+'pp)':'')+', normal contango. No physical-stress signature; nothing here contradicts a bearish or bullish read.';
+  box.innerHTML=rows+'<div class="read">'+read+'</div>';
 }
 // ---- durable-log plumbing: verdicts flow to data/tilt-log.json via a prefilled
 // GitHub issue; log-tilt.yml (owner-gated) appends, scores, and commits ----
