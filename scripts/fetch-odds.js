@@ -294,13 +294,48 @@ async function fetchSlvOunces() {
   // per-contract 24h trade counts (sequential — small N, be polite to the API)
   for (const c of contracts) c.trades24h = await fetchTradeCount24h(c.conditionId);
 
-  // physical layer: front + deferred silver, SLV ounces
+  // physical layer: front + deferred silver, SLV ounces, implied lease rate.
+  //
+  // IMPLIED LEASE: from cost-of-carry F = S·e^((r + storage − lease)·T),
+  //   implied lease ≈ short rate − annualized contango  (storage not observable,
+  //   so this number reads ~0.3-0.5%/yr HIGH — a constant bias that does not
+  //   matter because the SIGNAL is the spike, not the level: lease jumping from
+  //   ~0.5% to 2%+ is dealers scrambling for physical metal).
+  // Short rate = 13-week T-bill (^IRX) from the committed data file — tenor is
+  // mismatched vs 5-8mo forwards; fine for a spike monitor, documented here.
+  const MONTH_CODES = { F: 0, G: 1, H: 2, J: 3, K: 4, M: 5, N: 6, Q: 7, U: 8, V: 9, X: 10, Z: 11 };
+  function yearsToExpiry(sym) {
+    // e.g. SIZ26.CMX -> Dec 2026; expiry approximated as the 25th of the
+    // delivery month (COMEX silver last trading day ≈ third-to-last business
+    // day). ±5d error on a 150d contract moves annualization ~3% relative — noise.
+    const m = sym.match(/^[A-Z]+([FGHJKMNQUVXZ])(\d{2})\./);
+    if (!m) return null;
+    const exp = new Date(Date.UTC(2000 + parseInt(m[2], 10), MONTH_CODES[m[1]], 25));
+    const t = (exp - Date.now()) / (365.25 * 86400000);
+    return t > 0 ? t : null;
+  }
+  let shortRatePct = null;
+  try {
+    const irx = JSON.parse(fs.readFileSync(path.join(DATA_DIR, '_IRX.json'), 'utf8'));
+    const io = (irx.historical || {}).ohlc || [];
+    if (io.length) shortRatePct = +io[io.length - 1].c.toFixed(3);
+  } catch (e) { console.log('⚠ no data/_IRX.json yet (^IRX added to tickers — arrives with next fetch-data run); implied lease deferred'); }
   const silverFront = await fetchFuturesClose('SI=F');
   const curve = [];
   for (const sym of silverCurve) {
     const px = await fetchFuturesClose(sym);
     if (px == null) { console.log('⚠ curve "' + sym + '": no price — expired contract? Roll silverCurve in data/odds-topics.json'); continue; }
-    curve.push({ sym, price: px, spreadPct: silverFront ? +(((px - silverFront) / silverFront) * 100).toFixed(2) : null });
+    const T = yearsToExpiry(sym);
+    let annualizedPct = null, impliedLeasePct = null;
+    // annualization divides by T: under ~60 days it just amplifies noise, so
+    // near-expiry contracts drop out of the lease calc (and need rolling anyway)
+    if (silverFront && T != null && T >= 60 / 365.25) {
+      annualizedPct = +((Math.log(px / silverFront) / T) * 100).toFixed(2);
+      if (shortRatePct != null) impliedLeasePct = +(shortRatePct - annualizedPct).toFixed(2);
+    } else if (T != null && T < 60 / 365.25) {
+      console.log('⚠ curve "' + sym + '": <60d to expiry — excluded from lease calc, roll it in odds-topics.json');
+    }
+    curve.push({ sym, price: px, spreadPct: silverFront ? +(((px - silverFront) / silverFront) * 100).toFixed(2) : null, annualizedPct, impliedLeasePct });
   }
   const slvOunces = await fetchSlvOunces();
   const PHYS_FILE = path.join(DATA_DIR, 'physical-log.json');
@@ -308,11 +343,11 @@ async function fetchSlvOunces() {
   if (fs.existsSync(PHYS_FILE)) { try { plog = JSON.parse(fs.readFileSync(PHYS_FILE, 'utf8')); } catch (e) { plog = []; } }
   {
     const today0 = new Date().toISOString().slice(0, 10);
-    const row = { date: today0, fetchedAt: new Date().toISOString(), front: silverFront, curve, slvOunces };
+    const row = { date: today0, fetchedAt: new Date().toISOString(), front: silverFront, shortRatePct, curve, slvOunces };
     const pi = plog.findIndex(r => r.date === today0);
     if (pi >= 0) plog[pi] = row; else plog.push(row);
     fs.writeFileSync(PHYS_FILE, JSON.stringify(plog, null, 1));
-    console.log('✓ physical: front ' + silverFront + ' · curve [' + curve.map(c => c.sym + ' ' + (c.spreadPct >= 0 ? '+' : '') + c.spreadPct + '%').join(', ') + ']' + (slvOunces ? ' · SLV ' + Math.round(slvOunces / 1e6) + 'M oz' : ''));
+    console.log('✓ physical: front ' + silverFront + ' · curve [' + curve.map(c => c.sym + ' ' + (c.spreadPct >= 0 ? '+' : '') + c.spreadPct + '%' + (c.impliedLeasePct != null ? ' lease~' + c.impliedLeasePct + '%' : '')).join(', ') + ']' + (shortRatePct != null ? ' · 13wk bill ' + shortRatePct + '%' : '') + (slvOunces ? ' · SLV ' + Math.round(slvOunces / 1e6) + 'M oz' : ''));
   }
 
   // load existing log

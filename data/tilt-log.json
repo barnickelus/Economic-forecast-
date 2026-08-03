@@ -124,16 +124,17 @@
   "p5": 58.615,
   "pct5": 4.06,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 58.47,
+  "pct10": 3.81,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": false
  },
  {
   "t": "2026-07-20 00:50",
@@ -145,16 +146,17 @@
   "p5": 58.615,
   "pct5": 3.5,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 58.47,
+  "pct10": 3.24,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
   "dup": false,
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": false
  },
  {
   "t": "2026-07-21 16:15",
@@ -247,9 +249,9 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: relief tilt, oil falling -3.9% into a unclear (no deep anchors) regime. One channel’s read — see scope note before tr",
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 58.47,
+  "pct5": -0.74,
+  "hit5": false,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -258,7 +260,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc",
+  "momoHit5": true
  },
  {
   "t": "2026-07-27 16:35",
@@ -267,9 +270,9 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: relief tilt, oil falling -7.0% into a unclear (no deep anchors) regime. One channel’s read — see scope note before tr",
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 58.47,
+  "pct5": -0.86,
+  "hit5": false,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -278,6 +281,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc",
+  "momoHit5": true
  }
 ]

@@ -119,12 +119,19 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    leaderboard P&L. Hypothesis to spec before building: calibrated-wallet-
    weighted odds lead the mid. `trades24h` field (now logging) is the cheap
    precursor — whale-vs-crowd repricing.
-9. Physical layer (logging since 2026-07-21): `data/physical-log.json` — silver
-   curve spread (SI=F front vs deferred, tickers in `odds-topics.json →
-   silverCurve`, ROLL THEM as contracts expire; backwardation = physical
-   stress) + best-effort SLV ounces (field names self-diagnose in Actions log).
-   Hypothesis to spec BEFORE using either as a signal. Lease rates and Shanghai
-   premium have no free source — still blind there.
+9. Physical layer (logging since 2026-07-21; lease added 2026-08-03):
+   `data/physical-log.json` — silver curve spread (SI=F front vs deferred,
+   tickers in `odds-topics.json → silverCurve`, ROLL THEM as contracts expire;
+   backwardation = acute physical stress) + IMPLIED LEASE RATE per deferred
+   contract (cost-of-carry: 13wk bill `^IRX` − annualized contango; level reads
+   ~0.3-0.5%/yr high from unobservable storage — constant bias, signal is the
+   spike; contracts <60d to expiry excluded from the calc) + best-effort SLV
+   ounces (still null — iShares endpoint returns HTML; field self-diagnoses).
+   PRE-COMMITTED (2026-08-03, before any event): STRESS = lease >2.0% absolute
+   OR +100bp within 10 logged days; hypothesis: t+20 return after stress >
+   unconditional t+20; test after ≥5 distinct events (episode ends when lease
+   <1.5%). Display-only until then. True lease fixings and Shanghai premium
+   still have no free source.
 10. Verdict hygiene (built 2026-07-21): logBtn warns when a directional call
    merely extrapolates a ≥3% 5-session move (the May failure pattern, 20% hit
    rate). The Fed-channel text in Channel Scope now carries the falsified-as-
