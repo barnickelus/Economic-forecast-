@@ -6,7 +6,7 @@
     "sectorETF": "SPY",
     "typicalVolAnnual": 0.3
   },
-  "fetchedAt": "2026-08-03T02:52:09.879Z",
+  "fetchedAt": "2026-08-03T06:01:36.210Z",
   "sources": {
     "asset": "yahoo:^IRX",
     "sector": "yahoo:SPY"
@@ -11455,7 +11455,7 @@
     "source": "^IRX"
   },
   "macro": {
-    "fetchedAt": "2026-08-03T02:52:07.157Z",
+    "fetchedAt": "2026-08-03T06:01:33.849Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11464,16 +11464,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 99.694,
+      "spot": 99.684,
       "prev": 99.80000305175781,
-      "change": -0.10600305175780989,
-      "changePct": -0.10621547947532134
+      "change": -0.116003051757815,
+      "changePct": -0.11623551924908662
     },
     "oil": {
-      "spot": 80.26,
+      "spot": 79.78,
       "prev": 84.66999816894531,
-      "change": -4.409998168945307,
-      "changePct": -5.208454310044826
+      "change": -4.889998168945311,
+      "changePct": -5.775361136996967
     },
     "vix": {
       "spot": 15.99,
