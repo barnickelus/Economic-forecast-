@@ -168,16 +168,17 @@
   "p5": 57.37,
   "pct5": -3.23,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 59.615,
+  "pct10": 0.56,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
   "dup": false,
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": false
  },
  {
   "t": "2026-07-21 19:08",
@@ -189,16 +190,17 @@
   "p5": 57.37,
   "pct5": -3.03,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 59.615,
+  "pct10": 0.76,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
   "scoredFrom": "ohlc",
   "dup": true,
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": false
  },
  {
   "t": "2026-07-22 17:40",
