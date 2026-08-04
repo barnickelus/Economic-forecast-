@@ -1,13 +1,13 @@
 {
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "oil": {
     "brent": {
-      "spot": 78.95,
-      "changePct": -5.75
+      "spot": 78.96,
+      "changePct": -5.74
     },
     "wti": {
-      "spot": 75.33,
-      "changePct": -6.24
+      "spot": 75.32,
+      "changePct": -6.25
     }
   },
   "contracts": [
@@ -203,7 +203,7 @@
       "liquidity": 111161.0886,
       "spreadPts": 1,
       "endDate": "2026-12-31T00:00:00Z",
-      "trades24h": 152,
+      "trades24h": 153,
       "deltaVsPriorDay": 1,
       "priorDate": "2026-08-03"
     },
@@ -217,7 +217,7 @@
       "liquidity": 94215.32561,
       "spreadPts": 0.1,
       "endDate": "2026-12-31T00:00:00Z",
-      "trades24h": 143,
+      "trades24h": 144,
       "deltaVsPriorDay": -0.05,
       "priorDate": "2026-08-03"
     },

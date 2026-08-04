@@ -5506,7 +5506,7 @@
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will the U.S. invade Iran before 2027?",
   "slug": "will-the-us-invade-iran-before-2027",
   "yes": 17.5,
@@ -5515,13 +5515,13 @@
   "liquidity": 1030954.1835,
   "spreadPts": 1,
   "trades24h": 500,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Israel x Iran ceasefire continues through August 9?",
   "slug": "israel-x-iran-ceasefire-continues-through-august-9-20260727170733638",
   "yes": 92.5,
@@ -5530,9 +5530,9 @@
   "liquidity": 86461.4073,
   "spreadPts": 1,
   "trades24h": 500,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
@@ -5551,7 +5551,7 @@
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "US x Iran Effective Ceasefire by August 14?",
   "slug": "us-x-iran-effective-ceasfire-by-august-14-20260715194822046",
   "yes": 77,
@@ -5560,13 +5560,13 @@
   "liquidity": 59015.3569,
   "spreadPts": 2,
   "trades24h": 500,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "US x Iran Effective Ceasefire by August 31?",
   "slug": "us-x-iran-effective-ceasfire-by-august-31-20260715194822047",
   "yes": 81.5,
@@ -5575,13 +5575,13 @@
   "liquidity": 81061.2713,
   "spreadPts": 1,
   "trades24h": 336,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Strait of Hormuz traffic returns to normal by December 31?",
   "slug": "strait-of-hormuz-traffic-returns-to-normal-by-december-31",
   "yes": 60.5,
@@ -5590,9 +5590,9 @@
   "liquidity": 297067.4574,
   "spreadPts": 1,
   "trades24h": 370,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
@@ -5656,7 +5656,7 @@
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Fed rate hike in 2026?",
   "slug": "fed-rate-hike-in-2026",
   "yes": 62.5,
@@ -5665,13 +5665,13 @@
   "liquidity": 165843.945,
   "spreadPts": 1,
   "trades24h": 177,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will no Fed rate cuts happen in 2026?",
   "slug": "will-no-fed-rate-cuts-happen-in-2026",
   "yes": 88.75,
@@ -5680,13 +5680,13 @@
   "liquidity": 150096.21705,
   "spreadPts": 0.1,
   "trades24h": 166,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Fed Rate Hike by September 2026 Meeting?",
   "slug": "fed-rate-hike-by-september-2026-meeting",
   "yes": 47.5,
@@ -5695,13 +5695,13 @@
   "liquidity": 78239.8288,
   "spreadPts": 1,
   "trades24h": 73,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will 1 Fed rate cut happen in 2026?",
   "slug": "will-1-fed-rate-cut-happen-in-2026",
   "yes": 7.5,
@@ -5709,14 +5709,14 @@
   "endDate": "2026-12-31T00:00:00Z",
   "liquidity": 111161.0886,
   "spreadPts": 1,
-  "trades24h": 152,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "trades24h": 153,
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will 2 Fed rate cuts happen in 2026?",
   "slug": "will-2-fed-rate-cuts-happen-in-2026",
   "yes": 2.45,
@@ -5724,14 +5724,14 @@
   "endDate": "2026-12-31T00:00:00Z",
   "liquidity": 94215.32561,
   "spreadPts": 0.1,
-  "trades24h": 143,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "trades24h": 144,
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Israel x Iran ceasefire continues through August 31?",
   "slug": "israel-x-iran-ceasefire-continues-through-august-31-20260716224448970-754-896-823",
   "yes": 75.5,
@@ -5740,13 +5740,13 @@
   "liquidity": 64192.2563,
   "spreadPts": 1,
   "trades24h": 387,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Israel x Iran ceasefire continues through August 15?",
   "slug": "israel-x-iran-ceasefire-continues-through-august-15-20260716224448969-246-815-987-693",
   "yes": 85.5,
@@ -5755,13 +5755,13 @@
   "liquidity": 54590.2077,
   "spreadPts": 1,
   "trades24h": 500,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Israel agrees to Board of Peace Gaza plan by August 7?",
   "slug": "israel-agrees-to-board-of-peace-gaza-plan-by-august-7-20260731224133050",
   "yes": 11.5,
@@ -5770,13 +5770,13 @@
   "liquidity": 15261.502,
   "spreadPts": 3,
   "trades24h": 180,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Israel closes its airspace by August 15?",
   "slug": "israel-closes-its-airspace-by-august-15",
   "yes": 6.5,
@@ -5785,13 +5785,13 @@
   "liquidity": 60457.4767,
   "spreadPts": 1,
   "trades24h": 134,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
   "slug": "will-mojtaba-khamenei-be-head-of-state-in-iran-end-of-2026",
   "yes": 85.1,
@@ -5800,13 +5800,13 @@
   "liquidity": 68379.10663,
   "spreadPts": 1,
   "trades24h": 500,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will the United States send warships through the Strait of Hormuz by August 31, 2026?",
   "slug": "will-the-united-states-send-warships-through-the-strait-of-hormuz-by-august-31-2026-20260728213742051",
   "yes": 18.5,
@@ -5815,13 +5815,13 @@
   "liquidity": 15568.4031,
   "spreadPts": 1,
   "trades24h": 26,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will France send warships through the Strait of Hormuz by August 31, 2026?",
   "slug": "will-france-send-warships-through-the-strait-of-hormuz-by-august-31-2026-20260728213742050",
   "yes": 6.6,
@@ -5830,13 +5830,13 @@
   "liquidity": 22617.42152,
   "spreadPts": 1.6,
   "trades24h": 15,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will the United Kingdom send warships through the Strait of Hormuz by August 31, 2026?",
   "slug": "will-the-united-kingdom-send-warships-through-the-strait-of-hormuz-by-august-31-2026-20260728213742049",
   "yes": 8.9,
@@ -5845,13 +5845,13 @@
   "liquidity": 7648.73175,
   "spreadPts": 6.6,
   "trades24h": 10,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  },
  {
   "date": "2026-08-04",
-  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "fetchedAt": "2026-08-04T22:24:30.784Z",
   "title": "Will Germany send warships through the Strait of Hormuz by August 31, 2026?",
   "slug": "will-germany-send-warships-through-the-strait-of-hormuz-by-august-31-2026-20260728213742055",
   "yes": 8.45,
@@ -5860,8 +5860,8 @@
   "liquidity": 7484.8273,
   "spreadPts": 6.7,
   "trades24h": 13,
-  "brent": 78.95,
-  "wti": 75.33,
-  "brentChangePct": -5.75
+  "brent": 78.96,
+  "wti": 75.32,
+  "brentChangePct": -5.74
  }
 ]
