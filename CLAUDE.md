@@ -142,7 +142,23 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    revisions — kept in the log and scored individually, but flagged `dup` and
    excluded from hit rate, calibration, Brier, and momentum aggregates, on
    both the server scorer and the dashboard. Never delete log rows.
-12. Contradiction ledger (built 2026-08-03): five cross-instrument disagreement
+12. Sample-integrity rules (built 2026-08-03, after auditing irregular logging):
+   - Non-trading-day entries anchor to the LAST COMPLETED session, not the next
+     one. Anchoring forward made "t+5" span six sessions from the price the
+     logger actually saw. `scoredFrom` carries a SCORE_VERSION marker
+     (`ohlc-v2`); bump it to force one clean re-score when the rule changes.
+   - EFFECTIVE SAMPLE SIZE is reported next to every hit rate: consecutive
+     daily entries produce horizon windows that overlap almost entirely (six
+     t+20 calls on six consecutive days share 19/20 of their price path = ONE
+     observation wearing six hats). Greedy non-overlapping window count shown
+     on the dashboard and in the Actions log. Horizons with <5 independent
+     windows are anecdote, not measurement.
+   - KNOWN, UNFIXABLE-IN-CODE: entries are self-selected. Gaps of 12 and 38
+     days exist in the log; the engine held unlogged opinions on those days.
+     The record therefore measures engine-on-days-Chris-logged, not the engine.
+     Logging on a fixed cadence (or logging the abstains too) is the only fix.
+
+13. Contradiction ledger (built 2026-08-03): five cross-instrument disagreement
    flags computed at analyze time, displayed under the verdict, and stamped
    into each logged entry (`flags` array; whitelist-validated at issue intake).
    WIRED INTO NOTHING. Pre-committed wiring test (stated before any flag was

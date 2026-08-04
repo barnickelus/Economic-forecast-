@@ -34,6 +34,25 @@ if (ohlc.length < 30) { console.log('SI_F.json historical.ohlc missing/short —
 const HORIZONS = [[5, 'p5', 'pct5', 'hit5'], [10, 'p10', 'pct10', 'hit10'], [20, 'p20', 'pct20', 'hit20']];
 let filled = 0;
 
+// Anchor an entry to its t+0 bar.
+//   - entry on a trading day        -> that bar
+//   - entry after the last committed bar -> -1 (not scoreable YET; wait for the bar,
+//     which is also the correct answer for a verdict logged intraday today)
+//   - entry on a non-trading day inside the series (weekend/holiday) -> the LAST
+//     COMPLETED session. Anchoring forward to the next session instead made "t+5"
+//     span six sessions of price action from the price the logger actually saw.
+function entryIndex(ohlc, d) {
+  const exact = ohlc.findIndex(b => b.date === d);
+  if (exact >= 0) return exact;
+  if (!ohlc.length || d > ohlc[ohlc.length - 1].date) return -1;
+  let i = -1;
+  for (let k = 0; k < ohlc.length; k++) { if (ohlc[k].date < d) i = k; else break; }
+  return i;
+}
+// Bumping this marker forces one clean re-score of every row whenever the
+// scoring rule itself changes (v2 = corrected non-trading-day anchor).
+const SCORE_VERSION = 'ohlc-v2';
+
 // ONE OBSERVATION PER DAY: the FIRST entry of each calendar day is the scored
 // commitment; later same-day entries are revisions made after seeing more tape,
 // so they stay in the log (nothing is ever deleted) and get scored for
@@ -52,14 +71,14 @@ log.sort((a, b) => a.t < b.t ? -1 : 1);
 for (const r of log) {
   if (!r || !r.t || r.spot == null || !r.tilt) continue;
   const entryDate = String(r.t).slice(0, 10);
-  const idx = ohlc.findIndex(b => b.date >= entryDate);
-  // == null (not === undefined): an entry logged on a weekend/after-hours is
-  // scored before any bar exists at-or-after its date, so idx is -1 and momoDir
-  // lands as null. It must stay eligible for recomputation once the bar
-  // commits, or that entry is silently dropped from the momentum baseline.
+  const idx = entryIndex(ohlc, entryDate);
+  // == null (not === undefined): an entry logged before its t+0 bar commits
+  // scores with idx -1 and momoDir lands null. It must stay eligible for
+  // recomputation once the bar arrives, or that entry is silently dropped
+  // from the momentum baseline.
   if (r.momoDir == null) r.momoDir = (idx >= 20) ? (ohlc[idx].c >= ohlc[idx - 20].c ? 'bullish' : 'bearish') : null;
   for (const [n, pk, pctk, hitk] of HORIZONS) {
-    if (r[pk] != null && r.scoredFrom === 'ohlc') continue;
+    if (r[pk] != null && r.scoredFrom === SCORE_VERSION) continue;
     const target = idx < 0 ? -1 : idx + n;
     const c = (target >= 0 && target < ohlc.length) ? ohlc[target].c : null;
     if (c == null) continue; // no committed close that far out yet
@@ -73,7 +92,7 @@ for (const r of log) {
       if (r[hk] != null && r[mk] == null) r[mk] = (r.momoDir === 'bullish') ? r[pk2] > 0 : r[pk2] < 0;
     }
   }
-  r.scoredFrom = 'ohlc';
+  r.scoredFrom = SCORE_VERSION;
 }
 
 fs.writeFileSync(TILT_FILE, JSON.stringify(log, null, 1));
@@ -98,3 +117,26 @@ if (calls.length) {
   console.log('  calibration: ' + calls.length + ' directional horizon-calls · stated ' + stated.toFixed(0) + '% vs realized ' + realized.toFixed(0) + '% · Brier ' + brier.toFixed(3) + ' (always-50% = 0.25)');
 }
 if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a + b, 0) / momo.length * 100).toFixed(0) + '% hit on ' + momo.length + ' scored');
+
+// EFFECTIVE SAMPLE SIZE. Consecutive daily entries produce horizon windows that
+// overlap almost entirely — six t+20 calls logged on six consecutive days share
+// 19 of 20 days of price path, so they are ONE observation wearing six hats.
+// Report the greedy count of NON-OVERLAPPING windows alongside the raw count so
+// the headline hit rate can never overstate how much evidence stands behind it.
+{
+  const parts = [];
+  for (const [n] of HORIZONS) {
+    const spans = [];
+    for (const r of log) {
+      if (r.dup || r['hit' + n] == null) continue;
+      const i = entryIndex(ohlc, String(r.t).slice(0, 10));
+      if (i >= 0) spans.push([i, i + n]);
+    }
+    if (!spans.length) continue;
+    spans.sort((a, b) => a[1] - b[1]);
+    let last = -1, indep = 0;
+    for (const [a, b] of spans) if (a >= last) { indep++; last = b; }
+    parts.push('t+' + n + ': ' + spans.length + ' scored / ' + indep + ' independent');
+  }
+  if (parts.length) console.log('  effective sample (non-overlapping windows) — ' + parts.join(' · '));
+}

@@ -20,7 +20,7 @@
   "momoHit5": false,
   "momoHit10": false,
   "momoHit20": false,
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-05-27 23:43",
@@ -43,7 +43,7 @@
   "momoHit5": false,
   "momoHit10": false,
   "momoHit20": false,
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-05-28 17:01",
@@ -66,7 +66,7 @@
   "momoHit5": false,
   "momoHit10": false,
   "momoHit20": false,
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-05-29 17:26",
@@ -89,7 +89,7 @@
   "momoHit5": false,
   "momoHit10": false,
   "momoHit20": false,
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-06-10 16:12",
@@ -112,7 +112,7 @@
   "momoHit5": false,
   "momoHit10": true,
   "momoHit20": true,
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-07-18 20:22",
@@ -121,18 +121,18 @@
   "confidence": 52,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +4.6% with escalation-leaning. One channel’s read — other channels not modeled here.",
   "source": "issue",
-  "p5": 58.615,
-  "pct5": 4.06,
+  "p5": 58.656,
+  "pct5": 4.14,
   "hit5": false,
-  "p10": 58.47,
-  "pct10": 3.81,
+  "p10": 57.591,
+  "pct10": 2.25,
   "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "momoHit5": false,
   "momoHit10": false
  },
@@ -143,17 +143,17 @@
   "confidence": 58,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.6% with escalation-leaning. One channel’s read — other channels not modeled here.",
   "source": "issue",
-  "p5": 58.615,
-  "pct5": 3.5,
+  "p5": 58.472,
+  "pct5": 3.24,
   "hit5": false,
-  "p10": 58.47,
-  "pct10": 3.24,
+  "p10": 57.667,
+  "pct10": 1.82,
   "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "dup": false,
   "momoHit5": false,
   "momoHit10": false
@@ -165,17 +165,17 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
   "source": "issue",
-  "p5": 57.37,
-  "pct5": -3.23,
+  "p5": 57.296,
+  "pct5": -3.35,
   "hit5": true,
-  "p10": 59.615,
-  "pct10": 0.56,
+  "p10": 59.75,
+  "pct10": 0.78,
   "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "dup": false,
   "momoHit5": true,
   "momoHit10": false
@@ -187,17 +187,17 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
   "source": "issue",
-  "p5": 57.37,
-  "pct5": -3.03,
+  "p5": 57.296,
+  "pct5": -3.16,
   "hit5": true,
-  "p10": 59.615,
-  "pct10": 0.76,
+  "p10": 59.75,
+  "pct10": 0.99,
   "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "dup": true,
   "momoHit5": true,
   "momoHit10": false
@@ -209,8 +209,8 @@
   "confidence": 58,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +3.2% with escalation-leaning. One channel’s read — other channels not modeled here.",
   "source": "issue",
-  "p5": 57.2,
-  "pct5": -5.13,
+  "p5": 57.863,
+  "pct5": -4.03,
   "hit5": true,
   "p10": null,
   "pct10": null,
@@ -220,7 +220,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "momoHit5": true
  },
  {
@@ -230,8 +230,8 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +7.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
   "source": "issue",
-  "p5": 58.26,
-  "pct5": 0.76,
+  "p5": 58.815,
+  "pct5": 1.72,
   "hit5": false,
   "p10": null,
   "pct10": null,
@@ -241,7 +241,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "momoHit5": false
  },
  {
@@ -251,8 +251,8 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: relief tilt, oil falling -3.9% into a unclear (no deep anchors) regime. One channel’s read — see scope note before tr",
   "source": "issue",
-  "p5": 58.47,
-  "pct5": -0.74,
+  "p5": 57.591,
+  "pct5": -2.23,
   "hit5": false,
   "p10": null,
   "pct10": null,
@@ -262,7 +262,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "momoHit5": true
  },
  {
@@ -272,8 +272,8 @@
   "confidence": 40,
   "headline": "Iran/oil channel only: relief tilt, oil falling -7.0% into a unclear (no deep anchors) regime. One channel’s read — see scope note before tr",
   "source": "issue",
-  "p5": 58.47,
-  "pct5": -0.86,
+  "p5": 57.667,
+  "pct5": -2.22,
   "hit5": false,
   "p10": null,
   "pct10": null,
@@ -283,7 +283,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc",
+  "scoredFrom": "ohlc-v2",
   "momoHit5": true
  },
  {
@@ -305,7 +305,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-08-04 01:33",
@@ -328,7 +328,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-08-04 22:15",
@@ -349,6 +349,6 @@
   "hit20": null,
   "dup": true,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  }
 ]

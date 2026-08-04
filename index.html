@@ -485,7 +485,7 @@ async function run(){
   $('banner').className='banner';$('banner').innerHTML='● pulling live silver, oil, and contract population…';
   let d;try{d=await gatherData();}catch(e){$('banner').className='banner err';$('banner').innerHTML='● data fetch failed (CORS proxy). Try again.';$('run').textContent='▶ Analyze';$('run').disabled=false;return;}
   lastSpot=d.spot;
-  await scoreLog(); persist(); render();
+  await scoreLog(); persist(); render(); renderEffectiveSample();
   const v=reason(d);
   // data table with role tags
   const roleClass={'regime anchor':'rt-anchor','decay·excluded':'rt-decay','escalation watch':'rt-esc','repricing':'rt-reprice','thin':'rt-thin','context':'rt-context'};
@@ -558,7 +558,7 @@ async function restore(){
       }
     }
   }catch(e){}
-  await scoreLog(); persist(); render(); renderTiltSync();
+  await scoreLog(); persist(); render(); renderTiltSync(); renderEffectiveSample();
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
   physicalLayer();       // display-only, reads committed files — fire and forget
 }
@@ -730,8 +730,24 @@ async function loadHistOHLC(){
   }catch(e){}
   return SI_HIST||[];
 }
+// Anchor an entry to its t+0 bar. Trading-day entry -> that bar. Entry after the
+// last committed bar -> -1 (wait for it; correct for a verdict logged intraday
+// today). Entry on a non-trading day INSIDE the series (weekend/holiday) -> the
+// LAST COMPLETED session: anchoring forward to the next session made "t+5" span
+// six sessions of price action from the price the logger actually saw.
+function entryIndex(ohlc,d){
+  const exact=ohlc.findIndex(b=>b.date===d);
+  if(exact>=0)return exact;
+  if(!ohlc.length||d>ohlc[ohlc.length-1].date)return -1;
+  let i=-1;
+  for(let k=0;k<ohlc.length;k++){ if(ohlc[k].date<d)i=k; else break; }
+  return i;
+}
+// bumped whenever the scoring rule changes, forcing one clean re-score of every
+// row (v2 = corrected non-trading-day anchor)
+const SCORE_VERSION='ohlc-v2';
 function closeNTradingDaysAfter(ohlc,entryDateStr,n){
-  const idx=ohlc.findIndex(b=>b.date>=entryDateStr);
+  const idx=entryIndex(ohlc,entryDateStr);
   if(idx<0)return null;
   const target=idx+n;
   return target<ohlc.length?ohlc[target].c:null;
@@ -743,16 +759,16 @@ async function scoreLog(){
   const horizons=[[5,'p5','pct5','hit5'],[10,'p10','pct10','hit10'],[20,'p20','pct20','hit20']];
   LOG.forEach(r=>{
     const entryDateStr=r.t.slice(0,10);
-    const idx=ohlc.findIndex(b=>b.date>=entryDateStr);
+    const idx=entryIndex(ohlc,entryDateStr);
     // MOMENTUM BASELINE: sign of the trailing 20-trading-day return at entry.
     // Mild momentum is the one validated effect in silver — it is the reigning
     // champion every tilt must beat, scored on identical entries and horizons.
-    // == null, not === undefined: a weekend/after-hours entry is scored before
-    // any bar exists at-or-after its date (idx -1), so momoDir lands null and
-    // must stay eligible for recompute or it drops out of the baseline forever
+    // == null, not === undefined: an entry logged before its t+0 bar commits
+    // scores with idx -1 and momoDir lands null; it must stay eligible for
+    // recompute or it drops out of the baseline forever
     if(r.momoDir==null) r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
     horizons.forEach(([n,pk,pctk,hitk])=>{
-      if(r[pk]!=null&&r.scoredFrom==='ohlc')return; // already correctly scored — leave it
+      if(r[pk]!=null&&r.scoredFrom===SCORE_VERSION)return; // already scored under the current rule
       const target=idx<0?-1:idx+n;
       const c=(target>=0&&target<ohlc.length)?ohlc[target].c:null;
       if(c==null)return; // no committed close that far out yet — do not guess from live spot
@@ -765,8 +781,41 @@ async function scoreLog(){
         if(r[hk]!=null&&r[mk]==null)r[mk]=(r.momoDir==='bullish')?r[pk2]>0:r[pk2]<0;
       });
     }
-    r.scoredFrom='ohlc';
+    r.scoredFrom=SCORE_VERSION;
   });
+}
+// EFFECTIVE SAMPLE SIZE: consecutive daily entries produce near-identical
+// horizon windows — six t+20 calls on six consecutive days share 19 of 20 days
+// of price path, i.e. ONE observation wearing six hats. Greedy count of
+// non-overlapping windows, reported next to the raw count.
+async function renderEffectiveSample(){
+  const el=$('effSample'); if(!el)return;
+  const es=await effectiveSample(); if(!es)return;
+  const parts=[5,10,20].filter(n=>es[n]).map(n=>{
+    const {scored,indep}=es[n];
+    const thin=indep<5;
+    return 't+'+n+': <b class="'+(thin?'bear':'dim')+'">'+scored+' scored / '+indep+' independent</b>';
+  });
+  if(!parts.length)return;
+  el.innerHTML='<span class="dim" style="font-size:10px">Effective sample (non-overlapping windows) \u2014 '+parts.join(' \u00b7 ')+'. Consecutive daily entries share almost all of their price path, so the scored count overstates the evidence; treat any horizon with &lt;5 independent windows as anecdote, not measurement.</span>';
+}
+async function effectiveSample(){
+  const ohlc=await loadHistOHLC(); if(!ohlc.length)return null;
+  const prim=primaryTs(); const out={};
+  [5,10,20].forEach(n=>{
+    const spans=[];
+    LOG.forEach(r=>{
+      if(!prim.has(r.t)||r['hit'+n]==null)return;
+      const i=entryIndex(ohlc,r.t.slice(0,10));
+      if(i>=0)spans.push([i,i+n]);
+    });
+    if(!spans.length)return;
+    spans.sort((a,b)=>a[1]-b[1]);
+    let last=-1,indep=0;
+    spans.forEach(([a,b])=>{if(a>=last){indep++;last=b;}});
+    out[n]={scored:spans.length,indep};
+  });
+  return out;
 }
 // CALIBRATION + BRIER: hit/miss alone throws away the confidence number — and the
 // confidence number is this engine's documented failure mode (anti-correlated with
@@ -861,7 +910,7 @@ function render(){
     scoreLine+='</div>';
     const cal=calibration();
     if(cal){
-      scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries \u2014 the bar any tilt must beat':'')+'</div>';
+      scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries \u2014 the bar any tilt must beat':'')+'<div id="effSample" style="margin-top:3px"></div></div>';
     }
   }
   const prim=primaryTs();
