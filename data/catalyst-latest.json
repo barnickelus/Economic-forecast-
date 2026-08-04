@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "fetchedAt": "2026-08-04T22:20:26.031Z",
   "oil": {
     "brent": {
@@ -8,6 +9,17 @@
     "wti": {
       "spot": 75.26,
       "changePct": -6.32
+=======
+  "fetchedAt": "2026-08-04T22:22:33.047Z",
+  "oil": {
+    "brent": {
+      "spot": 78.95,
+      "changePct": -5.75
+    },
+    "wti": {
+      "spot": 75.33,
+      "changePct": -6.24
+>>>>>>> origin/claude/session-xivrfo
     }
   },
   "contracts": [
@@ -17,8 +29,13 @@
       "slug": "will-the-us-invade-iran-before-2027",
       "conditionId": "0x5db999fad322cea2914535aae5517060c3f80ad6d8c0231cde2124a434d16846",
       "yes": 17.5,
+<<<<<<< HEAD
       "vol24": 959623.9338710005,
       "liquidity": 1030437.8615,
+=======
+      "vol24": 960728.7531469997,
+      "liquidity": 1030954.1835,
+>>>>>>> origin/claude/session-xivrfo
       "spreadPts": 1,
       "endDate": "2026-12-31T00:00:00Z",
       "trades24h": 500,
@@ -30,6 +47,7 @@
       "title": "Israel x Iran ceasefire continues through August 9?",
       "slug": "israel-x-iran-ceasefire-continues-through-august-9-20260727170733638",
       "conditionId": "0x68818a54ca4c49406bb28ada26ecf9ce732dba21505454ce874e7066da6d788c",
+<<<<<<< HEAD
       "yes": 93,
       "vol24": 229054.23951200003,
       "liquidity": 86432.4733,
@@ -37,6 +55,15 @@
       "endDate": "2026-08-09T23:59:00Z",
       "trades24h": 500,
       "deltaVsPriorDay": 2.5,
+=======
+      "yes": 92.5,
+      "vol24": 230927.51951200003,
+      "liquidity": 86461.4073,
+      "spreadPts": 1,
+      "endDate": "2026-08-09T23:59:00Z",
+      "trades24h": 500,
+      "deltaVsPriorDay": 2,
+>>>>>>> origin/claude/session-xivrfo
       "priorDate": "2026-08-03"
     },
     {
@@ -45,16 +72,39 @@
       "slug": "us-x-iran-effective-ceasfire-by-august-14-20260715194822046",
       "conditionId": "0x833f0bac240ad7d5c947d58a8acac0f77a74cf03dccd8f9b72a28811836a920f",
       "yes": 77,
+<<<<<<< HEAD
       "vol24": 127721.77202099995,
       "liquidity": 59784.3198,
+=======
+      "vol24": 128132.27013699997,
+      "liquidity": 59015.3569,
+>>>>>>> origin/claude/session-xivrfo
       "spreadPts": 2,
       "endDate": "2026-08-14T23:59:00Z",
       "trades24h": 500,
       "deltaVsPriorDay": 38.5,
+<<<<<<< HEAD
+=======
       "priorDate": "2026-07-31"
     },
     {
       "q": "iran",
+      "title": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
+      "slug": "will-mojtaba-khamenei-be-head-of-state-in-iran-end-of-2026",
+      "conditionId": "0x25fb28382075f418a944a781a9f8840e2f541152eea0d9798d1cabfa1466adbb",
+      "yes": 85.1,
+      "vol24": 122671.18317900095,
+      "liquidity": 68379.10663,
+      "spreadPts": 1,
+      "endDate": "2026-12-31T00:00:00Z",
+      "trades24h": 500,
+      "deltaVsPriorDay": 6.15,
+>>>>>>> origin/claude/session-xivrfo
+      "priorDate": "2026-07-31"
+    },
+    {
+      "q": "iran",
+<<<<<<< HEAD
       "title": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
       "slug": "will-mojtaba-khamenei-be-head-of-state-in-iran-end-of-2026",
       "conditionId": "0x25fb28382075f418a944a781a9f8840e2f541152eea0d9798d1cabfa1466adbb",
@@ -80,6 +130,19 @@
       "trades24h": 111,
       "deltaVsPriorDay": -0.25,
       "priorDate": "2026-08-03"
+=======
+      "title": "US x Iran Effective Ceasefire by August 31?",
+      "slug": "us-x-iran-effective-ceasfire-by-august-31-20260715194822047",
+      "conditionId": "0x61c2b9e70f7fdf3441fd1cfa2c8fa93308fefe3f5ecc2db87c393efab3a207a3",
+      "yes": 81.5,
+      "vol24": 108587.005747,
+      "liquidity": 81061.2713,
+      "spreadPts": 1,
+      "endDate": "2026-08-31T23:59:00Z",
+      "trades24h": 336,
+      "deltaVsPriorDay": 10,
+      "priorDate": "2026-07-28"
+>>>>>>> origin/claude/session-xivrfo
     },
     {
       "q": "hormuz",
@@ -91,7 +154,11 @@
       "liquidity": 297067.4574,
       "spreadPts": 1,
       "endDate": "2026-12-31T00:00:00Z",
+<<<<<<< HEAD
       "trades24h": 371,
+=======
+      "trades24h": 370,
+>>>>>>> origin/claude/session-xivrfo
       "deltaVsPriorDay": 4,
       "priorDate": "2026-08-03"
     },
@@ -259,7 +326,11 @@
       "liquidity": 60457.4767,
       "spreadPts": 1,
       "endDate": "2026-08-15T00:00:00Z",
+<<<<<<< HEAD
       "trades24h": 130,
+=======
+      "trades24h": 134,
+>>>>>>> origin/claude/session-xivrfo
       "deltaVsPriorDay": -4,
       "priorDate": "2026-08-03"
     },
