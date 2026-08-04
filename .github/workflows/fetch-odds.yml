@@ -12,6 +12,8 @@ on:
   push:
     paths:
       - 'scripts/fetch-odds.js'
+      - 'scripts/auto-tilt.js'
+      - 'scripts/engine.js'
       - 'scripts/score-tilt.js'
       - '.github/workflows/fetch-odds.yml'
       - 'data/odds-topics.json'
@@ -38,6 +40,9 @@ jobs:
 
       - name: Fetch and log odds
         run: node scripts/fetch-odds.js
+
+      - name: Auto-log the engine's daily verdict (incl. abstains)
+        run: node scripts/auto-tilt.js
 
       - name: Score tilt log from committed OHLC
         run: node scripts/score-tilt.js

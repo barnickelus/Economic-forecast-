@@ -53,6 +53,19 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   post-decline before citing it.
 
 ## Architecture
+- `scripts/engine.js` — THE ENGINE, shared verbatim by the dashboard
+  (`<script src>` → `window.Engine`) and the server (`require`). Single source
+  of truth on purpose: a duplicated copy would drift and silently corrupt the
+  auto-vs-manual comparison. Pure — no DOM, no network. Verified
+  behaviour-identical to the old inline copy over 400 randomized inputs.
+- `scripts/auto-tilt.js` — DAILY AUTO-LOGGER (runs in the fetch-odds workflow,
+  2x daily). Runs `Engine.reason()` once per COMMITTED trading bar, priced at
+  that bar's close, and appends `source:'auto'` to `data/tilt-log.json`
+  INCLUDING abstains. Never backfills (using today's odds for a past date would
+  be look-ahead contamination) and REFUSES to log when zero contracts are
+  fetched (a blind contract channel yields an oil-only verdict — a missing day
+  is a gap, a wrong day is corruption). Computes the contradiction flags
+  server-side with the same thresholds as the dashboard.
 - `index.html` — main dashboard (large, ~178KB). Reads committed data files
   same-origin; some legacy fetches still use public CORS proxies (flaky —
   migrate to `data/` reads where possible).
@@ -153,10 +166,10 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
      observation wearing six hats). Greedy non-overlapping window count shown
      on the dashboard and in the Actions log. Horizons with <5 independent
      windows are anecdote, not measurement.
-   - KNOWN, UNFIXABLE-IN-CODE: entries are self-selected. Gaps of 12 and 38
-     days exist in the log; the engine held unlogged opinions on those days.
-     The record therefore measures engine-on-days-Chris-logged, not the engine.
-     Logging on a fixed cadence (or logging the abstains too) is the only fix.
+   - SELF-SELECTION: FIXED 2026-08-04 by `scripts/auto-tilt.js` (below). Gaps
+     of 12 and 38 days exist in the PRE-2026-08-04 history; entries before that
+     date remain self-selected and should be treated as a separate, weaker
+     sample from the auto-logged era.
 
 13. Contradiction ledger (built 2026-08-03): five cross-instrument disagreement
    flags computed at analyze time, displayed under the verdict, and stamped
