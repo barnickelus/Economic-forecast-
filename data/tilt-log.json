@@ -305,7 +305,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-08-04 01:33",
@@ -328,7 +328,7 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  },
  {
   "t": "2026-08-04 22:15",
@@ -349,6 +349,6 @@
   "hit20": null,
   "dup": true,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc"
+  "scoredFrom": "ohlc-v2"
  }
 ]
