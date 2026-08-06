@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-06T03:56:04.666Z",
+  "generatedAt": "2026-08-06T06:21:51.787Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 62.17,
-      "changePct": 3.5200483760731567,
+      "spot": 62.175,
+      "changePct": 0.12238679810895625,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4320.6,
-      "changePct": 7.112577839231073,
+      "spot": 4320.9,
+      "changePct": 1.7688115023602056,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -27,7 +27,7 @@
       "name": "Apple",
       "assetClass": "equity",
       "spot": 311,
-      "changePct": 2.4981827950749045,
+      "changePct": 0.523626314441725,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -57,7 +57,7 @@
       "name": "S&P 500 ETF",
       "assetClass": "index",
       "spot": 769.79,
-      "changePct": 1.5996432963190113,
+      "changePct": -0.19965735232943838,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 64457.79,
-      "changePct": 1.570875274452343,
+      "spot": 64698.49,
+      "changePct": 1.0030869008320575,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 75.02,
-      "changePct": -6.62185285087145,
+      "spot": 75.15,
+      "changePct": -0.09306197762178789,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 99.732,
-      "changePct": 0.04212815484525018,
+      "spot": 99.731,
+      "changePct": 0.041125045229927895,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 6.707,
-      "changePct": 2.9628502125197476,
+      "spot": 6.7105,
+      "changePct": 0.11188917288707605,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -127,7 +127,7 @@
       "name": "^IRX",
       "assetClass": "equity",
       "spot": 3.725,
-      "changePct": 0.6756743782188546,
+      "changePct": -0.13404876804070956,
       "healthyCount": 2,
       "totalCount": 2
     }
