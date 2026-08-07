@@ -256,16 +256,17 @@
   "p5": 57.591,
   "pct5": -2.23,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 64.25,
+  "pct10": 9.07,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v2",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": false
  },
  {
   "t": "2026-07-27 16:35",
