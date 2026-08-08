@@ -7,22 +7,22 @@
     "spotSource": "XAG=X",
     "typicalVolAnnual": 0.32
   },
-  "fetchedAt": "2026-08-08T04:01:20.750Z",
+  "fetchedAt": "2026-08-08T05:12:28.602Z",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
   },
   "log": [
-    "✓ SI=F: $63.80 (+3.84%)",
+    "✓ SI=F: $63.50 (+3.35%)",
     "✓ SI=F history: 1257 bars (5.0y)",
     "✓ sector SIL: $88.50 (+6.29%)",
     "✗ spot XAG=X: HTTP 404"
   ],
   "asset": {
-    "spot": 63.8,
+    "spot": 63.499,
     "prev": 61.43899917602539,
-    "change": 2.3610008239746065,
-    "changePct": 3.842837376322223
+    "change": 2.0600008239746117,
+    "changePct": 3.352920541678454
   },
   "series": [
     80.3949966430664,
@@ -11443,14 +11443,14 @@
   },
   "sectorName": "SIL",
   "display": {
-    "spot": 63.8,
+    "spot": 63.499,
     "prev": 61.43899917602539,
-    "change": 2.3610008239746065,
-    "changePct": 3.842837376322223,
+    "change": 2.0600008239746117,
+    "changePct": 3.352920541678454,
     "source": "SI=F"
   },
   "macro": {
-    "fetchedAt": "2026-08-08T04:01:20.365Z",
+    "fetchedAt": "2026-08-08T05:12:27.837Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11465,10 +11465,10 @@
       "changePct": -0.3661110495488615
     },
     "oil": {
-      "spot": 77.08,
+      "spot": 78.18,
       "prev": 77.29000091552734,
-      "change": -0.21000091552734546,
-      "changePct": -0.27170515337017787
+      "change": 0.8899990844726631,
+      "changePct": 1.1515061119553756
     },
     "vix": {
       "spot": 14.9,
