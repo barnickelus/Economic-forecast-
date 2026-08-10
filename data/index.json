@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-10T06:47:46.368Z",
+  "generatedAt": "2026-08-10T08:18:59.205Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 64.295,
-      "changePct": 1.5205571534788629,
+      "spot": 64.435,
+      "changePct": 1.7416144363389157,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4406.6,
-      "changePct": 1.5181837427672435,
+      "spot": 4413.2,
+      "changePct": 1.6702329445786646,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 65188.67,
-      "changePct": 0.437537735621943,
+      "spot": 65227.78,
+      "changePct": 0.5904756729866946,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 77.92,
-      "changePct": -0.33256626267698625,
+      "spot": 78.27,
+      "changePct": 0.11511856545523252,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 99.686,
-      "changePct": 0.0863469148558862,
+      "spot": 99.627,
+      "changePct": 0.027109966157195624,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 6.627,
-      "changePct": 0.8599056979301656,
+      "spot": 6.647,
+      "changePct": 1.1642965405374766,
       "healthyCount": 2,
       "totalCount": 2
     },
