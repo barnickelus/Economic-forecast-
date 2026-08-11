@@ -322,9 +322,9 @@
    "ratio-confirmer"
   ],
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 65.22,
+  "pct5": 11.83,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -333,7 +333,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v2"
+  "scoredFrom": "ohlc-v2",
+  "momoHit5": false
  },
  {
   "t": "2026-08-04 21:00",
@@ -344,9 +345,9 @@
   "flags": [],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 65.22,
+  "pct5": 9.15,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -355,7 +356,8 @@
   "hit20": null,
   "dup": true,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v2"
+  "scoredFrom": "ohlc-v2",
+  "momoHit5": false
  },
  {
   "t": "2026-08-04 22:15",
@@ -365,9 +367,9 @@
   "headline": "Iran/oil channel only: relief tilt, but consensus already priced (regime 61%) — sell-the-news risk + other-channel offsets not modeled. Conf",
   "flags": [],
   "source": "issue",
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 65.22,
+  "pct5": 9.13,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -376,7 +378,8 @@
   "hit20": null,
   "dup": true,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v2"
+  "scoredFrom": "ohlc-v2",
+  "momoHit5": false
  },
  {
   "t": "2026-08-05 21:00",
@@ -450,6 +453,28 @@
   "tilt": "bearish",
   "confidence": 40,
   "headline": "Iran/oil channel only: stagflation tilt, oil rising +3.4% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
+  "flags": [],
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bullish",
+  "scoredFrom": "ohlc-v2"
+ },
+ {
+  "t": "2026-08-11 21:00",
+  "spot": 65.22,
+  "tilt": "balanced",
+  "confidence": 40,
+  "headline": "Iran/oil channel: balanced — no decisive lean. Other channels not modeled here.",
   "flags": [],
   "source": "auto",
   "contractsSeen": 20,
