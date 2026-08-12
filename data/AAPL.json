@@ -6,7 +6,7 @@
     "sectorETF": "XLK",
     "typicalVolAnnual": 0.25
   },
-  "fetchedAt": "2026-08-12T00:04:23.604Z",
+  "fetchedAt": "2026-08-12T03:01:44.573Z",
   "sources": {
     "asset": "yahoo:AAPL",
     "sector": "yahoo:XLK"
@@ -11445,7 +11445,7 @@
     "source": "AAPL"
   },
   "macro": {
-    "fetchedAt": "2026-08-12T00:04:22.380Z",
+    "fetchedAt": "2026-08-12T03:01:43.786Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11454,16 +11454,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 99.812,
-      "prev": 99.80999755859375,
-      "change": 0.0020024414062476126,
-      "changePct": 0.002006253336567886
+      "spot": 99.858,
+      "prev": 99.81999969482422,
+      "change": 0.03800030517578534,
+      "changePct": 0.03806882918449428
     },
     "oil": {
-      "spot": 83.44,
+      "spot": 84.05,
       "prev": 82.12999725341797,
-      "change": 1.310002746582029,
-      "changePct": 1.5950356634493994
+      "change": 1.9200027465820284,
+      "changePct": 2.3377606365402923
     },
     "vix": {
       "spot": 15.28,
