@@ -6,7 +6,7 @@
     "sectorETF": "UUP",
     "typicalVolAnnual": 0.08
   },
-  "fetchedAt": "2026-08-14T22:09:48.908Z",
+  "fetchedAt": "2026-08-14T22:45:15.523Z",
   "sources": {
     "asset": "yahoo:DX-Y.NYB",
     "sector": "yahoo:UUP"
@@ -9721,7 +9721,7 @@
     "source": "DX-Y.NYB"
   },
   "macro": {
-    "fetchedAt": "2026-08-14T22:09:46.419Z",
+    "fetchedAt": "2026-08-14T22:45:13.064Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
