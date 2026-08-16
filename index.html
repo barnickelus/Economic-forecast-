@@ -461,7 +461,7 @@ async function loadGoldOHLC(){
   if(GOLD_HIST)return GOLD_HIST;
   try{
     const r=await fetch('data/GC_F.json',{cache:'no-cache'});
-    if(r.ok){const j=await r.json();GOLD_HIST=(j?.historical?.ohlc||[]).slice().sort((a,b)=>a.date<b.date?-1:1);}
+    if(r.ok){const j=await r.json();GOLD_HIST=(j?.historical?.ohlc||[]).filter(b=>!isWeekendBar(b.date)).sort((a,b)=>a.date<b.date?-1:1);}
   }catch(e){}
   return GOLD_HIST||[];
 }
@@ -612,7 +612,7 @@ async function loadHistOHLC(){
   if(SI_HIST)return SI_HIST;
   try{
     const r=await fetch('data/SI_F.json',{cache:'no-cache'});
-    if(r.ok){const j=await r.json();SI_HIST=(j?.historical?.ohlc||[]).slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);}
+    if(r.ok){const j=await r.json();SI_HIST=(j?.historical?.ohlc||[]).filter(b=>!isWeekendBar(b.date)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);}
   }catch(e){}
   return SI_HIST||[];
 }
@@ -621,6 +621,7 @@ async function loadHistOHLC(){
 // today). Entry on a non-trading day INSIDE the series (weekend/holiday) -> the
 // LAST COMPLETED session: anchoring forward to the next session made "t+5" span
 // six sessions of price action from the price the logger actually saw.
+const isWeekendBar=d=>{const w=new Date(d+'T12:00:00Z').getUTCDay();return w===0||w===6;};
 function entryIndex(ohlc,d){
   const exact=ohlc.findIndex(b=>b.date===d);
   if(exact>=0)return exact;
@@ -631,7 +632,7 @@ function entryIndex(ohlc,d){
 }
 // bumped whenever the scoring rule changes, forcing one clean re-score of every
 // row (v2 = corrected non-trading-day anchor)
-const SCORE_VERSION='ohlc-v2';
+const SCORE_VERSION='ohlc-v3'; // v3 = weekend pseudo-bars excluded
 function closeNTradingDaysAfter(ohlc,entryDateStr,n){
   const idx=entryIndex(ohlc,entryDateStr);
   if(idx<0)return null;
@@ -735,7 +736,7 @@ async function regimeDiscriminator(){
   const box=$('regimeDiscBox'); if(!box)return;
   async function last11(file){
     try{const r=await fetch('data/'+file,{cache:'no-cache'});if(!r.ok)return null;
-      const j=await r.json();const o=j?.historical?.ohlc;if(!o||o.length<11)return null;
+      const j=await r.json();const o=(j?.historical?.ohlc||[]).filter(b=>!isWeekendBar(b.date));if(o.length<11)return null;
       return o.slice(-11);}catch(e){return null;}
   }
   const [oil,cop,tnx]=await Promise.all([last11('CL_F.json'),last11('HG_F.json'),last11('_TNX.json')]);

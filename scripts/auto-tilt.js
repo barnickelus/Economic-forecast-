@@ -31,7 +31,8 @@ const UA = 'Mozilla/5.0 (compatible; Kelly-Auto-Tilt/1.0; +https://github.com/)'
 const TERMS = ['iran', 'hormuz', 'fed rate', 'israel', 'ukraine', 'russia'];
 
 function loadJSON(f, fb) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return fb; } }
-function ohlcOf(t) { return ((loadJSON(path.join(DATA_DIR, t + '.json'), {}).historical || {}).ohlc || []); }
+const isWeekendBar = d => { const w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 0 || w === 6; };
+function ohlcOf(t) { return ((loadJSON(path.join(DATA_DIR, t + '.json'), {}).historical || {}).ohlc || []).filter(b => !isWeekendBar(b.date)); }
 
 async function fetchJSON(url) {
   const ctl = new AbortController();
@@ -207,6 +208,7 @@ function computeFlags(v) {
   const cl = ohlcOf('CL_F'), gc = ohlcOf('GC_F');
   const oilSp = cl.length ? cl[cl.length - 1].c : null;
   const oilChg = cl.length >= 2 ? ((cl[cl.length - 1].c - cl[cl.length - 2].c) / cl[cl.length - 2].c) * 100 : null;
+  const oilChg5 = cl.length >= 6 ? ((cl[cl.length - 1].c - cl[cl.length - 6].c) / cl[cl.length - 6].c) * 100 : null; // v14 challenger input
   const goldSp = gc.length ? gc[gc.length - 1].c : null;
   const chg = si.length >= 2 ? ((bar.c - si[si.length - 2].c) / si[si.length - 2].c) * 100 : 0;
 
@@ -222,8 +224,14 @@ function computeFlags(v) {
     return;
   }
 
-  const v = Engine.reason({ spot: bar.c, chg, oilChg, oilSp, goldSp, contracts });
+  const d = { spot: bar.c, chg, oilChg, oilChg5, oilSp, goldSp, contracts };
+  const v = Engine.reason(d);
   const flags = computeFlags(v);
+  // CHALLENGER SHADOW: same bar, same inputs, v14 spec (see engine.js). Logged
+  // to its own file so the champion's record stays untouched; scored identically
+  // by score-tilt. Contracts are shared state — deep-copy so the champion's
+  // mutations (roles, escSign) can't leak into the challenger's read.
+  const v14 = Engine.reason(JSON.parse(JSON.stringify(d)), 'v14');
 
   log.push({
     t: bar.date + ' 21:00',            // anchored to the committed close, not wall-clock
@@ -241,6 +249,21 @@ function computeFlags(v) {
   });
   log.sort((a, b) => a.t < b.t ? -1 : 1);
   fs.writeFileSync(TILT_FILE, JSON.stringify(log, null, 1));
+
+  const SHADOW_FILE = path.join(DATA_DIR, 'shadow-v14.json');
+  let shadow = loadJSON(SHADOW_FILE, []);
+  if (!Array.isArray(shadow)) shadow = [];
+  if (!shadow.some(r => String(r.t).slice(0, 10) === bar.date)) {
+    shadow.push({
+      t: bar.date + ' 21:00', inputsAt: new Date().toISOString(),
+      spot: +bar.c.toFixed(3), tilt: v14.tilt, confidence: v14.confidence,
+      headline: (v14.headline || '').slice(0, 140), source: 'auto-v14',
+      p5: null, pct5: null, hit5: null, p10: null, pct10: null, hit10: null, p20: null, pct20: null, hit20: null,
+    });
+    shadow.sort((a, b) => a.t < b.t ? -1 : 1);
+    fs.writeFileSync(SHADOW_FILE, JSON.stringify(shadow, null, 1));
+    console.log('✓ shadow v14: ' + v14.tilt.toUpperCase() + ' @ ' + v14.confidence + '%' + (v14.tilt !== v.tilt ? ' (DIVERGES from champion)' : ' (agrees)'));
+  }
 
   console.log('✓ AUTO-LOGGED ' + bar.date + ': ' + v.tilt.toUpperCase() + ' @ ' + v.confidence + '%' +
     (flags.length ? ' · flags: ' + flags.join(',') : ' · no flags') + ' · spot $' + bar.c.toFixed(2));
