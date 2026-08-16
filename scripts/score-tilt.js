@@ -140,3 +140,14 @@ if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a 
   }
   if (parts.length) console.log('  effective sample (non-overlapping windows) — ' + parts.join(' · '));
 }
+
+// VERDICT PERSISTENCE (auto era): a forecaster claiming 5-20 day horizons that
+// flips direction day-to-day is incoherent regardless of hit rate — surface it.
+{
+  const autos = log.filter(r => r.source === 'auto' && !r.dup).sort((a, b) => a.t < b.t ? -1 : 1);
+  if (autos.length >= 3) {
+    let flips = 0;
+    for (let i = 1; i < autos.length; i++) if (autos[i].tilt !== autos[i - 1].tilt) flips++;
+    console.log('  auto verdict persistence: ' + flips + ' flip' + (flips === 1 ? '' : 's') + ' in ' + (autos.length - 1) + ' transitions (' + Math.round(flips / (autos.length - 1) * 100) + '% flip rate)');
+  }
+}

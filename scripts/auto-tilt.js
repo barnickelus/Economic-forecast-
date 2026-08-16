@@ -163,9 +163,31 @@ function computeFlags(v) {
 (async function main() {
   const si = ohlcOf('SI_F');
   if (si.length < 25) { console.log('SI_F history too short — nothing to do'); return; }
-  const bar = si[si.length - 1];                       // last COMMITTED trading bar
+  const bar = si[si.length - 1];
   const log = loadJSON(TILT_FILE, []);
   if (!Array.isArray(log)) { console.log('tilt-log.json unreadable — refusing to write'); process.exit(1); }
+
+  // RECORDING-FAIRNESS GATE (added after auditing the first 9 auto entries,
+  // which were all logged MID-SESSION with spots up to 2.7% away from the
+  // final close — a directional bias in volatile tape):
+  //  - A bar dated today is only loggable AFTER 21:00 UTC: settlement (18:25)
+  //    is done, so the recorded spot is near-final, and the odds inputs still
+  //    PRECEDE the final electronic close — no look-ahead in either direction.
+  //    The morning run sees today's bar mid-session and must refuse it.
+  //  - A bar older than today is refused outright. Logging yesterday's close
+  //    with this morning's odds hands the verdict 16h of post-close
+  //    information (look-ahead); logging Friday on Monday hands it 60h. If
+  //    the evening run fails, that day is an honest gap, not a reconstruction.
+  const now = new Date();
+  const todayUTC = now.toISOString().slice(0, 10);
+  if (bar.date === todayUTC && now.getUTCHours() < 21) {
+    console.log('· bar ' + bar.date + ' is mid-session — only the post-settlement (>=21:00 UTC) run logs; skipping');
+    return;
+  }
+  if (bar.date < todayUTC) {
+    console.log('· latest bar ' + bar.date + ' predates today — logging it now would use post-close odds (look-ahead); skipping');
+    return;
+  }
 
   if (log.some(r => String(r.t).slice(0, 10) === bar.date && r.source === 'auto')) {
     console.log('· auto entry for ' + bar.date + ' already logged — nothing to do');
@@ -196,6 +218,7 @@ function computeFlags(v) {
 
   log.push({
     t: bar.date + ' 21:00',            // anchored to the committed close, not wall-clock
+    inputsAt: new Date().toISOString(), // provenance: when odds/spot were read
     spot: +bar.c.toFixed(3),
     tilt: v.tilt,
     confidence: v.confidence,
