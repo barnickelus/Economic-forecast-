@@ -18,7 +18,22 @@ const fmt=(x,d=1)=>x==null?'\u2014':(x>=0?'+':'')+x.toFixed(d);
 function parseTitleDate(t){const M={january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11};const m=t.toLowerCase().match(/(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})?,?\s*(\d{4})?/);if(!m)return null;const now=new Date();const yr=m[3]?+m[3]:now.getFullYear();return new Date(yr,M[m[1]],m[2]?+m[2]:28);}
 function daysToExpiry(t){const d=parseTitleDate(t);if(!d)return null;return Math.round((d-new Date())/86400000);}
 
-function reason(d){
+// reason(d, variant):
+//   variant undefined -> v13, THE CHAMPION. Behaviour frozen; do not touch.
+//   variant 'v14'     -> THE CHALLENGER (spec pre-committed 2026-08-16, before
+//     any v14 verdict was ever scored). Exactly two changes, each repairing an
+//     internal contradiction with the project's own validated findings:
+//     1. oilTilt reads the 5-SESSION oil change (d.oilChg5, scaled /6) instead
+//        of the 1-day change (/3). The validated oil->silver channel is ~20d
+//        forward with same-day correlation ~0 — v13's dominant input was the
+//        one timescale shown to carry no information (57% flip rate resulted).
+//     2. Direction dead-band widens 0.15 -> 0.25: a 5-20d forecaster should
+//        need more evidence to leave 'balanced', giving verdicts hysteresis.
+//   PROMOTION RULE (fixed now): v14 replaces v13 only if, with >=15 independent
+//   (non-overlapping) t+5 windows in the shadow log, its pooled t+5/t+10
+//   directional hit rate beats BOTH v13's and momentum's on the same dates by
+//   >=10pp. Otherwise v14 is retired and the next challenger starts fresh.
+function reason(d,variant){
   const C=d.contracts;
   C.forEach(c=>{
     c.near=c.dte!=null&&c.dte>=0&&c.dte<=7;
@@ -64,7 +79,9 @@ function reason(d){
   let escRising=esc.some(c=>c.yes>=25&&c.delta!=null&&c.delta>=5);
   let escTilt=-Math.max(0,(escLevel-35)/50);if(escRising)escTilt-=0.15;escTilt=Math.max(-1,escTilt);
   let contractTilt=Math.max(-1,Math.min(1,regimeTilt+escTilt+0.4*repTilt));
-  let oilTilt=d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null;
+  let oilTilt=(variant==='v14')
+    ?(d.oilChg5!=null?Math.max(-1,Math.min(1,-d.oilChg5/6)):null)
+    :(d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null);
   let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
   const contradiction=oilTilt!=null&&Math.sign(contractTilt)!==Math.sign(oilTilt)&&Math.abs(contractTilt)>0.35&&Math.abs(oilTilt)>0.25;
   // the +12 agreement bonus is documented as "oil agrees with the REGIME read" — it must not
@@ -84,7 +101,8 @@ function reason(d){
     conf=Math.min(conf,cap);
   }
   if(contradiction)conf=Math.min(conf,28);
-  const dir=netTilt,tilt=dir>0.15?'bullish':dir<-0.15?'bearish':'balanced';
+  const DIR_TH=(variant==='v14')?0.25:0.15;
+  const dir=netTilt,tilt=dir>DIR_TH?'bullish':dir<-DIR_TH?'bearish':'balanced';
   // narrative
   const decayed=C.filter(c=>c.decay);
   const standout=C.filter(c=>!c.decay&&!c.thin&&c.delta!=null).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta))[0];

@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: write
+  issues: write   # watchdog opens an issue when the pipeline fails silently
 
 concurrency:
   group: fetch-odds
@@ -47,11 +48,31 @@ jobs:
       - name: Score tilt log from committed OHLC
         run: node scripts/score-tilt.js
 
+      - name: Run pre-registered referees (print-only until maturity)
+        run: |
+          node scripts/referee-discriminator.js
+          node scripts/referee-kalshi.js
+          node scripts/referee-flags.js
+
+      - name: Watchdog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/watchdog.js | tee /tmp/watchdog.out
+          if grep -q WATCHDOG_ALERT /tmp/watchdog.out; then
+            if [ -z "$(gh issue list --state open --search 'WATCHDOG in:title' --json number --jq '.[].number')" ]; then
+              gh issue create --title "WATCHDOG: pipeline alert $(date -u +%Y-%m-%d)" --body "$(grep WATCHDOG_ALERT /tmp/watchdog.out). Opened automatically by the fetch-odds watchdog; close after fixing — it reopens if the condition persists."
+            else
+              echo "open WATCHDOG issue already exists — not duplicating"
+            fi
+          fi
+
       - name: Commit log if changed
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/catalyst-log.json data/catalyst-latest.json data/odds-topics.json data/kalshi-log.json data/tilt-log.json data/physical-log.json
+          git add data/shadow-v14.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "no changes — skipping commit"
           else

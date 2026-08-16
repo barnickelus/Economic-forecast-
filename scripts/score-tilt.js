@@ -28,7 +28,11 @@ if (!Array.isArray(log)) { console.log('no data/tilt-log.json (or not an array) 
 if (!log.length) { console.log('tilt-log.json is empty — nothing to score'); process.exit(0); }
 
 const si = loadJSON(SI_FILE, {});
-const ohlc = ((si.historical || {}).ohlc || []).slice().sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+// COMEX settles Mon-Fri only; Yahoo occasionally emits a thin Sunday pseudo-bar
+// (Globex evening open). Counting one as a "trading day" would shrink every
+// horizon window that crosses it and shift the momentum lookback.
+const isWeekend = d => { const w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 0 || w === 6; };
+const ohlc = ((si.historical || {}).ohlc || []).filter(b => !isWeekend(b.date)).slice().sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
 if (ohlc.length < 30) { console.log('SI_F.json historical.ohlc missing/short — cannot score'); process.exit(0); }
 
 const HORIZONS = [[5, 'p5', 'pct5', 'hit5'], [10, 'p10', 'pct10', 'hit10'], [20, 'p20', 'pct20', 'hit20']];
@@ -51,7 +55,7 @@ function entryIndex(ohlc, d) {
 }
 // Bumping this marker forces one clean re-score of every row whenever the
 // scoring rule itself changes (v2 = corrected non-trading-day anchor).
-const SCORE_VERSION = 'ohlc-v2';
+const SCORE_VERSION = 'ohlc-v3'; // v3 = weekend pseudo-bars excluded from the scoring series
 
 // ONE OBSERVATION PER DAY: the FIRST entry of each calendar day is the scored
 // commitment; later same-day entries are revisions made after seeing more tape,
@@ -139,6 +143,44 @@ if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a 
     parts.push('t+' + n + ': ' + spans.length + ' scored / ' + indep + ' independent');
   }
   if (parts.length) console.log('  effective sample (non-overlapping windows) — ' + parts.join(' · '));
+}
+
+// CHALLENGER SHADOW SCORING: same rules, own file. Comparison uses only dates
+// where BOTH engines have a scored call, so neither side cherry-picks days.
+{
+  const SHADOW_FILE = path.join(DATA_DIR, 'shadow-v14.json');
+  const shadow = loadJSON(SHADOW_FILE, null);
+  if (Array.isArray(shadow) && shadow.length) {
+    for (const r of shadow) {
+      if (!r || !r.t || r.spot == null || !r.tilt) continue;
+      const idx = entryIndex(ohlc, String(r.t).slice(0, 10));
+      for (const [n, pk, pctk, hitk] of HORIZONS) {
+        if (r[pk] != null && r.scoredFrom === SCORE_VERSION) continue;
+        const target = idx < 0 ? -1 : idx + n;
+        const c = (target >= 0 && target < ohlc.length) ? ohlc[target].c : null;
+        if (c == null) continue;
+        r[pk] = +c.toFixed(3); r[pctk] = +(((c - r.spot) / r.spot) * 100).toFixed(2);
+        r[hitk] = (r.tilt === 'bullish' && r[pctk] > 0) || (r.tilt === 'bearish' && r[pctk] < 0) || (r.tilt === 'balanced' && Math.abs(r[pctk]) < 2);
+      }
+      r.scoredFrom = SCORE_VERSION;
+    }
+    fs.writeFileSync(SHADOW_FILE, JSON.stringify(shadow, null, 1));
+    const champByDate = {};
+    for (const r of log) if (r.source === 'auto' && !r.dup) champByDate[String(r.t).slice(0, 10)] = r;
+    let both = 0, cHit = 0, sHit = 0, mHit = 0;
+    for (const r of shadow) {
+      const d = String(r.t).slice(0, 10), c = champByDate[d];
+      if (!c) continue;
+      for (const h of ['5', '10']) {
+        const sv = r['hit' + h], cv = c['hit' + h];
+        if (sv == null || cv == null) continue;
+        if (r.tilt === 'balanced' && c.tilt === 'balanced') continue;
+        both++; if (cv) cHit++; if (sv) sHit++; if (c['momoHit' + h]) mHit++;
+      }
+    }
+    if (both) console.log('  v13 vs v14 shadow (shared scored t+5/t+10): v13 ' + Math.round(cHit / both * 100) + '% · v14 ' + Math.round(sHit / both * 100) + '% · momentum ' + Math.round(mHit / both * 100) + '% on ' + both + ' calls');
+    else console.log('  v14 shadow: ' + shadow.length + ' logged, none scored on shared dates yet');
+  }
 }
 
 // VERDICT PERSISTENCE (auto era): a forecaster claiming 5-20 day horizons that

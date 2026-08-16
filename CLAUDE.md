@@ -58,6 +58,21 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   of truth on purpose: a duplicated copy would drift and silently corrupt the
   auto-vs-manual comparison. Pure — no DOM, no network. Verified
   behaviour-identical to the old inline copy over 400 randomized inputs.
+- `scripts/engine.js` reason(d,variant): variant 'v14' = THE CHALLENGER
+  (spec pre-committed 2026-08-16 in the file header): 5-session oil input
+  (repairs v13 feeding its dominant weight the one timescale validated to
+  carry no information) + dead-band 0.15→0.25. Shadow-logged daily to
+  `data/shadow-v14.json`, scored identically by score-tilt, compared only on
+  shared dates. PROMOTION RULE (fixed): ≥15 independent t+5 windows AND pooled
+  t+5/t+10 hit beats BOTH v13 and momentum by ≥10pp on the same dates, else
+  v14 is retired. Champion regression-locked (0 diffs over 400 inputs).
+- `scripts/referee-*.js` — PRE-REGISTERED EVALUATION CODE for the three
+  pending tests (discriminator falsifier, item-7 Kalshi, flag wiring), frozen
+  before any test could run. They print NOT READY until their pre-committed
+  maturity gates, then PASS/FAIL. Run every fetch-odds pass. Do not edit a
+  referee after its data starts accruing.
+- `scripts/watchdog.js` — opens a GitHub issue (deduped) when auto-logging
+  gaps 2+ weekdays or SI_F goes >26h stale. Failures now reach a phone.
 - `scripts/auto-tilt.js` — DAILY AUTO-LOGGER (runs in the fetch-odds workflow,
   2x daily). Runs `Engine.reason()` once per COMMITTED trading bar, priced at
   that bar's close, and appends `source:'auto'` to `data/tilt-log.json`
@@ -107,6 +122,10 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 - Futures/index tickers sometimes omit `regularMarketPrice` — guard for it.
 - Escalation keyword tagger needs reversal-word detection ("blockade LIFTED").
 - Contracts with past resolution dates settle at 0/100 — filter by endDate.
+- Weekend pseudo-bars: Yahoo stamps the Globex Sunday-evening open as a
+  Sunday-dated bar. SCORING now filters weekend bars everywhere (score
+  version ohlc-v3); the auto-logger refuses them. Any new OHLC consumer must
+  filter them too.
 - Yahoo's `historical.ohlc` INCLUDES the in-progress session as a partial bar
   (Globex opens 22:00 UTC the prior evening, so "today's bar" exists all day
   with a moving close). The first 9 auto entries were logged from mid-session
