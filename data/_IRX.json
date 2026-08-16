@@ -6,7 +6,7 @@
     "sectorETF": "SPY",
     "typicalVolAnnual": 0.3
   },
-  "fetchedAt": "2026-08-16T16:46:44.429Z",
+  "fetchedAt": "2026-08-16T17:09:51.450Z",
   "sources": {
     "asset": "yahoo:^IRX",
     "sector": "yahoo:SPY"
@@ -11455,7 +11455,7 @@
     "source": "^IRX"
   },
   "macro": {
-    "fetchedAt": "2026-08-16T16:46:41.619Z",
+    "fetchedAt": "2026-08-16T17:09:48.887Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
