@@ -107,6 +107,12 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 - Futures/index tickers sometimes omit `regularMarketPrice` — guard for it.
 - Escalation keyword tagger needs reversal-word detection ("blockade LIFTED").
 - Contracts with past resolution dates settle at 0/100 — filter by endDate.
+- Yahoo's `historical.ohlc` INCLUDES the in-progress session as a partial bar
+  (Globex opens 22:00 UTC the prior evening, so "today's bar" exists all day
+  with a moving close). The first 9 auto entries were logged from mid-session
+  snapshots up to 2.7% off the final close before the post-settlement gate
+  (below) fixed it. Anything reading the last bar of historical.ohlc during
+  market hours is reading a moving number.
 
 ## Work queue
 1. ~~Verify odds logger deployed~~ DONE 2026-07-19: first run committed 20 sane
@@ -166,6 +172,15 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
      observation wearing six hats). Greedy non-overlapping window count shown
      on the dashboard and in the Actions log. Horizons with <5 independent
      windows are anecdote, not measurement.
+   - RECORDING FAIRNESS (added 2026-08-16): auto entries log ONLY from the
+     post-settlement run (>=21:00 UTC, same day): earlier, the bar is
+     mid-session and the spot is a moving number; later (next morning), the
+     odds would postdate the close being scored from — look-ahead in either
+     direction. A failed evening run leaves an honest gap. Auto entries
+     before 2026-08-17 carry `spotNote` marking mid-session spot drift (up
+     to 2.7%); their scores stand but analyses can separate them. Flip-rate
+     diagnostic in score-tilt surfaces verdict persistence (57% at intro —
+     the engine flips direction day-to-day while claiming 5-20d horizons).
    - SELF-SELECTION: FIXED 2026-08-04 by `scripts/auto-tilt.js` (below). Gaps
      of 12 and 38 days exist in the PRE-2026-08-04 history; entries before that
      date remain self-selected and should be treated as a separate, weaker
