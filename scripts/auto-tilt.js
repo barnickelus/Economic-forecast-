@@ -188,6 +188,15 @@ function computeFlags(v) {
     console.log('· latest bar ' + bar.date + ' predates today — logging it now would use post-close odds (look-ahead); skipping');
     return;
   }
+  // COMEX has no weekend settlements. Yahoo emits a thin pseudo-bar for the
+  // Globex Sunday-evening open stamped with Sunday's date; it passed the
+  // >=21:00 gate on 2026-08-16 and logged a no-settlement session. Real
+  // sessions are Mon-Fri only.
+  const dow = new Date(bar.date + 'T12:00:00Z').getUTCDay();
+  if (dow === 0 || dow === 6) {
+    console.log('· bar ' + bar.date + ' is a weekend pseudo-session (no settlement) — skipping');
+    return;
+  }
 
   if (log.some(r => String(r.t).slice(0, 10) === bar.date && r.source === 'auto')) {
     console.log('· auto entry for ' + bar.date + ' already logged — nothing to do');
