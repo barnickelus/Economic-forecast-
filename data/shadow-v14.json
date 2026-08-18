@@ -17,5 +17,24 @@
   "pct20": null,
   "hit20": null,
   "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-08-18 21:00",
+  "inputsAt": "2026-08-18T21:35:43.230Z",
+  "spot": 63.42,
+  "tilt": "balanced",
+  "confidence": 22,
+  "headline": "Iran/oil channel: balanced — no decisive lean. Other channels not modeled here.",
+  "source": "auto-v14",
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "scoredFrom": "ohlc-v3"
  }
 ]
