@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-18T04:57:46.684Z",
+  "generatedAt": "2026-08-18T05:22:45.582Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 65.255,
-      "changePct": -1.3097233382549096,
+      "spot": 65.175,
+      "changePct": -1.4307136398860405,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4448.1,
-      "changePct": 0.6858661924958751,
+      "spot": 4447,
+      "changePct": 0.6609669202646343,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 64146.71,
-      "changePct": 2.1141135740746773,
+      "spot": 64158.61,
+      "changePct": 2.1330569922411216,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 85.14,
-      "changePct": 0.7573964497041427,
+      "spot": 85.23,
+      "changePct": 0.8639053254437917,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -97,7 +97,7 @@
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
       "spot": 4.724,
-      "changePct": 0.596250004823208,
+      "changePct": 1.7884121887021789,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 99.646,
-      "changePct": -0.024077625550502853,
+      "spot": 99.672,
+      "changePct": 0.002008459006180924,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -127,7 +127,7 @@
       "name": "^IRX",
       "assetClass": "equity",
       "spot": 3.703,
-      "changePct": 0.16229302823321812,
+      "changePct": -0.05397904850843687,
       "healthyCount": 2,
       "totalCount": 2
     }
