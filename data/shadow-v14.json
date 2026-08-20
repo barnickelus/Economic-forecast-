@@ -55,5 +55,24 @@
   "pct20": null,
   "hit20": null,
   "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-08-20 21:00",
+  "inputsAt": "2026-08-20T21:39:28.198Z",
+  "spot": 68.13,
+  "tilt": "bearish",
+  "confidence": 40,
+  "headline": "Iran/oil channel only: stagflation tilt, with unclear (no deep anchors). One channel’s read — other channels not modeled here.",
+  "source": "auto-v14",
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "scoredFrom": "ohlc-v3"
  }
 ]
