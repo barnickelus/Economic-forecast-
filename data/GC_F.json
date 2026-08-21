@@ -7,7 +7,7 @@
     "spotSource": "XAU=X",
     "typicalVolAnnual": 0.15
   },
-  "fetchedAt": "2026-08-21T22:10:15.227Z",
+  "fetchedAt": "2026-08-21T22:46:38.687Z",
   "sources": {
     "asset": "yahoo:GC=F",
     "sector": "yahoo:GDX"
@@ -11451,7 +11451,7 @@
     "source": "GC=F"
   },
   "macro": {
-    "fetchedAt": "2026-08-21T22:10:14.690Z",
+    "fetchedAt": "2026-08-21T22:46:37.549Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
