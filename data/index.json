@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-23T17:10:55.719Z",
+  "generatedAt": "2026-08-23T17:41:01.408Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 77266.23,
-      "changePct": 0.23716637323791465,
+      "spot": 77232.77,
+      "changePct": 0.19375885113093821,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -126,8 +126,8 @@
       "filename": "_IRX.json",
       "name": "^IRX",
       "assetClass": "equity",
-      "spot": 3.7099998,
-      "changePct": 0.18902865799766103,
+      "spot": 3.71,
+      "changePct": 0.189034059023759,
       "healthyCount": 2,
       "totalCount": 2
     }
