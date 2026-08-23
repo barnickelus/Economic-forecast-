@@ -7,7 +7,7 @@
     "spotSource": "XAG=X",
     "typicalVolAnnual": 0.32
   },
-  "fetchedAt": "2026-08-23T09:15:22.971Z",
+  "fetchedAt": "2026-08-23T09:48:43.026Z",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
@@ -11449,7 +11449,7 @@
     "source": "SI=F"
   },
   "macro": {
-    "fetchedAt": "2026-08-23T09:15:22.604Z",
+    "fetchedAt": "2026-08-23T09:48:42.723Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11465,9 +11465,9 @@
     },
     "oil": {
       "spot": 87.06,
-      "prev": 87.83000183105469,
-      "change": -0.7700018310546852,
-      "changePct": -0.8766956791550812
+      "prev": 86.83,
+      "change": 0.23000000000000398,
+      "changePct": 0.264885408269036
     },
     "vix": {
       "spot": 15.13,
