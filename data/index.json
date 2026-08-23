@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-23T07:52:48.698Z",
+  "generatedAt": "2026-08-23T08:14:58.789Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,18 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 76121.15,
-      "changePct": -1.2483412601831474,
-      "healthyCount": 2,
-      "totalCount": 2
-    },
-    {
-      "ticker": "CL=F",
-      "filename": "CL_F.json",
-      "name": "Crude Oil",
-      "assetClass": "commodity",
-      "spot": 87.06,
-      "changePct": -0.8766956791550812,
+      "spot": 76190.99,
+      "changePct": -1.1577381118283219,
       "healthyCount": 2,
       "totalCount": 2
     },
