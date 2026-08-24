@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-24T12:20:19.054Z",
+  "generatedAt": "2026-08-24T13:27:16.117Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 69.23,
-      "changePct": -0.3397394500281545,
+      "spot": 69.745,
+      "changePct": 0.4016303922834959,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4712.3,
-      "changePct": 1.9073960442260924,
+      "spot": 4733.9,
+      "changePct": 2.374513960011426,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 78304.58,
-      "changePct": 0.7064658201403987,
+      "spot": 78987.43,
+      "changePct": 1.5846700092859378,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 85.44,
-      "changePct": -1.8607829129600535,
+      "spot": 85.61,
+      "changePct": -1.6655152759657073,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -96,8 +96,8 @@
       "filename": "_TNX.json",
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
-      "spot": 4.738,
-      "changePct": 0.8943760632625704,
+      "spot": 4.718,
+      "changePct": -0.42211727376350994,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 98.998,
-      "changePct": 0.20040176328584586,
+      "spot": 98.913,
+      "changePct": 0.11436937727925892,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 6.593,
-      "changePct": 0.20517974357837043,
+      "spot": 6.629,
+      "changePct": 0.7523337661430268,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -126,8 +126,8 @@
       "filename": "_IRX.json",
       "name": "^IRX",
       "assetClass": "equity",
-      "spot": 3.71,
-      "changePct": 0.189034059023759,
+      "spot": 3.718,
+      "changePct": 0.21563239274312895,
       "healthyCount": 2,
       "totalCount": 2
     }
