@@ -734,5 +734,28 @@
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-08-24 21:00",
+  "inputsAt": "2026-08-24T21:41:12.583Z",
+  "spot": 68.965,
+  "tilt": "bullish",
+  "confidence": 28,
+  "headline": "Iran/oil channel: contracts and oil disagree — no confident call. (Other channels not modeled — see scope note.)",
+  "flags": [],
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bullish",
+  "scoredFrom": "ohlc-v3"
  }
 ]
