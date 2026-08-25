@@ -7,7 +7,7 @@
     "spotSource": "XAU=X",
     "typicalVolAnnual": 0.15
   },
-  "fetchedAt": "2026-08-25T21:15:07.374Z",
+  "fetchedAt": "2026-08-25T21:49:23.277Z",
   "sources": {
     "asset": "yahoo:GC=F",
     "sector": "yahoo:GDX"
@@ -11451,7 +11451,7 @@
     "source": "GC=F"
   },
   "macro": {
-    "fetchedAt": "2026-08-25T21:15:06.679Z",
+    "fetchedAt": "2026-08-25T21:49:22.223Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
@@ -11460,16 +11460,16 @@
       "✓ ^TNX"
     ],
     "dxy": {
-      "spot": 98.912,
+      "spot": 98.896,
       "prev": 99,
-      "change": -0.08799999999999386,
-      "changePct": -0.08888888888888269
+      "change": -0.1039999999999992,
+      "changePct": -0.10505050505050424
     },
     "oil": {
-      "spot": 81.09,
+      "spot": 81.11,
       "prev": 85.01000213623047,
-      "change": -3.9200021362304653,
-      "changePct": -4.611224606192307
+      "change": -3.9000021362304693,
+      "changePct": -4.587697962859273
     },
     "vix": {
       "spot": 15.45,

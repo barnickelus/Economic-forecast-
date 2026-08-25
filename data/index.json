@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-25T21:15:07.081Z",
+  "generatedAt": "2026-08-25T21:49:22.822Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 78265.45,
-      "changePct": -0.8852516172717716,
+      "spot": 78608.64,
+      "changePct": -0.4506385089657601,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 81.09,
-      "changePct": -4.611224606192307,
+      "spot": 81.11,
+      "changePct": -4.587697962859273,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 98.912,
-      "changePct": -0.08888888888888269,
+      "spot": 98.896,
+      "changePct": -0.10505050505050424,
       "healthyCount": 2,
       "totalCount": 2
     },
