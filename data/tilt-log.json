@@ -583,9 +583,9 @@
   "p5": 69.665,
   "pct5": 6.29,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 69.63,
+  "pct10": 6.23,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
@@ -593,7 +593,8 @@
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "spotNote": "mid-session snapshot (pre-gate); drift vs final close up to 2.7%",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-08-16 21:00",
@@ -608,9 +609,9 @@
   "p5": 69.665,
   "pct5": 7.05,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 69.63,
+  "pct10": 7,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
@@ -618,7 +619,8 @@
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "spotNote": "weekend pseudo-bar (Sunday Globex open, no settlement)",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-08-17 21:00",
@@ -728,9 +730,9 @@
   "flags": [],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 69.63,
+  "pct5": 0.9,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -739,7 +741,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-08-24 21:00",
