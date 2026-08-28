@@ -150,5 +150,24 @@
   "pct20": null,
   "hit20": null,
   "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-08-28 21:00",
+  "inputsAt": "2026-08-28T23:00:03.791Z",
+  "spot": 67.72,
+  "tilt": "balanced",
+  "confidence": 28,
+  "headline": "Iran/oil channel: contracts and oil disagree — no confident call. (Other channels not modeled — see scope note.)",
+  "source": "auto-v14",
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "scoredFrom": "ohlc-v3"
  }
 ]
