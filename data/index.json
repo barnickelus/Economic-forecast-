@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-29T13:27:34.125Z",
+  "generatedAt": "2026-08-29T17:16:05.510Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -27,7 +27,7 @@
       "name": "Apple",
       "assetClass": "equity",
       "spot": 319.7,
-      "changePct": 1.9939344551183718,
+      "changePct": 1.6275712525527077,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -37,7 +37,7 @@
       "name": "Nvidia",
       "assetClass": "equity",
       "spot": 217.55,
-      "changePct": 3.7632339025455,
+      "changePct": -4.574960927714041,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -47,7 +47,7 @@
       "name": "Tesla",
       "assetClass": "equity",
       "spot": 348.75,
-      "changePct": 0.8472594452970085,
+      "changePct": -1.707955694679374,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -57,7 +57,7 @@
       "name": "S&P 500 ETF",
       "assetClass": "index",
       "spot": 769.35,
-      "changePct": 0.4268461305880504,
+      "changePct": -0.2269453561592606,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -67,7 +67,7 @@
       "name": "Nasdaq 100",
       "assetClass": "index",
       "spot": 716.43,
-      "changePct": 0.7113042323325557,
+      "changePct": -0.6489974409771788,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 77687.86,
-      "changePct": -3.2017914983648823,
+      "spot": 78065.16,
+      "changePct": -2.731679899620018,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -97,7 +97,7 @@
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
       "spot": 4.72,
-      "changePct": 1.2006853613958353,
+      "changePct": 1.027398745077253,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -107,7 +107,7 @@
       "name": "US Dollar Index",
       "assetClass": "macro",
       "spot": 99.677,
-      "changePct": 0.511245175371456,
+      "changePct": 0.5213758761569957,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -127,7 +127,7 @@
       "name": "^IRX",
       "assetClass": "equity",
       "spot": 3.73,
-      "changePct": 1.0840092726088324,
+      "changePct": 1.4138125905494707,
       "healthyCount": 2,
       "totalCount": 2
     }
