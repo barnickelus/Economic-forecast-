@@ -169,5 +169,24 @@
   "pct20": null,
   "hit20": null,
   "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-09-01 21:00",
+  "inputsAt": "2026-09-01T23:16:33.920Z",
+  "spot": 64.66,
+  "tilt": "bearish",
+  "confidence": 40,
+  "headline": "Iran/oil channel only: stagflation tilt, oil rising +5.7% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
+  "source": "auto-v14",
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "scoredFrom": "ohlc-v3"
  }
 ]
