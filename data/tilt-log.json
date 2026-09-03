@@ -439,15 +439,16 @@
   "p10": 66.83,
   "pct10": 8.97,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 66.975,
+  "pct20": 9.2,
+  "hit20": false,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": true,
   "spotNote": "mid-session snapshot (pre-gate); drift vs final close up to 2.7%",
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-08-07 21:00",
@@ -717,16 +718,17 @@
   "p5": 70.05,
   "pct5": 2.82,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 66.975,
+  "pct10": -1.7,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": false
  },
  {
   "t": "2026-08-21 21:00",
@@ -815,9 +817,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 66.975,
+  "pct5": -4.39,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -826,7 +828,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": false
  },
  {
   "t": "2026-08-28 21:00",
