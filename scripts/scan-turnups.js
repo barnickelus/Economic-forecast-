@@ -32,7 +32,41 @@ const WATCHLIST = [
   'XOM', 'CVX', 'OXY', 'SLB', 'HAL', 'FCX', 'SCCO', 'ALB', 'CCJ',
   // momentum / crypto-adjacent
   'COIN', 'MSTR', 'PLTR',
+  // broad index / high-beta singles
+  'SPY', 'QQQ', 'TSLA', 'NVDA', 'AAPL',
 ];
+
+// Symbols whose intraday shape matters for same-day option decisions.
+// 15-minute bars for the current session → data/scan-intraday.json.
+const INTRADAY = ['SPY', 'QQQ', 'MU', 'PLTR', 'TSLA', 'META', 'NVDA'];
+
+async function fetchIntraday(sym) {
+  const ctl = new AbortController();
+  const tid = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?interval=15m&range=1d',
+      { headers: { 'User-Agent': UA, Accept: 'application/json' }, signal: ctl.signal });
+    clearTimeout(tid);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const res = j?.chart?.result?.[0];
+    const meta = res?.meta || {};
+    const ts = res?.timestamp || [];
+    const q = res?.indicators?.quote?.[0] || {};
+    const bars = [];
+    for (let i = 0; i < ts.length; i++) {
+      if (q.close?.[i] == null) continue;
+      bars.push({
+        t: new Date(ts[i] * 1000).toISOString().slice(11, 16),
+        c: +q.close[i].toFixed(2),
+        h: q.high?.[i] != null ? +q.high[i].toFixed(2) : null,
+        l: q.low?.[i] != null ? +q.low[i].toFixed(2) : null,
+        v: q.volume?.[i] ?? null,
+      });
+    }
+    return { prevClose: meta.chartPreviousClose ?? null, last: meta.regularMarketPrice ?? null, bars };
+  } catch (e) { clearTimeout(tid); return { error: e.message }; }
+}
 
 const isWeekend = d => { const w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 0 || w === 6; };
 
@@ -92,6 +126,14 @@ function screen(c) {
   }
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(path.join(DATA_DIR, 'scan-latest.json'), JSON.stringify(out, null, 1));
+
+  const intra = { fetchedAt: out.fetchedAt, symbols: {} };
+  for (const sym of INTRADAY) {
+    const r = await fetchIntraday(sym);
+    if (!r.error) intra.symbols[sym] = r;
+    await new Promise(r2 => setTimeout(r2, 150));
+  }
+  fs.writeFileSync(path.join(DATA_DIR, 'scan-intraday.json'), JSON.stringify(intra, null, 1));
 
   const order = { TURNING_UP: 0, improving: 1, trending: 2, basing: 3, turning_down: 4 };
   const rows = Object.entries(out.results).sort((a, b) =>
