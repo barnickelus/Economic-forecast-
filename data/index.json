@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T22:03:02.278Z",
+  "generatedAt": "2026-09-12T00:23:48.063Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -27,7 +27,7 @@
       "name": "Apple",
       "assetClass": "equity",
       "spot": 332.27,
-      "changePct": 1.7454121774637676,
+      "changePct": 5.368809494108275,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -37,7 +37,7 @@
       "name": "Nvidia",
       "assetClass": "equity",
       "spot": 218.29,
-      "changePct": -0.03205743275137728,
+      "changePct": -2.405328480792328,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -47,7 +47,7 @@
       "name": "Tesla",
       "assetClass": "equity",
       "spot": 365.44,
-      "changePct": 0.5171092678047601,
+      "changePct": -0.6443537626288153,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -57,7 +57,7 @@
       "name": "S&P 500 ETF",
       "assetClass": "index",
       "spot": 764.29,
-      "changePct": 0.8524316488496071,
+      "changePct": 0.24789815391073627,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -67,7 +67,7 @@
       "name": "Nasdaq 100",
       "assetClass": "index",
       "spot": 714.88,
-      "changePct": 0.8734422014236792,
+      "changePct": -0.19963389642300525,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 76987.32,
-      "changePct": 0.5474797769959849,
+      "spot": 77281.3,
+      "changePct": 0.9314254462937455,
       "healthyCount": 2,
       "totalCount": 2
     },

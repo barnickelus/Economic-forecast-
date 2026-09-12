@@ -6,7 +6,7 @@
     "sectorETF": "COPX",
     "typicalVolAnnual": 0.25
   },
-  "fetchedAt": "2026-09-11T22:03:04.648Z",
+  "fetchedAt": "2026-09-12T00:23:49.943Z",
   "sources": {
     "asset": "yahoo:HG=F",
     "sector": "yahoo:COPX"
@@ -14,7 +14,7 @@
   "log": [
     "✓ HG=F: $6.56 (+1.39%)",
     "✓ HG=F history: 1258 bars (5.0y)",
-    "✓ sector COPX: $88.53 (-0.09%)"
+    "✓ sector COPX: $88.53 (-7.07%)"
   ],
   "asset": {
     "spot": 6.557,
@@ -11453,9 +11453,9 @@
   },
   "sector": {
     "spot": 88.53,
-    "prev": 88.61000061035156,
-    "change": -0.08000061035156136,
-    "changePct": -0.0902839519247397
+    "prev": 95.2699966430664,
+    "change": -6.739996643066405,
+    "changePct": -7.0746267246320205
   },
   "sectorName": "COPX",
   "display": {
@@ -11466,7 +11466,7 @@
     "source": "HG=F"
   },
   "macro": {
-    "fetchedAt": "2026-09-11T22:03:01.590Z",
+    "fetchedAt": "2026-09-12T00:23:47.807Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",

@@ -7,7 +7,7 @@
     "spotSource": "XAG=X",
     "typicalVolAnnual": 0.32
   },
-  "fetchedAt": "2026-09-11T22:03:02.279Z",
+  "fetchedAt": "2026-09-12T00:23:48.064Z",
   "sources": {
     "asset": "yahoo:SI=F",
     "sector": "yahoo:SIL"
@@ -15,7 +15,7 @@
   "log": [
     "✓ SI=F: $65.02 (+1.14%)",
     "✓ SI=F history: 1257 bars (5.0y)",
-    "✓ sector SIL: $96.36 (+0.17%)",
+    "✓ sector SIL: $96.36 (-3.75%)",
     "✗ spot XAG=X: HTTP 404"
   ],
   "asset": {
@@ -11438,9 +11438,9 @@
   },
   "sector": {
     "spot": 96.36,
-    "prev": 96.19999694824219,
-    "change": 0.16000305175781193,
-    "changePct": 0.1663233439018686
+    "prev": 100.11000061035156,
+    "change": -3.750000610351563,
+    "changePct": -3.7458801193572326
   },
   "sectorName": "SIL",
   "display": {
@@ -11451,7 +11451,7 @@
     "source": "SI=F"
   },
   "macro": {
-    "fetchedAt": "2026-09-11T22:03:01.590Z",
+    "fetchedAt": "2026-09-12T00:23:47.807Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
