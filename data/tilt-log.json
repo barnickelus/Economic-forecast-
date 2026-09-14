@@ -597,15 +597,16 @@
   "p10": 69.63,
   "pct10": 6.23,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 63.305,
+  "pct20": -3.42,
+  "hit20": false,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "spotNote": "mid-session snapshot (pre-gate); drift vs final close up to 2.7%",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": false
  },
  {
   "t": "2026-08-16 21:00",
@@ -623,15 +624,16 @@
   "p10": 69.63,
   "pct10": 7,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 63.305,
+  "pct20": -2.72,
+  "hit20": false,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "spotNote": "weekend pseudo-bar (Sunday Globex open, no settlement)",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": false
  },
  {
   "t": "2026-08-17 21:00",
@@ -856,16 +858,17 @@
   "p5": 66.515,
   "pct5": -1.78,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 63.305,
+  "pct10": -6.52,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": false
  },
  {
   "t": "2026-09-01 21:00",
@@ -957,9 +960,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 63.305,
+  "pct5": -5.26,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -968,7 +971,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": false
  },
  {
   "t": "2026-09-07 21:00",
@@ -982,9 +986,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 63.305,
+  "pct5": -5.35,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -993,7 +997,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": false
  },
  {
   "t": "2026-09-08 21:00",
