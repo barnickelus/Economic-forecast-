@@ -731,14 +731,15 @@
   "p10": 66.975,
   "pct10": -1.7,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 66.94,
+  "pct20": -1.75,
+  "hit20": true,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": true,
-  "momoHit10": false
+  "momoHit10": false,
+  "momoHit20": false
  },
  {
   "t": "2026-08-21 21:00",
@@ -940,16 +941,17 @@
   "p5": 65.575,
   "pct5": -2.96,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 66.94,
+  "pct10": -0.94,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": false
  },
  {
   "t": "2026-09-04 21:00",
@@ -1096,9 +1098,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 66.94,
+  "pct5": 2.95,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -1107,7 +1109,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-09-14 21:00",
