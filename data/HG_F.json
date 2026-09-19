@@ -6,7 +6,7 @@
     "sectorETF": "COPX",
     "typicalVolAnnual": 0.25
   },
-  "fetchedAt": "2026-09-19T11:39:57.390Z",
+  "fetchedAt": "2026-09-19T14:54:13.553Z",
   "sources": {
     "asset": "yahoo:HG=F",
     "sector": "yahoo:COPX"
@@ -11465,7 +11465,7 @@
     "source": "HG=F"
   },
   "macro": {
-    "fetchedAt": "2026-09-19T11:39:55.163Z",
+    "fetchedAt": "2026-09-19T14:54:07.745Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
