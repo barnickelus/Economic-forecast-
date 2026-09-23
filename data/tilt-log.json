@@ -811,14 +811,15 @@
   "p10": 68.1,
   "pct10": -0.77,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 65.345,
+  "pct20": -4.79,
+  "hit20": false,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": false,
-  "momoHit10": false
+  "momoHit10": false,
+  "momoHit20": false
  },
  {
   "t": "2026-08-27 21:00",
@@ -1054,16 +1055,17 @@
   "p5": 65.065,
   "pct5": -4.2,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 65.345,
+  "pct10": -3.78,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": false
  },
  {
   "t": "2026-09-10 21:00",
@@ -1181,9 +1183,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 65.345,
+  "pct5": 3.04,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -1192,7 +1194,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": false
  },
  {
   "t": "2026-09-17 21:00",
