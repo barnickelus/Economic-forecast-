@@ -1428,5 +1428,28 @@
    }
   ],
   "slvOunces": null
+ },
+ {
+  "date": "2026-09-24",
+  "fetchedAt": "2026-09-24T17:50:14.817Z",
+  "front": 63.945,
+  "shortRatePct": 4.04,
+  "curve": [
+   {
+    "sym": "SIZ26.CMX",
+    "price": 63.945,
+    "spreadPct": 0,
+    "annualizedPct": 0,
+    "impliedLeasePct": 4.04
+   },
+   {
+    "sym": "SIH27.CMX",
+    "price": 64.725,
+    "spreadPct": 1.22,
+    "annualizedPct": 2.44,
+    "impliedLeasePct": 1.6
+   }
+  ],
+  "slvOunces": null
  }
 ]
