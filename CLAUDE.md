@@ -120,6 +120,11 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   It silently no-ops on GitHub Pages (this destroyed a year of manual odds
   logging). Use localStorage in pages; prefer Actions-committed files.
 - Futures/index tickers sometimes omit `regularMarketPrice` — guard for it.
+- `fetch()` has no timeout. Any browser call through a public CORS proxy must
+  carry an AbortController timeout and race the proxies — a stalled proxy
+  otherwise hangs the whole page action forever (the 2026-09 Analyze hang).
+- The embedded `SV`/`GOLD` series in index.html are a snapshot ending
+  2026-05-15; `extendSeries()` appends committed OHLC on the first Analyze.
 - Escalation keyword tagger needs reversal-word detection ("blockade LIFTED").
 - Contracts with past resolution dates settle at 0/100 — filter by endDate.
 - Weekend pseudo-bars: Yahoo stamps the Globex Sunday-evening open as a
@@ -147,6 +152,14 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    first `data/HG_F.json` commit has 5y backfill. REMAINING: after ≥30 tagged
    days, run the falsifier test before any wiring into tilt.
 4. Migrate remaining CORS-proxy fetches to same-origin `data/` reads.
+   PARTLY DONE 2026-09-25: the Analyze button (`gatherData`) now reads spot/oil/
+   gold from committed `data/*.json` (same inputs as auto-tilt) and only uses
+   the proxies for the live Polymarket population — all six searches in
+   parallel, every proxy under a hard timeout, falling back to
+   `data/catalyst-latest.json` (tagged in the data-table meta line). Before
+   this, nine sequential proxy calls with NO timeout hung the button forever
+   whenever one proxy stalled. Still on proxies: nothing in index.html;
+   check catalyst.html.
 5. After ~90 days of odds history: run Link 1 test (odds lead/lag vs oil tape).
 6. Verify Kalshi series tickers on first Actions run (log warns if a series
    returns 0 markets — fix `kalshiSeries` in `data/odds-topics.json` via web UI).
