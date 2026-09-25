@@ -49,6 +49,8 @@ const Engine = require('./engine.js');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const TILT_FILE = path.join(DATA_DIR, 'tilt-log.json');
 const SHADOW_FILE = path.join(DATA_DIR, 'shadow-v14.json');
+const SHADOW15_FILE = path.join(DATA_DIR, 'shadow-v15.json');
+const V15_START = '2026-09-25'; // v15 spec date: earlier shadow rows are in-sample for its derivation
 const CATALYST_FILE = path.join(DATA_DIR, 'catalyst-log.json');
 const TERMS = ['iran', 'hormuz', 'fed rate', 'israel', 'ukraine', 'russia'];
 const RECORDER = 'v2';
@@ -193,6 +195,8 @@ const blank = () => ({ p5: null, pct5: null, hit5: null, p10: null, pct10: null,
   if (!Array.isArray(log)) { console.log('tilt-log.json unreadable — refusing to write'); process.exit(1); }
   let shadow = loadJSON(SHADOW_FILE, []);
   if (!Array.isArray(shadow)) shadow = [];
+  let shadow15 = loadJSON(SHADOW15_FILE, []);
+  if (!Array.isArray(shadow15)) shadow15 = [];
   const crows = loadJSON(CATALYST_FILE, []);
   if (!Array.isArray(crows) || !crows.length) { console.log('catalyst-log.json missing/empty — contract channel blind, nothing logged'); return; }
 
@@ -216,20 +220,24 @@ const blank = () => ({ p5: null, pct5: null, hit5: null, p10: null, pct10: null,
     const oilChg = cl.length >= 2 && cl[cl.length - 1].date === D ? ((cl[cl.length - 1].c - cl[cl.length - 2].c) / cl[cl.length - 2].c) * 100 : null;
     const oilChg5 = cl.length >= 6 && cl[cl.length - 1].date === D ? ((cl[cl.length - 1].c - cl[cl.length - 6].c) / cl[cl.length - 6].c) * 100 : null;
     const goldSp = gc.length ? gc[gc.length - 1].c : null;
+    // v15 challenger input: oil's percentile within its trailing 120 sessions (as of D)
+    let oilPct120 = null;
+    if (cl.length >= 120 && cl[cl.length - 1].date === D) { const w = cl.slice(-120), L = w[w.length - 1].c; oilPct120 = +(w.filter(b => b.c < L).length / w.length * 100).toFixed(1); }
     const chg = siD.length >= 2 ? ((bar.c - siD[siD.length - 2].c) / siD[siD.length - 2].c) * 100 : 0;
     const { contracts, oddsAt } = contractsAsOf(crows, D);
     if (!contracts.length) { console.log('⚠ ' + D + ': odds rows exist but none match the engine terms — contract channel blind, refusing to log'); continue; }
 
-    const d = { spot: bar.c, chg, oilChg, oilChg5, oilSp, goldSp, contracts };
+    const d = { spot: bar.c, chg, oilChg, oilChg5, oilPct120, oilSp, goldSp, contracts };
     const v = Engine.reason(d);
     const flags = computeFlags(v, D);
-    // CHALLENGER SHADOW: same bar, same inputs, v14 spec (see engine.js). Own file so
-    // the champion's record stays untouched; scored identically by score-tilt.
-    // Contracts are shared state — deep-copy so the champion's mutations can't leak.
+    // CHALLENGER SHADOWS: same bar, same inputs, v14 and v15 specs (see engine.js).
+    // Own files so the champion's record stays untouched; scored identically by
+    // score-tilt. Contracts are shared state — deep-copy so mutations can't leak.
     const v14 = Engine.reason(JSON.parse(JSON.stringify(d)), 'v14');
+    const v15 = Engine.reason(JSON.parse(JSON.stringify(d)), 'v15');
     const now = new Date().toISOString();
     const inputs = {
-      oilChg: oilChg != null ? +oilChg.toFixed(2) : null, oilChg5: oilChg5 != null ? +oilChg5.toFixed(2) : null,
+      oilChg: oilChg != null ? +oilChg.toFixed(2) : null, oilChg5: oilChg5 != null ? +oilChg5.toFixed(2) : null, oilPct120,
       chg: +chg.toFixed(2), regimeLevel: v.regimeLevel != null ? +v.regimeLevel.toFixed(1) : null,
     };
     log.push({
@@ -258,17 +266,29 @@ const blank = () => ({ p5: null, pct5: null, hit5: null, p10: null, pct10: null,
         headline: (v14.headline || '').slice(0, 140), source: 'auto-v14', inputs, ...blank(),
       });
     }
+    if (!shadow15.some(r => String(r.t).slice(0, 10) === D)) {
+      shadow15.push({
+        t: D + ' 21:00', recorder: RECORDER, oddsAt, recordedAt: now, inputsAt: oddsAt || now,
+        spot: +bar.c.toFixed(3), tilt: v15.tilt, confidence: v15.confidence,
+        headline: (v15.headline || '').slice(0, 140), source: 'auto-v15', inputs,
+        inSample: D < V15_START || undefined, // derivation window: never counts toward promotion
+        ...blank(),
+      });
+    }
     wrote++;
     console.log('✓ AUTO-LOGGED ' + D + ': ' + v.tilt.toUpperCase() + ' @ ' + v.confidence + '%' +
       (flags.length ? ' · flags: ' + flags.join(',') : ' · no flags') + ' · spot $' + bar.c.toFixed(2) +
       ' · oil 1d ' + (oilChg != null ? oilChg.toFixed(2) + '%' : 'n/a') + ' · ' + contracts.length + ' contracts (odds read ' + (oddsAt || '?').slice(0, 16) + 'Z)' +
-      ' · v14 ' + v14.tilt.toUpperCase() + ' @ ' + v14.confidence + '%' + (v14.tilt !== v.tilt ? ' (DIVERGES)' : ''));
+      ' · v14 ' + v14.tilt.toUpperCase() + ' @ ' + v14.confidence + '%' + (v14.tilt !== v.tilt ? ' (DIVERGES)' : '') +
+      ' · v15 ' + v15.tilt.toUpperCase() + ' @ ' + v15.confidence + '% (oil pctile ' + (oilPct120 != null ? oilPct120.toFixed(0) : '?') + ')');
   }
   if (!wrote) return;
   log.sort((a, b) => a.t < b.t ? -1 : 1);
   shadow.sort((a, b) => a.t < b.t ? -1 : 1);
+  shadow15.sort((a, b) => a.t < b.t ? -1 : 1);
   fs.writeFileSync(TILT_FILE, JSON.stringify(log, null, 1));
   fs.writeFileSync(SHADOW_FILE, JSON.stringify(shadow, null, 1));
+  fs.writeFileSync(SHADOW15_FILE, JSON.stringify(shadow15, null, 1));
 
   // report coverage honestly — gaps are the defect this script exists to close
   const autos = log.filter(r => r.source === 'auto').map(r => String(r.t).slice(0, 10)).sort();

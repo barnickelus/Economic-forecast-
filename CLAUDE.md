@@ -25,8 +25,10 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 - Recorder-v2 clean sample (2026-07-20..09-24, scored 2026-09-25): 48 entries
   (24 bearish / 15 bullish / 9 abstain), directional hit 43% on 72
   horizon-calls vs momentum 42% on the same calls; 11 independent t+5
-  windows. v14 shadow 51% vs v13 43% vs momentum 38% on 68 shared calls —
-  below the 15-window promotion gate. Flip rate 64%.
+  windows. v14 shadow 50% vs v13 41% vs momentum 39% on 66 shared calls,
+  8/15 independent windows toward the promotion gate. Flip rate 63%. v15
+  on the same (in-sample) window: 9/18 directional t+5 hits — the study's
+  t+5 pass did not show up in this slice; treat it as noise until live.
 
 ## Falsified hypotheses — do NOT re-propose without new evidence
 - **Russia/Ukraine haven channel for silver**: ~6% 2-week bid post-Feb-2022
@@ -290,3 +292,28 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    - `physical-stress`: lease stress or backwardation vs bearish.
    The one pre-existing WIRED damper (oil-vs-contracts `contradiction` →
    conf ≤28) predates the ledger and stays as-is.
+
+14. PREDICTOR STUDY (pre-registered 2026-09-25, `scripts/study-predictors.js`,
+   committed before its first run; results in `data/study-predictors.json`,
+   shown on the page). 16 mechanical signals x t+5/10/20 on committed closes
+   (aligned history 2022-08-09.. because DX-Y.NYB only goes back that far),
+   OOS from 2025-01-01, non-overlapping windows averaged over phase, pass bar
+   in the file header. RESULT: NO candidate. OOS base rate (share of windows
+   up) was 60/62/66% — "always bullish" beat every signal. Every oil-CHANGE
+   rule (1d = v13's input, 5d = v14's, 20d) scored 47-55% OOS: the "one
+   validated channel" is NOT validated as a change signal. Momentum 50-55%
+   OOS. The discriminator-conditioned oil rule (historical analogue) 49-53%.
+   Yield-change and dollar-change signals flipped sign between IS and OOS.
+   Only oil's LEVEL in its trailing 120-session range passed, and only at
+   t+5 (OOS 65% on 52 windows vs momentum 47% / always-up 59%); at t+10/20
+   it merely matched always-up. That single-horizon pass is the basis for
+   the v15 challenger (below) — a weak prior, tested live, never promoted on
+   the study alone. Do not re-run the study with different settings and
+   report the best one; add a study-v2 with its own pre-registration.
+15. v15 CHALLENGER (spec pre-committed 2026-09-25 in engine.js): oil channel
+   = level, not change — oilTilt +1 at or below the 30th percentile of oil's
+   trailing 120 sessions, -1 at or above the 70th, else 0; everything else
+   as v14. Shadow-logged to `data/shadow-v15.json`; rows dated before
+   2026-09-25 carry `inSample:true` (derivation window) and never count.
+   Same promotion rule as v14, counted from 2026-09-25. Champion and v14
+   regression-locked (0 diffs over 400 random inputs after the edit).

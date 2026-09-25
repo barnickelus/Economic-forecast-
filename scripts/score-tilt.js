@@ -165,8 +165,10 @@ if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a 
 
 // CHALLENGER SHADOW SCORING: same rules, own file. Comparison uses only dates
 // where BOTH engines have a scored call, so neither side cherry-picks days.
-{
-  const SHADOW_FILE = path.join(DATA_DIR, 'shadow-v14.json');
+for (const [VARIANT, SHADOW_NAME, COUNT_FROM] of [['v14', 'shadow-v14.json', null], ['v15', 'shadow-v15.json', '2026-09-25']]) {
+  // COUNT_FROM: rows dated before a challenger's spec date are in-sample for its
+  // derivation (v15 came out of the pre-registered study) and never count.
+  const SHADOW_FILE = path.join(DATA_DIR, SHADOW_NAME);
   const shadow = loadJSON(SHADOW_FILE, null);
   if (Array.isArray(shadow) && shadow.length) {
     for (const r of shadow) {
@@ -186,19 +188,22 @@ if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a 
     const champByDate = {};
     for (const r of log) if (r.source === 'auto' && !r.dup) champByDate[String(r.t).slice(0, 10)] = r;
     let both = 0, cHit = 0, sHit = 0, mHit = 0;
+    const spans = [];
     for (const r of shadow) {
-      if (r.superseded) continue;
+      if (r.superseded || r.inSample) continue;
       const d = String(r.t).slice(0, 10), c = champByDate[d];
-      if (!c) continue;
+      if (!c || (COUNT_FROM && d < COUNT_FROM)) continue;
       for (const h of ['5', '10']) {
         const sv = r['hit' + h], cv = c['hit' + h];
         if (sv == null || cv == null) continue;
         if (r.tilt === 'balanced' && c.tilt === 'balanced') continue;
         both++; if (cv) cHit++; if (sv) sHit++; if (c['momoHit' + h]) mHit++;
+        if (h === '5') { const i = entryIndex(ohlc, d); if (i >= 0) spans.push([i, i + 5]); }
       }
     }
-    if (both) console.log('  v13 vs v14 shadow (shared scored t+5/t+10): v13 ' + Math.round(cHit / both * 100) + '% · v14 ' + Math.round(sHit / both * 100) + '% · momentum ' + Math.round(mHit / both * 100) + '% on ' + both + ' calls');
-    else console.log('  v14 shadow: ' + shadow.length + ' logged, none scored on shared dates yet');
+    spans.sort((a, b) => a[1] - b[1]); let last = -1, indep = 0; for (const [a, b] of spans) if (a >= last) { indep++; last = b; }
+    if (both) console.log('  v13 vs ' + VARIANT + ' shadow (shared scored t+5/t+10' + (COUNT_FROM ? ', from ' + COUNT_FROM : '') + '): v13 ' + Math.round(cHit / both * 100) + '% · ' + VARIANT + ' ' + Math.round(sHit / both * 100) + '% · momentum ' + Math.round(mHit / both * 100) + '% on ' + both + ' calls · ' + indep + '/15 independent t+5 windows toward the promotion gate');
+    else console.log('  ' + VARIANT + ' shadow: ' + shadow.length + ' logged, none scored on shared dates yet' + (COUNT_FROM ? ' (counting from ' + COUNT_FROM + ')' : ''));
   }
 }
 

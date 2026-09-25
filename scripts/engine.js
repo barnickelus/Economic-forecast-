@@ -33,6 +33,20 @@ function daysToExpiry(t){const d=parseTitleDate(t);if(!d)return null;return Math
 //   (non-overlapping) t+5 windows in the shadow log, its pooled t+5/t+10
 //   directional hit rate beats BOTH v13's and momentum's on the same dates by
 //   >=10pp. Otherwise v14 is retired and the next challenger starts fresh.
+//   variant 'v15'     -> SECOND CHALLENGER (spec pre-committed 2026-09-25).
+//     Derivation, disclosed: scripts/study-predictors.js (pre-registered) found
+//     NO single signal passing its bar at >=2 horizons; oil's LEVEL in its
+//     trailing 120-session range passed at t+5 only (OOS 65% on 52 windows vs
+//     momentum 47% / always-up 59%). Every oil CHANGE rule (1d, 5d, 20d —
+//     i.e. v13's and v14's oil input) scored 47-55% out of sample. So v15
+//     swaps the oil channel from a change to a level, exactly as studied:
+//       oilTilt = +1 if oil is at or below the 30th percentile of its trailing
+//                 120 sessions, -1 at or above the 70th, else 0 (no oil call).
+//       d.oilPct120 = share of the trailing 120 closes strictly below today's.
+//     Contract channel, weights (0.4/0.6) and dead-band 0.25 (as v14) unchanged.
+//     A single-horizon in-study pass is a WEAK prior: shadow rows dated before
+//     2026-09-25 are in-sample for this derivation and do not count toward
+//     promotion. Same promotion rule as v14, counted from 2026-09-25.
 function reason(d,variant){
   const C=d.contracts;
   C.forEach(c=>{
@@ -79,7 +93,9 @@ function reason(d,variant){
   let escRising=esc.some(c=>c.yes>=25&&c.delta!=null&&c.delta>=5);
   let escTilt=-Math.max(0,(escLevel-35)/50);if(escRising)escTilt-=0.15;escTilt=Math.max(-1,escTilt);
   let contractTilt=Math.max(-1,Math.min(1,regimeTilt+escTilt+0.4*repTilt));
-  let oilTilt=(variant==='v14')
+  let oilTilt=(variant==='v15')
+    ?(d.oilPct120!=null?(d.oilPct120<=30?1:d.oilPct120>=70?-1:0):null)
+    :(variant==='v14')
     ?(d.oilChg5!=null?Math.max(-1,Math.min(1,-d.oilChg5/6)):null)
     :(d.oilChg!=null?Math.max(-1,Math.min(1,-d.oilChg/3)):null);
   let netTilt=oilTilt!=null?0.4*contractTilt+0.6*oilTilt:contractTilt;
@@ -101,7 +117,7 @@ function reason(d,variant){
     conf=Math.min(conf,cap);
   }
   if(contradiction)conf=Math.min(conf,28);
-  const DIR_TH=(variant==='v14')?0.25:0.15;
+  const DIR_TH=(variant==='v14'||variant==='v15')?0.25:0.15;
   const dir=netTilt,tilt=dir>DIR_TH?'bullish':dir<-DIR_TH?'bearish':'balanced';
   // narrative
   const decayed=C.filter(c=>c.decay);
@@ -133,7 +149,8 @@ function reason(d,variant){
     ?'<b class="dim">NO REGIME READ</b> — 0 contracts qualify as deep anchors today, so this component is dropped from tilt and confidence entirely. Near-dated noise is NOT substituted in its place; the verdict below rests on the remaining components (mostly oil) with correspondingly less structural grounding.'
     :'Regime read from '+anchors.length+' deep anchor'+(anchors.length===1?'':'s')+': de-escalation odds average '+Math.round(regimeLevel)+'% on the far-dated curve → <b class="'+(regimeTilt>0.1?'bull':regimeTilt<-0.1?'bear':'dim')+'">'+regimeWord+'</b>. This is the structural backdrop, read from levels not the noisy near-dated deltas.'+(pricedIn?' <b class="warn">CAUTION:</b> regime is already at consensus — relief is the priced view, not a surprise. Sell-the-news risk material; confidence capped accordingly.':'');
   const decTxt=decayed.length?decayed.length+' near-dated contract'+(decayed.length===1?'':'s')+' bleeding toward zero on calendar decay (e.g. "'+decayed[0].title.slice(0,40)+'" '+fmt(decayed[0].delta)+'pt at '+decayed[0].dte+'d) — excluded from direction. These deadline-failures are NOT escalation.':'No near-dated decay distortion today.';
-  const oilTxt=d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(regimeLevel==null?'is the dominant vote (no regime read to corroborate).':(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.')));
+  const oilTxt=(variant==='v15')?(d.oilPct120==null?'Oil level unavailable — running on contracts alone.':'Oil at the '+Math.round(d.oilPct120)+'th percentile of its 120-session range → '+(oilTilt>0?'LOW (bullish silver, studied t+5 channel)':oilTilt<0?'HIGH (bearish silver, studied t+5 channel)':'mid-range: no oil call'))
+    :d.oilChg==null?'Oil unavailable — running on contracts alone, lower confidence.':(contradiction?'Oil ('+fmt(d.oilChg)+'%) CONTRADICTS the contract lean — confidence forced low. Trust oil.':'Oil '+fmt(d.oilChg)+'% '+(d.oilChg<0?'(relief→bullish)':d.oilChg>0?'(stagflation→bearish)':'(neutral)')+' '+(regimeLevel==null?'is the dominant vote (no regime read to corroborate).':(Math.sign(contractTilt)===Math.sign(oilTilt)?'AGREES with the regime read — confidence reinforced.':'is the dominant vote.')));
   const points=[];
   points.push(regimeLevel!=null
     ?'Regime (deep curve): '+regimeWord+' at ~'+Math.round(regimeLevel)+'% deal odds — the de-escalation backdrop that drives silver via oil.'

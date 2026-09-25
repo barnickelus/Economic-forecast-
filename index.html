@@ -105,6 +105,7 @@
     <h2>Physical layer <span class="num">hypothesis-generating · NOT wired into tilt</span></h2>
     <div class="psub">The squeeze detector. Implied lease rate derived from the futures curve via cost-of-carry (lease ≈ 13-week bill − annualized contango); level reads ~0.3–0.5%/yr high because storage cost is unobservable — irrelevant, because the signal is the SPIKE: lease jumping toward 2%+ is bullion banks scrambling for physical metal, historically preceding violent upside. Backwardation (negative spread) is the acute form. Logged 2x daily from committed files; no free source exists for actual lease fixings, Shanghai premium, or COMEX warehouse flows — this curve read is the one physical-stress window we have.</div>
     <div id="physBox" style="margin:10px 0"><span class="dim" style="font-size:11px">Loading physical log…</span></div>
+    <div id="studyBox" style="margin:14px 0 4px"><span class="dim" style="font-size:11px">Loading predictor study…</span></div>
     <div class="note"><b>Pre-committed stress definition (stated 2026-08-03, before any event has occurred):</b> a STRESS event = implied lease &gt; 2.0% absolute, OR a rise of ≥ 100bp within 10 logged days. <b>Hypothesis:</b> t+20 forward silver return following a stress event exceeds the unconditional t+20 return. <b>Test:</b> after ≥5 distinct stress events (an episode ends when lease falls back under 1.5%). This is a rare-event indicator — the clock may run for months without an event, and that is fine. Until the test passes, display-only, feeds NOTHING downstream.</div>
   </div>
 
@@ -193,6 +194,9 @@ async function gatherData(){
   // oil LEVEL for the range reader: Brent (OILH history is Brent) from the odds logger, WTI close as fallback
   const brent=cat&&cat.oil&&cat.oil.brent?cat.oil.brent.spot:null;
   const oilSp=brent!=null?brent:(ch.length?ch[ch.length-1].c:null);
+  // v15 challenger input: oil's percentile within its trailing 120 sessions
+  let oilPct120=null;
+  if(ch.length>=120){const w=ch.slice(-120),L=w[w.length-1].c;oilPct120=+(w.filter(b=>b.c<L).length/w.length*100).toFixed(1);}
   const goldSp=(gc&&gc.display&&gc.display.spot!=null)?gc.display.spot:(gh.length?gh[gh.length-1].c:null);
   const dataAt=(si&&si.fetchedAt)||null;
   // Contract population: live Polymarket, all six searches in parallel, every proxy
@@ -216,7 +220,7 @@ async function gatherData(){
   const seen=new Set();const contracts=raw.filter(r=>{if(seen.has(r.title))return false;seen.add(r.title);return true;})
     .map(r=>{r.dte=daysToExpiry(r.title);const pin=r.yes!=null&&(r.yes<=1||r.yes>=99);const past=r.dte!=null&&r.dte<0;r.resolved=pin||past;return r;})
     .filter(r=>!r.resolved).sort((a,b)=>(b.vol||0)-(a.vol||0)).slice(0,20);
-  return{spot,chg,oilChg,oilChg5,oilSp,goldSp,contracts,dataAt,contractsSource};
+  return{spot,chg,oilChg,oilChg5,oilPct120,oilSp,goldSp,contracts,dataAt,contractsSource};
 }
 
 // ---- THE CURVE-REGIME ENGINE ----
@@ -487,6 +491,7 @@ async function restore(){
   await scoreLog(); persist(); render(); renderTiltSync(); renderEffectiveSample();
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
   physicalLayer();       // display-only, reads committed files — fire and forget
+  studyPanel();          // pre-registered backtest ledger — display-only
 }
 // ---- CONTRADICTION LEDGER ----------------------------------------------------
 // Flags fire when two instruments disagree. They are LOGGED WITH EVERY VERDICT
@@ -592,6 +597,23 @@ function renderFlags(flags){
     return;
   }
   el.innerHTML='<div class="falsify" style="margin-top:8px"><b class="warn">CONTRADICTION LEDGER: '+flags.length+' active flag'+(flags.length===1?'':'s')+'</b> <span class="dim" style="font-size:10px">logged with the verdict · wired into nothing until each passes its pre-committed test</span><br>'+flags.map(f=>'• <b>'+f.id+'</b> — '+f.note).join('<br>')+'</div>';
+}
+// ---- PREDICTOR STUDY LEDGER (display-only) — scripts/study-predictors.js, pre-registered
+// 2026-09-25: hypotheses, IS/OOS split and pass bar written before the first run.
+// Shown in full so a null result stays in plain sight (prime directive 3).
+async function studyPanel(){
+  const box=$('studyBox'); if(!box)return;
+  let st=null;
+  try{const r=await fetch('data/study-predictors.json',{cache:'no-cache'});if(r.ok)st=await r.json();}catch(e){}
+  if(!st||!st.results){box.innerHTML='<span class="dim" style="font-size:11px">No predictor study committed yet.</span>';return;}
+  const hs=['h5','h10','h20'];
+  const cell=(res,k)=>{const x=res[k];if(!x)return'<td class="dim">—</td>';const o=x.oos;const c=x.pass?'bull':o.hit>=55?'warn':'dim';return'<td class="'+c+'" title="IS '+x.is.hit.toFixed(0)+'% (N'+Math.round(x.is.n)+') · OOS N'+Math.round(o.n)+' · momentum on same windows '+o.momoSame.toFixed(0)+'% · always-up '+o.upSame.toFixed(0)+'%">'+o.hit.toFixed(0)+'%'+(x.pass?' ✓':'')+'</td>';};
+  const names={momo20:'momentum 20d (baseline)',alwaysUp:'always bullish (baseline)',momo5:'momentum 5d',momo60:'momentum 60d',meanrev5:'mean-reversion 5d',oil1d:'oil 1d change (v13 rule)',oil5d:'oil 5d change (v14 rule)',oil20d:'oil 20d change',oilLvl120:'oil level, 120d range (v15 rule)',copper20:'copper 20d',tnx20:'10y yield 20d',dxy20:'dollar 20d',gold20:'gold 20d',ratio20:'gold/silver ratio 20d',discOil20:'discriminator-conditioned oil',momoOilAgree:'momentum + oil agree'};
+  let rows='';
+  for(const k of Object.keys(st.results))rows+='<tr><td class="ctitle">'+(names[k]||k)+'</td>'+hs.map(h=>cell(st.results[k],h)).join('')+'</tr>';
+  box.innerHTML='<div style="font-size:12px;margin-bottom:6px"><b class="purp">PRE-REGISTERED PREDICTOR STUDY</b> <span class="dim">'+st.studyVersion+' · '+st.days+' sessions '+st.from+' → '+st.to+' · out-of-sample from '+st.oosStart+' ('+st.oosDays+' days) · non-overlapping windows, averaged over phase</span></div>'
+    +'<table style="font-size:11px"><thead><tr><th>signal → silver direction</th><th>OOS t+5</th><th>OOS t+10</th><th>OOS t+20</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div class="read" style="margin-top:6px">'+(st.candidates&&st.candidates.length?'<b class="warn">CANDIDATES:</b> '+st.candidates.join(', '):'<b class="dim">NO CANDIDATE</b> — no single mechanical signal beat both baselines out of sample at ≥2 horizons under the pre-committed bar (OOS ≥55%, IS ≥52% same sign, ≥5pp over momentum AND always-bullish on the same windows). ✓ marks a single-horizon pass; the oil-LEVEL rule (t+5 only) became the v15 shadow challenger on that basis alone. Every oil-CHANGE rule the engine uses scored 47-55% out of sample.')+'</div>';
 }
 // ---- PHYSICAL LAYER (display-only; stress thresholds pre-committed in the panel) ----
 async function physicalLayer(){
