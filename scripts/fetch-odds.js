@@ -329,13 +329,20 @@ async function fetchSlvOunces() {
     let annualizedPct = null, impliedLeasePct = null;
     // annualization divides by T: under ~60 days it just amplifies noise, so
     // near-expiry contracts drop out of the lease calc (and need rolling anyway)
-    if (silverFront && T != null && T >= 60 / 365.25) {
+    // ROLL GUARD: when SI=F rolls INTO a listed leg, that leg's price equals the
+    // front, its contango is 0 and "lease" = the whole bill rate. This produced a
+    // month of fake STRESS after the 2026-08-27 roll (Dec became the front while
+    // still listed as deferred). A leg within 0.05% of the front is the front.
+    const isFront = silverFront != null && Math.abs(px - silverFront) / silverFront < 0.0005;
+    if (isFront) {
+      console.log('⚠ curve "' + sym + '" trades AT the front (spread 0) — it IS the front month now. Lease not computed. ROLL silverCurve in data/odds-topics.json');
+    } else if (silverFront && T != null && T >= 60 / 365.25) {
       annualizedPct = +((Math.log(px / silverFront) / T) * 100).toFixed(2);
       if (shortRatePct != null) impliedLeasePct = +(shortRatePct - annualizedPct).toFixed(2);
     } else if (T != null && T < 60 / 365.25) {
       console.log('⚠ curve "' + sym + '": <60d to expiry — excluded from lease calc, roll it in odds-topics.json');
     }
-    curve.push({ sym, price: px, spreadPct: silverFront ? +(((px - silverFront) / silverFront) * 100).toFixed(2) : null, annualizedPct, impliedLeasePct });
+    curve.push({ sym, price: px, spreadPct: silverFront ? +(((px - silverFront) / silverFront) * 100).toFixed(2) : null, annualizedPct, impliedLeasePct, isFront: isFront || undefined });
   }
   const slvOunces = await fetchSlvOunces();
   const PHYS_FILE = path.join(DATA_DIR, 'physical-log.json');
@@ -374,7 +381,7 @@ async function fetchSlvOunces() {
     // one row per contract per day; update today's row if it exists (later run wins)
     const idx = log.findIndex(r => r.date === today && r.title === c.title);
     const row = {
-      date: today, fetchedAt: nowIso, title: c.title, slug: c.slug,
+      date: today, fetchedAt: nowIso, title: c.title, slug: c.slug, q: c.q,
       yes: c.yes, vol24: c.vol24, endDate: c.endDate,
       liquidity: c.liquidity, spreadPts: c.spreadPts, trades24h: c.trades24h,
       brent: brent ? brent.spot : null, wti: wti ? wti.spot : null,

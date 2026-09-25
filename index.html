@@ -600,22 +600,30 @@ async function physicalLayer(){
   try{const r=await fetch('data/physical-log.json',{cache:'no-cache'});if(r.ok)plog=await r.json();}catch(e){}
   if(!Array.isArray(plog)||!plog.length){box.innerHTML='<span class="dim" style="font-size:11px">No physical log yet — first fetch-odds run pending.</span>';return;}
   const last=plog[plog.length-1];
-  const leases=(last.curve||[]).filter(c=>c.impliedLeasePct!=null);
+  // ROLL GUARD (2026-09-25): a curve leg priced AT the front is the front month
+  // (SI=F rolled into it); its "lease" is the whole bill rate, not stress. The
+  // 2026-08-27 roll manufactured a month of fake STRESS this way. Ignore such legs.
+  const realLegs=row=>(row.curve||[]).filter(c=>c.impliedLeasePct!=null&&c.spreadPct!=null&&Math.abs(c.spreadPct)>=0.05);
+  const leases=realLegs(last);
   const maxLease=leases.length?Math.max(...leases.map(c=>c.impliedLeasePct)):null;
   // 10-logged-day change for the spike condition
+  // the spike test needs the SAME legs on both dates and no front-month roll in
+  // between (a roll jumps every leg's lease ~1-2pp with no physical event)
   let d10=null;
   if(maxLease!=null&&plog.length>=11){
-    const prev=plog[plog.length-11];
-    const pl=(prev.curve||[]).filter(c=>c.impliedLeasePct!=null);
-    if(pl.length)d10=+(maxLease-Math.max(...pl.map(c=>c.impliedLeasePct))).toFixed(2);
+    const prevRow=plog[plog.length-11],pl=realLegs(prevRow);
+    const same=pl.length&&pl.map(c=>c.sym).sort().join()===realLegs(last).map(c=>c.sym).sort().join();
+    const rolled=[last,prevRow].some(r=>(r.curve||[]).some(c=>c.spreadPct!=null&&Math.abs(c.spreadPct)<0.05));
+    if(same&&!rolled)d10=+(maxLease-Math.max(...pl.map(c=>c.impliedLeasePct))).toFixed(2);
   }
   const stress=maxLease!=null&&(maxLease>2.0||(d10!=null&&d10>=1.0));
-  const backwardated=(last.curve||[]).some(c=>c.spreadPct!=null&&c.spreadPct<0);
+  const backwardated=(last.curve||[]).some(c=>c.spreadPct!=null&&c.spreadPct<-0.05);
+  const rolledLegs=(last.curve||[]).filter(c=>c.spreadPct!=null&&Math.abs(c.spreadPct)<0.05).map(c=>c.sym.replace('.CMX',''));
   PHYS_STATE={stress,backwardated,maxLease,d10}; // cached for the contradiction ledger
   const f=(v,d=2)=>v==null?'—':(v>=0?'+':'')+v.toFixed(d);
   let rows='<div style="font-size:12px;display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px">'
     +'<span>Front <b class="purp">$'+(last.front!=null?last.front.toFixed(2):'—')+'</b></span>'
-    +(last.curve||[]).map(c=>'<span>'+c.sym.replace('.CMX','')+' <b class="purp">'+f(c.spreadPct)+'%</b>'+(c.impliedLeasePct!=null?' <span class="dim">lease~'+c.impliedLeasePct.toFixed(2)+'%</span>':'')+'</span>').join('')
+    +(last.curve||[]).map(c=>'<span>'+c.sym.replace('.CMX','')+' <b class="purp">'+f(c.spreadPct)+'%</b>'+(rolledLegs.includes(c.sym.replace('.CMX',''))?' <span class="warn">= front (rolled, ignored)</span>':(c.impliedLeasePct!=null?' <span class="dim">lease~'+c.impliedLeasePct.toFixed(2)+'%</span>':''))+'</span>').join('')
     +(last.shortRatePct!=null?'<span class="dim">13wk bill '+last.shortRatePct.toFixed(2)+'%</span>':'<span class="dim">bill rate pending (_IRX.json)</span>')
     +(last.slvOunces?'<span class="dim">SLV '+(last.slvOunces/1e6).toFixed(0)+'M oz</span>':'')
     +'<span class="dim">'+last.date+' · '+plog.length+' logged day'+(plog.length===1?'':'s')+'</span></div>';

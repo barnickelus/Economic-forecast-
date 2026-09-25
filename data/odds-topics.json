@@ -4,7 +4,9 @@
     "hormuz",
     "fed rate",
     "israel",
-    "oil price"
+    "oil price",
+    "ukraine",
+    "russia"
   ],
   "kalshiSeries": [
     "KXFEDDECISION",
@@ -12,7 +14,7 @@
     "KXCPIYOY"
   ],
   "silverCurve": [
-    "SIZ26.CMX",
-    "SIH27.CMX"
+    "SIH27.CMX",
+    "SIK27.CMX"
   ]
 }

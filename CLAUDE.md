@@ -22,6 +22,11 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   were placed within days of the May-2026 top (~$76); silver fell 25% to ~$56.
 - The engine's only honest entry was a 28%-confidence abstain. Confidence has
   been anti-correlated with outcomes. The tilt engine has NO demonstrated edge.
+- Recorder-v2 clean sample (2026-07-20..09-24, scored 2026-09-25): 48 entries
+  (24 bearish / 15 bullish / 9 abstain), directional hit 43% on 72
+  horizon-calls vs momentum 42% on the same calls; 11 independent t+5
+  windows. v14 shadow 51% vs v13 43% vs momentum 38% on 68 shared calls —
+  below the 15-window promotion gate. Flip rate 64%.
 
 ## Falsified hypotheses — do NOT re-propose without new evidence
 - **Russia/Ukraine haven channel for silver**: ~6% 2-week bid post-Feb-2022
@@ -73,14 +78,19 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   referee after its data starts accruing.
 - `scripts/watchdog.js` — opens a GitHub issue (deduped) when auto-logging
   gaps 2+ weekdays or SI_F goes >26h stale. Failures now reach a phone.
-- `scripts/auto-tilt.js` — DAILY AUTO-LOGGER (runs in the fetch-odds workflow,
-  2x daily). Runs `Engine.reason()` once per COMMITTED trading bar, priced at
-  that bar's close, and appends `source:'auto'` to `data/tilt-log.json`
-  INCLUDING abstains. Never backfills (using today's odds for a past date would
-  be look-ahead contamination) and REFUSES to log when zero contracts are
-  fetched (a blind contract channel yields an oil-only verdict — a missing day
-  is a gap, a wrong day is corruption). Computes the contradiction flags
-  server-side with the same thresholds as the dashboard.
+- `scripts/auto-tilt.js` — DAILY AUTO-LOGGER, RECORDER v2 (rule pre-committed
+  2026-09-25; runs in the fetch-odds workflow, 2x daily). The verdict for trade
+  date D is a DETERMINISTIC FUNCTION OF INPUTS DATED <= D, computed on the
+  first run after D's bar is final (a later-dated bar exists in the committed
+  series): closes <= D for spot/oil/gold/ratio/discriminator, the odds
+  logger's `catalyst-log.json` rows dated D for the contract population
+  (delta vs the latest rows dated < D, expiry measured from D), Kalshi and
+  physical rows <= D for the flags. Entries carry `recorder:'v2'`, `oddsAt`,
+  `recordedAt` and the oil inputs the engine saw (`inputs`). Logging D a day
+  or three late is reproduction, not backfill — the only unrecoverable gap is
+  a day with no odds rows. Still REFUSES to log when the contract channel is
+  blind (zero matching rows: an oil-only verdict is a different forecaster).
+  Computes the contradiction flags server-side with the dashboard's thresholds.
 - `index.html` — main dashboard (large, ~178KB). Reads committed data files
   same-origin; some legacy fetches still use public CORS proxies (flaky —
   migrate to `data/` reads where possible).
@@ -131,6 +141,17 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   Sunday-dated bar. SCORING now filters weekend bars everywhere (score
   version ohlc-v3); the auto-logger refuses them. Any new OHLC consumer must
   filter them too.
+- Yahoo MIS-DATES the evening session: from the 22:00 UTC Globex reopen until
+  some hours later, the daily bar dated TODAY is the newly opened NEXT
+  session (open/close both from the reopen), and today's true bar only
+  appears when Yahoo re-dates it. Any run between 22:00 UTC and the next
+  morning that reads "today's bar" reads tomorrow's first hours. Applies to
+  every futures series (SI, GC, CL, HG). Recorder v2 exists because of this.
+- GitHub scheduled workflows run LATE on this repo — 2-3h for the 21:10 cron,
+  and the */30 price cron fires every ~5h. Never design a rule that depends on
+  a cron firing inside a window.
+- Front-month rolls silently turn a listed deferred contract into the front
+  (spread 0). Every curve consumer must treat |spread| < 0.05% as "the front".
 - Yahoo's `historical.ohlc` INCLUDES the in-progress session as a partial bar
   (Globex opens 22:00 UTC the prior evening, so "today's bar" exists all day
   with a moving close). The first 9 auto entries were logged from mid-session
@@ -183,6 +204,19 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    unconditional t+20; test after ≥5 distinct events (episode ends when lease
    <1.5%). Display-only until then. True lease fixings and Shanghai premium
    still have no free source.
+   ROLL ARTIFACT (found 2026-09-25, amendments pre-committed before any event
+   is counted): SI=F rolled Sep->Dec on 2026-08-27 while Dec was still listed
+   as deferred, so its spread read 0 and its "lease" = the whole bill rate
+   (3.7-4.1%) — a month of fake STRESS on the panel and 12 fake
+   `physical-stress` flags (all on v1 rows, now superseded). Same roll jumped
+   the March leg's lease from -0.2% to +1.7% overnight (spread measured
+   against a nearer front), tripping the +100bp/10d spike rule. Amendments:
+   a leg within 0.05% of the front IS the front (lease not computed, warned,
+   ignored by every consumer); the 10-day spike test only counts when the same
+   deferred legs exist on both dates and neither row spans a roll. Rows
+   2026-08-27..09-25 are roll artifacts — they count toward NO stress event.
+   Tickers rolled to SIH27/SIK27 (SIK27 unverified until the first run logs
+   it). Roll again when SIH27 is within ~60d (late Jan 2027).
 10. Verdict hygiene (built 2026-07-21): logBtn warns when a directional call
    merely extrapolates a ≥3% 5-session move (the May failure pattern, 20% hit
    rate). The Fed-channel text in Channel Scope now carries the falsified-as-
@@ -217,6 +251,26 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
      of 12 and 38 days exist in the PRE-2026-08-04 history; entries before that
      date remain self-selected and should be treated as a separate, weaker
      sample from the auto-logged era.
+   - RECORDER v2 (pre-committed 2026-09-25). Audit finding: GitHub ran the
+     21:10 UTC cron 2-3h late, after the 22:00 UTC Globex reopen, and in that
+     window Yahoo's daily bar dated D is the NEWLY OPENED next session (silver
+     AND oil), rewritten to the true D bar hours later. 20 of 26 v1 evening
+     entries recorded the next session's opening price as D's close (up to
+     2.7% off) and fed the engine a phantom oil change (2026-09-22: -6.3%
+     "crash" on a -1.2% day -> bullish "relief" verdict). Fix: the rule in the
+     Architecture bullet — verdicts are functions of inputs dated <= D, computed
+     after D is final. CONSEQUENCES, all pre-committed: (a) the odds-log era
+     (2026-07-20 onward) was recomputed under v2 — 48 entries; (b) every v1
+     auto row with a v2 row for the same date is KEPT but marked `superseded`
+     and treated as a same-day dup (scored for reference, excluded from every
+     aggregate and referee); the two v1 rows on non-sessions (Aug-16 Sunday
+     pseudo-bar, Sep-7 Labor Day) are marked `superseded` by 'non-session';
+     (c) DISCLOSURE: outcomes for the recomputed window were already visible
+     when v2 was designed. The design (true closes, dated odds) is the
+     obviously correct one and was not tuned to outcomes, but treat the
+     recomputed window as in-sample-adjacent; the untainted clean sample
+     starts 2026-09-25. (d) The 30-min price cron is throttled to ~5h gaps;
+     fetch-odds now refreshes prices itself before recording.
 
 13. Contradiction ledger (built 2026-08-03): five cross-instrument disagreement
    flags computed at analyze time, displayed under the verdict, and stamped
