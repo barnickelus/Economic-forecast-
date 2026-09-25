@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-25T22:42:24.952Z",
+  "fetchedAt": "2026-09-25T22:43:49.494Z",
   "oil": {
     "brent": {
       "spot": 97.47,
@@ -273,7 +273,7 @@
       "liquidity": 91838.7327,
       "spreadPts": 1,
       "endDate": "2026-10-31T20:29:00Z",
-      "trades24h": 37,
+      "trades24h": 36,
       "deltaVsPriorDay": 0,
       "priorDate": "2026-09-24"
     },
@@ -371,7 +371,7 @@
       "liquidity": 23082.81204,
       "spreadPts": 0.4,
       "endDate": "2026-11-01T03:59:00Z",
-      "trades24h": 107,
+      "trades24h": 108,
       "deltaVsPriorDay": null,
       "priorDate": null
     },
@@ -558,9 +558,9 @@
       "series": "KXFEDDECISION",
       "ticker": "KXFEDDECISION-27MAR-H25",
       "title": "Will the Federal Reserve Hike rates by 25bps at their March 2027 meeting?",
-      "yes": 58.5,
+      "yes": 56,
       "yesBid": 52,
-      "yesAsk": 65,
+      "yesAsk": 60,
       "vol24": null,
       "openInterest": null,
       "closeTime": "2027-03-17T17:59:00Z"
