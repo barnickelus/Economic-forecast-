@@ -189,6 +189,11 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   WTI -2.3%). Rows where Brent and WTI moved >4pp apart carry
   `brentChangeSuspect` (3 of 49 days before the flag existed: 08-31, 09-18,
   09-25). Any backtest uses committed final closes (CL_F / BZ_F), never these.
+- fetch-data's `ohlcFromYahoo(r, n)` sliced the last n TIMESTAMPS where n was
+  the count of non-null closes, so series with null bars lost their oldest
+  history (DX-Y.NYB started 2022-08-09 in a "5y" file). Fixed 2026-09-26:
+  bars with closes, one per date, last n. Never size a slice by one array
+  and apply it to another.
 - The embedded OILH (Brent) series in index.html ends 2026-05-28. Until
   2026-09-26 the oil reader's "120d range" was Dec-May plus today's price.
   `extendSeries()` now appends committed BZ=F closes (added to tickers.json);
@@ -365,6 +370,21 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    the v15 challenger (below) — a weak prior, tested live, never promoted on
    the study alone. Do not re-run the study with different settings and
    report the best one; add a study-v2 with its own pre-registration.
+   NOTE: v1's aligned history began 2022-08-09 because of a fetch-data bug
+   (below), not data availability.
+   STUDY-v2 (pre-registered 2026-09-26 in `scripts/study-predictors-v2.js`,
+   committed before its first run; `data/study-predictors-v2.json`): v1's
+   16 signals on the full aligned history (2021-09-27.., IS 821 days, OOS
+   unchanged) plus oil level at 60d/250d, gold/silver ratio level 250d,
+   gold 5d, momentum-in-low-vol. RESULT: NO candidate. v15 BASIS = FRAGILE
+   under the pre-committed rule: oilLvl120 passed t+5 again (IS 54%, OOS 65%
+   vs momentum 47% / always-up 59%) but neither oilLvl60 (OOS 56%) nor
+   oilLvl250 (OOS 67% vs always-up 63%: +4pp, bar is +5) passed t+5.
+   Descriptive only, NOT a pass: the oil-level family points the same way
+   in all 9 window x horizon cells (IS 51-58%, OOS 56-72%). v15 keeps
+   shadow-logging; only its live promotion rule can retire or promote it.
+   Cautionary row: ratioLvl250 scored 63/72/78% in-sample and 53/54/54% out
+   of sample with NEGATIVE returns — what an overfit looks like here.
 15. v15 CHALLENGER (spec pre-committed 2026-09-25 in engine.js): oil channel
    = level, not change — oilTilt +1 at or below the 30th percentile of oil's
    trailing 120 sessions, -1 at or above the 70th, else 0; everything else
