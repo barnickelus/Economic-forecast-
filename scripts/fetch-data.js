@@ -108,19 +108,25 @@ function seriesFromYahoo(r) {
   return r.indicators.quote[0].close.filter(x => x != null);
 }
 
+// n = number of BARS WITH A CLOSE to return, counted from the end. (It used to
+// slice the last n TIMESTAMPS, so any series with null bars — DX-Y.NYB has
+// hundreds — silently lost its oldest history: the "5y" dollar file started
+// 2022-08-09.) One bar per date; a later timestamp on the same date wins.
 function ohlcFromYahoo(r, n = 6) {
-  const ts = r.timestamp;
+  const ts = r.timestamp || [];
   const q = r.indicators.quote[0];
-  const out = [];
-  for (let i = Math.max(0, ts.length - n); i < ts.length; i++) {
+  const byDate = new Map();
+  for (let i = 0; i < ts.length; i++) {
     if (q.close[i] == null) continue;
-    out.push({
-      date: new Date(ts[i] * 1000).toISOString().split('T')[0],
+    const date = new Date(ts[i] * 1000).toISOString().split('T')[0];
+    byDate.set(date, {
+      date,
       o: q.open[i], h: q.high[i], l: q.low[i], c: q.close[i],
       v: q.volume[i] || 0,
     });
   }
-  return out;
+  const out = [...byDate.values()].sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+  return out.slice(Math.max(0, out.length - n));
 }
 
 async function fetchTicker(tickerSymbol, config, macroData) {
