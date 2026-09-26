@@ -76,7 +76,15 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/*.json
+          # Commit ONLY files this workflow owns. The refreshed price files are used
+          # locally for recording/scoring but belong to fetch-data.yml: committing
+          # them here too made both workflows edit data/SI_F.json etc., so a
+          # rebase conflict would fail the push and lose the whole odds run.
+          # (Final bars never change once a later bar exists, so recorded
+          # values stay reproducible from fetch-data's own commits.)
+          git add data/catalyst-log.json data/catalyst-latest.json data/odds-topics.json data/kalshi-log.json data/tilt-log.json data/physical-log.json
+          git add data/shadow-v14.json data/shadow-v15.json 2>/dev/null || true
+          git checkout -- data/ 2>/dev/null || true   # drop the uncommitted price refresh before rebasing
           if git diff --staged --quiet; then
             echo "no changes — skipping commit"
           else

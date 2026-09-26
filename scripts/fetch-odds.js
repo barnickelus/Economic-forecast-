@@ -386,6 +386,11 @@ async function fetchSlvOunces() {
       liquidity: c.liquidity, spreadPts: c.spreadPts, trades24h: c.trades24h,
       brent: brent ? brent.spot : null, wti: wti ? wti.spot : null,
       brentChangePct: brent ? brent.changePct : null,
+      // Brent and WTI rarely diverge >4pp in a day; when they do it is almost
+      // always a contract-roll artifact in Yahoo's continuous series (2026-09-25:
+      // Brent -8.8% vs WTI -2.3%). Flag it so the Link 1 lead/lag test and the
+      // DIVERGE rule can exclude the row instead of trusting a fake oil move.
+      brentChangeSuspect: (brent && wti && brent.changePct != null && wti.changePct != null && Math.abs(brent.changePct - wti.changePct) > 4) || undefined,
     };
     if (idx >= 0) log[idx] = row; else { log.push(row); appended++; }
   }

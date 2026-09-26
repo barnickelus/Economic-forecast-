@@ -108,11 +108,20 @@ fs.writeFileSync(TILT_FILE, JSON.stringify(log, null, 1));
 // summary — directional calls only (balanced = abstain, no probability to
 // calibrate), and only the primary entry per day (dup entries excluded)
 const calls = [], momo = [];
+let upSame = 0, fadeSame = 0;
 for (const r of log) {
   if (r.dup) continue;
   for (const h of ['5', '10', '20']) {
-    if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish') && r.confidence != null)
+    if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish') && r.confidence != null) {
       calls.push({ p: r.confidence / 100, hit: r['hit' + h] ? 1 : 0 });
+      // two more baselines on the SAME directional horizon-calls: silver's
+      // drift (always bullish) and fading the engine (the opposite call).
+      // Fading only "wins" by being long in a rising market, so it has to
+      // beat always-bullish too before it means anything.
+      const pct = r['pct' + h];
+      if (pct > 0) upSame++;
+      if ((r.tilt === 'bullish' && pct < 0) || (r.tilt === 'bearish' && pct > 0)) fadeSame++;
+    }
     if (r['momoHit' + h] != null) momo.push(r['momoHit' + h] ? 1 : 0);
   }
 }
@@ -123,21 +132,29 @@ if (calls.length) {
   const realized = calls.reduce((a, c) => a + c.hit, 0) / calls.length * 100;
   const brier = calls.reduce((a, c) => a + Math.pow(c.p - c.hit, 2), 0) / calls.length;
   console.log('  calibration: ' + calls.length + ' directional horizon-calls · stated ' + stated.toFixed(0) + '% vs realized ' + realized.toFixed(0) + '% · Brier ' + brier.toFixed(3) + ' (always-50% = 0.25)');
+  console.log('  same calls, other forecasters: always-bullish ' + Math.round(upSame / calls.length * 100) + '% · fading the engine ' + Math.round(fadeSame / calls.length * 100) + '%');
 }
 if (momo.length) console.log('  momentum baseline: ' + (momo.reduce((a, b) => a + b, 0) / momo.length * 100).toFixed(0) + '% hit on ' + momo.length + ' scored');
 // CLEAN SAMPLE: recorder-v2 auto entries only (as-of-date inputs, true closes).
 {
-  const v2 = log.filter(r => r.source === 'auto' && r.recorder === 'v2' && !r.dup);
-  const c2 = [], m2 = []; let dir = 0;
+  // Per-source sample: every recorder-v2 row (one per date by construction). The
+  // global first-entry-per-day rule lets a manual entry from Jul 20-Aug 4 claim
+  // the date, which would silently drop 7 clean rows from THIS line only.
+  const v2 = log.filter(r => r.source === 'auto' && r.recorder === 'v2');
+  const c2 = [], m2 = []; let dir = 0, u2 = 0;
   for (const r of v2) {
     if (r.tilt === 'bullish' || r.tilt === 'bearish') dir++;
     for (const h of ['5', '10', '20']) {
-      if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish')) c2.push(r['hit' + h] ? 1 : 0);
+      if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish')) { c2.push(r['hit' + h] ? 1 : 0); if (r['pct' + h] > 0) u2++; }
       if (r['momoHit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish')) m2.push(r['momoHit' + h] ? 1 : 0);
     }
   }
   if (v2.length) console.log('  recorder-v2 clean sample: ' + v2.length + ' entries (' + dir + ' directional, ' + (v2.length - dir) + ' abstain)' +
-    (c2.length ? ' · directional hit ' + Math.round(c2.reduce((a, b) => a + b, 0) / c2.length * 100) + '% on ' + c2.length + ' horizon-calls' + (m2.length ? ' · momentum on the same calls ' + Math.round(m2.reduce((a, b) => a + b, 0) / m2.length * 100) + '%' : '') : ' · nothing scored yet'));
+    (c2.length ? ' · directional hit ' + Math.round(c2.reduce((a, b) => a + b, 0) / c2.length * 100) + '% on ' + c2.length + ' horizon-calls' + (m2.length ? ' · momentum on the same calls ' + Math.round(m2.reduce((a, b) => a + b, 0) / m2.length * 100) + '%' : '') + ' · always-bullish ' + Math.round(u2 / c2.length * 100) + '%' : ' · nothing scored yet'));
+  // the untainted clean sample: recorder-v2 rows dated on/after the rule's own date
+  const live = v2.filter(r => String(r.t).slice(0, 10) >= '2026-09-25');
+  const lc = []; for (const r of live) for (const h of ['5', '10', '20']) if (r['hit' + h] != null && (r.tilt === 'bullish' || r.tilt === 'bearish')) lc.push(r['hit' + h] ? 1 : 0);
+  console.log('  LIVE sample (recorder v2, from 2026-09-25 — the only untainted record): ' + live.length + ' entries' + (lc.length ? ' · directional hit ' + Math.round(lc.reduce((a, b) => a + b, 0) / lc.length * 100) + '% on ' + lc.length + ' horizon-calls' : ' · nothing scored yet'));
 }
 
 // EFFECTIVE SAMPLE SIZE. Consecutive daily entries produce horizon windows that

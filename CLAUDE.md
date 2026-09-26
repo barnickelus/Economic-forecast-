@@ -19,7 +19,11 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 ## Measured track record (do not soften)
 - Tilt engine forward log: 31% hit rate over 13 entries; later v13 log scored
   3/15 horizon-scores (20%), 0-for-5 at t+10. Two 70%-confidence bullish reads
-  were placed within days of the May-2026 top (~$76); silver fell 25% to ~$56.
+  were placed 2026-05-27/28 at ~$75-76 (two weeks after a $88.89 local high on
+  May 13); silver fell ~22% over the next 20 sessions (June low $57.03).
+  (CORRECTED 2026-09-26 from committed OHLC: an earlier version called ~$76
+  "the May-2026 top". The 5y high is 2026-01-29 at $121.30 intraday / $115.08
+  close; silver has made lower highs since — Mar $95.86, May $88.89.)
 - The engine's only honest entry was a 28%-confidence abstain. Confidence has
   been anti-correlated with outcomes. The tilt engine has NO demonstrated edge.
 - Recorder-v2 clean sample (2026-07-20..09-24, scored 2026-09-25): 48 entries
@@ -29,6 +33,18 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   8/15 independent windows toward the promotion gate. Flip rate 63%. v15
   on the same (in-sample) window: 9/18 directional t+5 hits — the study's
   t+5 pass did not show up in this slice; treat it as noise until live.
+- FADE ANALYSIS (2026-09-26, "would the opposite bet have been better?"):
+  fading beat following in every population, but NONE of it is an edge.
+  Recorder-v2 window: silver rose after bullish calls (+1.6% t+5, +5.2%
+  t+10) AND after bearish calls (+1.8%, +2.5%) — the engine's direction
+  carried no information; bearish calls (23 of 36 at t+5) lost because
+  silver rose ~12% over the window. Fading = being long in an uptrend, and
+  plain ALWAYS-BULLISH beat the fade at every horizon (t+5 64% vs 61%, t+10
+  66% vs 50%, t+20 64% vs 56%). Manual era: fade 77%/69%/69% on 13 calls
+  vs always-bullish 46%/69%/69% — the fade's only edge is at t+5 on 5
+  independent windows (p=0.06). v1 era: fade ~50%. Rule going forward: a
+  fade is a forecaster like any other and must beat momentum AND always-
+  bullish on the live sample; the scoreboard on the page tracks it.
 
 ## Falsified hypotheses — do NOT re-propose without new evidence
 - **Russia/Ukraine haven channel for silver**: ~6% 2-week bid post-Feb-2022
@@ -97,7 +113,13 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   same-origin; some legacy fetches still use public CORS proxies (flaky —
   migrate to `data/` reads where possible).
 - `catalyst.html` — Polymarket catalyst monitor. Live odds + oil divergence
-  flags. DIVERGE = odds moved >5pt/24h while |Brent| < 1%.
+  flags. DIVERGE = odds moved >5pt/24h while |Brent| < 1%. Since 2026-09-26
+  every proxy call is timed (7s) and raced; searches run in parallel; if
+  all proxies fail it falls back to `data/catalyst-latest.json` and says so.
+- Dashboard SCOREBOARD (built 2026-09-26): v13, v14, v15, momentum,
+  always-bullish and fade-v13 on the same recorder-v2 dates, latest call +
+  directional hit rate, split into the recomputed window and the live
+  column (from 2026-09-25). The live column is the only one that counts.
 - `scripts/fetch-data.js` — price fetcher; Actions cron every 30 min commits
   `data/*.json` (SI=F, GC=F, macro tickers; 5y daily OHLC in
   `data/SI_F.json → historical.ohlc`).
@@ -154,6 +176,23 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   a cron firing inside a window.
 - Front-month rolls silently turn a listed deferred contract into the front
   (spread 0). Every curve consumer must treat |spread| < 0.05% as "the front".
+- Tilt-log rows can SHARE A TIMESTAMP (a superseded v1 row and its recorder-v2
+  replacement are both "D 21:00"). Never key or merge the log by `t`: the
+  dashboard did, silently replacing each clean row with the contaminated one
+  and counting both as the day's commitment (fixed 2026-09-26).
+- Two workflows must never commit the same file. fetch-odds refreshes prices
+  for its own use but commits only the files it owns; a shared file means a
+  rebase conflict, a failed push, and a lost odds run.
+- The odds logger's `brent`/`brentChangePct` fields are read at run time from
+  Yahoo's continuous contract: after 22:00 UTC they span the mis-dated
+  evening bar, and on roll days they are fake (2026-09-25: Brent -8.6% vs
+  WTI -2.3%). Rows where Brent and WTI moved >4pp apart carry
+  `brentChangeSuspect` (3 of 49 days before the flag existed: 08-31, 09-18,
+  09-25). Any backtest uses committed final closes (CL_F / BZ_F), never these.
+- The embedded OILH (Brent) series in index.html ends 2026-05-28. Until
+  2026-09-26 the oil reader's "120d range" was Dec-May plus today's price.
+  `extendSeries()` now appends committed BZ=F closes (added to tickers.json);
+  the reader returns no read if the series is >10 sessions stale.
 - Yahoo's `historical.ohlc` INCLUDES the in-progress session as a partial bar
   (Globex opens 22:00 UTC the prior evening, so "today's bar" exists all day
   with a moving close). The first 9 auto entries were logged from mid-session
@@ -167,9 +206,9 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
 2. ~~Build server-side tilt scorer~~ BUILT 2026-07-20: `data/tilt-log.json` +
    `scripts/score-tilt.js` (runs in fetch-odds workflow) + issue-driven inbox
    (`log-tilt.yml`, owner-gated: dashboard buttons open a prefilled "TILT:"
-   issue; submitting commits + scores it). REMAINING: Chris must tap
-   "⬆ Commit log to repo" on the iPad once — that syncs the real v13
-   localStorage entries (true timestamps/spots) into the durable log.
+   issue; submitting commits + scores it). DONE: the manual entries are in the
+   durable log (16 `source:'issue'` rows); stale issue #19 (its 3 entries
+   already logged, close step had failed) closed 2026-09-26.
 3. ~~Build the oil-regime discriminator~~ BUILT 2026-07-19 as display-only panel
    with pre-committed falsifier. Copper (HG=F) added to tickers.json — verify
    first `data/HG_F.json` commit has 5y backfill. REMAINING: after ≥30 tagged
@@ -181,14 +220,24 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    parallel, every proxy under a hard timeout, falling back to
    `data/catalyst-latest.json` (tagged in the data-table meta line). Before
    this, nine sequential proxy calls with NO timeout hung the button forever
-   whenever one proxy stalled. Still on proxies: nothing in index.html;
-   check catalyst.html.
+   whenever one proxy stalled. DONE 2026-09-26 for catalyst.html too (timed,
+   raced, parallel, committed fallback). Proxies remain only for LIVE odds,
+   never for anything the page cannot complete without.
 5. After ~90 days of odds history: run Link 1 test (odds lead/lag vs oil tape).
+   Use committed FINAL closes (CL_F, and BZ_F once it has history) aligned by
+   date — not the logger's run-time `brent`/`brentChangePct` fields — and
+   exclude `brentChangeSuspect` rows. State the test before running it.
 6. Verify Kalshi series tickers on first Actions run (log warns if a series
    returns 0 markets — fix `kalshiSeries` in `data/odds-topics.json` via web UI).
 7. After ~60 days of `kalshi-log.json`: test the Fed-conflict hypothesis —
    "hawkish weekly shift in Kalshi rate-path odds should have capped bullish
    confidence." State exact threshold BEFORE scoring.
+   VERDICT (referee-kalshi, first mature run 2026-09-25, 69 days): FAIL.
+   Bullish calls made INTO a hawkish drift hit 63% (8 horizon-calls) vs 41%
+   for other bullish calls (22) — the opposite of the hypothesis, consistent
+   with the falsified Fed channel. Caveat: scored on the recomputed,
+   in-sample-adjacent window. The cap is not justified; `kalshi-conflict`
+   stays annotation-only.
 8. Smart-wallet layer (unbuilt): Polymarket data-api exposes per-wallet trades +
    leaderboard P&L. Hypothesis to spec before building: calibrated-wallet-
    weighted odds lead the mid. `trades24h` field (now logging) is the cheap
@@ -292,6 +341,12 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
    - `physical-stress`: lease stress or backwardation vs bearish.
    The one pre-existing WIRED damper (oil-vs-contracts `contradiction` →
    conf ≤28) predates the ledger and stays as-is.
+   First mature referee run (2026-09-25): `ratio-confirmer` flagged 59% vs
+   unflagged 33%, `curve-incoherent` 42% vs 37% — neither is >=15pp WORSE,
+   so neither earns damping. `ratio-confirmer` pointing the other way is a
+   hint, not a finding (in-sample-adjacent window; would need its own
+   pre-registration). `physical-stress` has 0 flags after the roll-artifact
+   cleanup; `oil-premise` 0; `kalshi-conflict` 4 — NOT READY.
 
 14. PREDICTOR STUDY (pre-registered 2026-09-25, `scripts/study-predictors.js`,
    committed before its first run; results in `data/study-predictors.json`,

@@ -105,7 +105,26 @@
 
 <script>
 const CORS_PROXIES=[u=>'https://corsproxy.io/?url='+encodeURIComponent(u),u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://thingproxy.freeboard.io/fetch/'+u];
-async function viaProxy(url){for(const p of CORS_PROXIES){try{const r=await fetch(p(url),{cache:'no-cache'});if(r.ok)return await r.json();}catch(e){}}return null;}
+// Every proxy attempt runs under a hard timeout and the proxies race each other.
+// The old version tried them one after another with NO timeout, so one stalled
+// proxy froze the page on "Fetching…" forever (same bug fixed in index.html).
+async function viaProxy(url,ms){
+  ms=ms||7000;
+  const attempts=CORS_PROXIES.map(p=>(async()=>{
+    const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),ms);
+    try{const r=await fetch(p(url),{cache:'no-cache',signal:ctl.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+    finally{clearTimeout(t);}
+  })());
+  try{return await Promise.any(attempts);}catch(e){return null;}
+}
+// Same-origin snapshot the fetch-odds workflow commits twice a day: the fallback
+// whenever every proxy is down, so the page always completes.
+let COMMITTED=null;
+async function committedLatest(){
+  if(COMMITTED)return COMMITTED;
+  try{const r=await fetch('data/catalyst-latest.json',{cache:'no-cache'});if(r.ok)COMMITTED=await r.json();}catch(e){}
+  return COMMITTED;
+}
 
 // Polymarket — public, no key. The /markets endpoint IGNORES ?search (returns
 // top-volume junk), so we use the public-search endpoint AND keyword-filter
@@ -136,23 +155,24 @@ function titleDatePast(title){
 }
 async function fetchContracts(terms){
   const out=[];
-  for(const term of terms){
-    const tt=term.trim(); if(!tt)continue;
-    // 1) try the real text-search endpoint
+  terms=terms.map(t=>t.trim()).filter(Boolean);
+  // all searches in parallel (each bounded by viaProxy's timeout)
+  const searched=await Promise.all(terms.map(tt=>viaProxy('https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(tt)+'&limit_per_type=10&events_status=active')));
+  let bigList=null;
+  for(let k=0;k<terms.length;k++){
+    const tt=terms[k], sj=searched[k];
+    // 1) the real text-search endpoint
     let got=[];
-    const sUrl='https://gamma-api.polymarket.com/public-search?q='+encodeURIComponent(tt)+'&limit_per_type=10&events_status=active';
-    const sj=await viaProxy(sUrl);
     if(sj){
       // public-search returns {events:[{markets:[...]}], ...} or {markets:[...]}
       const evs=sj.events||[]; const mks=sj.markets||[];
       for(const ev of evs){ for(const m of (ev.markets||[])) got.push(m); }
       for(const m of mks) got.push(m);
     }
-    // 2) fallback: pull a big active list and keyword-filter client-side
+    // 2) fallback: pull a big active list (once) and keyword-filter client-side
     if(!got.length){
-      const lUrl='https://gamma-api.polymarket.com/markets?closed=false&active=true&limit=200&order=volume24hr&ascending=false';
-      const lj=await viaProxy(lUrl);
-      if(Array.isArray(lj)) got=lj;
+      if(bigList===null){const lj=await viaProxy('https://gamma-api.polymarket.com/markets?closed=false&active=true&limit=200&order=volume24hr&ascending=false');bigList=Array.isArray(lj)?lj:[];}
+      got=bigList;
     }
     // keep only genuine keyword matches; drop apparently-resolved contracts
     // (Yes pinned at 0 or 100 with no movement = already settled / past-dated),
@@ -165,7 +185,14 @@ async function fetchContracts(terms){
     out.push(...rows);
   }
   const seen=new Set(),uniq=[];for(const o of out){if(o.title&&!seen.has(o.title)){seen.add(o.title);uniq.push(o);}}
-  return uniq;
+  if(uniq.length){uniq.source='live';return uniq;}
+  // every proxy dead: fall back to the odds logger's committed snapshot
+  const cl=await committedLatest();
+  const rows=((cl&&cl.contracts)||[]).filter(c=>terms.some(tt=>matchesTerm(c.title||'',tt))).map(c=>{
+    const r={q:c.q,title:c.title,yes:c.yes,vol:c.vol24||0,delta:c.deltaVsPriorDay!=null?c.deltaVsPriorDay:null};
+    const datePast=titleDatePast(r.title),pinned=(r.yes!=null&&(r.yes<=1||r.yes>=99));r.resolved=datePast||pinned;r.expired=datePast;r.settled=pinned&&!datePast;return r;});
+  rows.source=cl?'committed '+String(cl.fetchedAt||'').slice(0,16).replace('T',' ')+'Z (proxies unreachable; Δ = vs prior logged day)':'none';
+  return rows;
 }
 async function fetchOil(){
   // Compute change from the LAST TWO DAILY CLOSES in the series (same contract),
@@ -188,7 +215,13 @@ async function fetchOil(){
     const suspect = Math.abs(changePct)>8;
     return {spot,changePct,asof,suspect,prev};
   }
-  return{brent:await q('BZ=F'),wti:await q('CL=F')};
+  const [brent,wti]=await Promise.all([q('BZ=F'),q('CL=F')]);
+  if(brent||wti)return{brent,wti,source:'live'};
+  // proxies dead: the odds logger's committed quotes (same roll-safe prior-close math)
+  const cl=await committedLatest();
+  const o=cl&&cl.oil; if(!o)return null;
+  const mk=x=>x&&x.spot!=null?{spot:x.spot,changePct:x.changePct,asof:cl.fetchedAt?new Date(cl.fetchedAt):null,suspect:Math.abs(x.changePct||0)>8}:null;
+  return{brent:mk(o.brent),wti:mk(o.wti),source:'committed'};
 }
 
 let LAST_ODDS=[],LAST_OIL=null;
@@ -196,7 +229,7 @@ const $=id=>document.getElementById(id);
 const fmt=(x,d=1)=>x==null?'—':(x>=0?'+':'')+x.toFixed(d);
 
 async function doFetch(){
-  $('status').textContent='Fetching live odds + oil… (CORS proxies can be slow/unreliable)';
+  $('status').textContent='Fetching live odds + oil… (each proxy capped at 7s; falls back to the committed snapshot)';
   const terms=$('q').value.split(',').filter(t=>t.trim());
   let contracts=[],oil=null;
   try{ [contracts,oil]=await Promise.all([fetchContracts(terms),fetchOil()]); }
@@ -230,7 +263,7 @@ async function doFetch(){
     ob.innerHTML=oilLine('Brent',oil.brent)+oilLine('WTI',oil.wti);
     const asof=oil.brent?.asof||oil.wti?.asof;
     if(asof)ob.innerHTML+='<div class="oilstat dim" style="width:100%;font-size:10px;margin-top:4px">last close: '+asof.toLocaleDateString()+' · change vs prior daily close (roll-safe)'+((oil.brent?.suspect||oil.wti?.suspect)?' · ⚠ a flagged move exceeds 8%/day — verify against another source before trusting':'')+'</div>';
-  } else ob.innerHTML='<span class="oilstat dim">Oil fetch failed (proxy). Odds still valid above.</span>';
+  } else ob.innerHTML='<span class="oilstat dim">Oil unavailable (proxies down and no committed snapshot). Odds still valid above.</span>';
 
   // synthesis read
   const movers=contracts.filter(c=>!c.resolved&&c.delta!=null&&Math.abs(c.delta)>=5);
@@ -244,7 +277,7 @@ async function doFetch(){
     r='Quiet. No catalyst contract moved &gt;5pt in 24h. Consistent with the chop regime — the coil stays coiled until one of these reprices. This is the no-edge state the dashboard calls STAND ASIDE.';
   }
   $('read').innerHTML=r;
-  $('status').textContent='Updated '+new Date().toLocaleString()+' · '+contracts.length+' contracts.';
+  $('status').textContent='Updated '+new Date().toLocaleString()+' · '+contracts.length+' contracts ('+(contracts.source||'live')+') · oil '+(oil?oil.source:'unavailable')+'.';
 }
 
 // ---- daily log (browser persistence via in-memory + window.storage if available) ----

@@ -114,6 +114,7 @@
     <div class="psub">Each analysis logs the verdict + silver price + timestamp. The engine improves interpretation; the log does the validating. Over weeks it shows whether the curve-regime read actually led price.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" id="logBtn">+ Log verdict</button><button class="btn ghost" id="syncBtn">⬆ Commit log to repo</button><button class="btn ghost" id="expBtn">⬇ CSV</button><button class="btn ghost" id="clrBtn" style="color:var(--bear);border-color:var(--bear)">✕ Clear</button></div>
     <div id="tiltCommit" style="margin-top:8px;font-size:12px"></div>
+    <div id="boardBox" style="margin-top:10px"></div>
     <div id="logBox" style="margin-top:10px"></div>
   </div>
 
@@ -166,12 +167,15 @@ const _ohlcOf=j=>((j&&j.historical&&j.historical.ohlc)||[]).filter(b=>b&&b.c!=nu
 // once per page load from the committed 5y OHLC so the trendline geometry, apex
 // projection and gold reader run on current bars instead of a 4-month-old chart.
 let _seriesExtended=false;
-function extendSeries(si,gc){
+function extendSeries(si,gc,bz){
   if(_seriesExtended)return;_seriesExtended=true;
   const last=SV[SV.length-1].date;
   _ohlcOf(si).filter(b=>b.date>last).forEach(b=>SV.push({date:b.date,c:b.c,h:b.h!=null?b.h:b.c,l:b.l!=null?b.l:b.c}));
   const svDates=new Set(SV.map(b=>b.date));
   _ohlcOf(gc).forEach(b=>{if(GOLD[b.date]==null&&svDates.has(b.date))GOLD[b.date]=b.c;});
+  // OILH (Brent) is a snapshot ending 2026-05-28: without this the oil reader's
+  // "120d range" was Dec-May plus today's price. Extended from committed BZ=F.
+  _ohlcOf(bz).forEach(b=>{if(OILH[b.date]==null&&svDates.has(b.date))OILH[b.date]=b.c;});
 }
 const $=id=>document.getElementById(id);const fmt=Engine.fmt; // scripts/engine.js
 const parseTitleDate=Engine.parseTitleDate,daysToExpiry=Engine.daysToExpiry; // scripts/engine.js
@@ -181,8 +185,8 @@ async function gatherData(){
   // same-origin, no third-party proxy in the path. These are the SAME inputs
   // scripts/auto-tilt.js feeds the engine, so the page verdict and the scored auto
   // verdict cannot drift apart on price inputs.
-  const [si,gc,cl,cat]=await Promise.all([localJSON('SI_F.json'),localJSON('GC_F.json'),localJSON('CL_F.json'),localJSON('catalyst-latest.json')]);
-  extendSeries(si,gc);
+  const [si,gc,cl,cat,bz]=await Promise.all([localJSON('SI_F.json'),localJSON('GC_F.json'),localJSON('CL_F.json'),localJSON('catalyst-latest.json'),localJSON('BZ_F.json')]);
+  extendSeries(si,gc,bz);
   const sh=_ohlcOf(si),gh=_ohlcOf(gc),ch=_ohlcOf(cl);
   let spot=SV[SV.length-1].c,chg=0;
   const disp=si&&si.display;
@@ -230,7 +234,11 @@ const reason=Engine.reason; // shared implementation: scripts/engine.js
 function _swing(seg,k,key){const hi=[],lo=[];for(let i=k;i<seg.length-k;i++){let H=true,L=true;for(let j=i-k;j<=i+k;j++){if(seg[j][key]>seg[i][key])H=false;if(seg[j][key]<seg[i][key])L=false;}if(H)hi.push(i);if(L)lo.push(i);}return{hi,lo};}
 function _fit(pts){const n=pts.length;if(n<2)return null;const mx=pts.reduce((s,p)=>s+p[0],0)/n,my=pts.reduce((s,p)=>s+p[1],0)/n;let nu=0,de=0;pts.forEach(p=>{nu+=(p[0]-mx)*(p[1]-my);de+=(p[0]-mx)**2;});if(de===0)return null;const a=nu/de,b=my-a*mx;let ssr=0,sst=0;pts.forEach(p=>{const yp=a*p[0]+b;ssr+=(p[1]-yp)**2;sst+=(p[1]-my)**2;});const r2=sst>0?1-ssr/sst:0;return{a,b,r2,n,pts};}
 // ===== OIL LEADING-INDICATOR READER =====
-// VALIDATED on 5y data: oil's effect on silver is LEADING (~20d), not coincident.
+// 2026-09-25 PRE-REGISTERED STUDY (scripts/study-predictors.js) REVISES THIS: out of
+// sample (2025-26) the oil-LEVEL rule below passed at t+5 only (65% vs momentum 47%,
+// always-bullish 59%); at t+20 it did no better than always-bullish. The 20d claims
+// underneath were in-sample. It is the v15 challenger's oil channel, tested live.
+// Original note — VALIDATED on 5y data: oil's effect on silver is LEADING (~20d), not coincident.
 //   contemporaneous daily corr(silver,oil) = +0.10 (≈0, slightly positive)
 //   but forward 20d silver: oil LOW (bottom 30% of range) → +4.9% avg; oil HIGH (top 30%) → -0.6%
 //   and after a 5d oil spike ≥7%: silver -1.9% fwd; after oil drop ≥7%: silver +2.9% fwd.
@@ -238,6 +246,11 @@ function _fit(pts){const n=pts.length;if(n<2)return null;const mx=pts.reduce((s,
 // Demand-destruction beats cost-push. This reader frames oil as a 20-DAY-FORWARD signal, not a same-day one.
 function oilReader(liveOil){
   const dates=SV.map(b=>b.date).filter(d=>OILH[d]!=null);
+  // STALENESS GUARD: if the Brent history stops well short of the silver series
+  // (BZ_F.json not committed yet), the "range" would be months old. No read.
+  if(!dates.length)return null;
+  const lastIdx=SV.findIndex(b=>b.date===dates[dates.length-1]);
+  if(SV.length-1-lastIdx>10)return null;
   const ser=dates.map(d=>({date:d,o:OILH[d]}));
   if(liveOil)ser.push({date:'live',o:liveOil});
   const N=ser.length;if(N<130)return null;
@@ -438,7 +451,7 @@ async function run(){
       let spikeTxt='';
       if(orr.spike==='up')spikeTxt=' <b class="bear">5d oil spike +'+orr.move5.toFixed(0)+'% — historically precedes ~-1.9% forward silver (demand-destruction).</b>';
       else if(orr.spike==='down')spikeTxt=' <b class="bull">5d oil drop '+orr.move5.toFixed(0)+'% — historically precedes ~+2.9% forward silver (relief/industrial).</b>';
-      html+='<h3>Oil \u2014 leading indicator <span style="font-size:10px;color:var(--ink3)">~20d forward, not same-day</span></h3><p>Oil $'+orr.oil.toFixed(2)+' at the <b class="'+regClr+'">'+orr.regime+'</b> end of its 120d range ('+orr.pctl+'th pctl). '+orr.note+spikeTxt+' <span class="dim">Validated: oil\u2019s same-day correlation with silver is ~0; its effect lands over ~20 days. This is a forecast horizon, not a confirmation of today\u2019s move.</span></p>';
+      html+='<h3>Oil \u2014 level in its 120d range <span style="font-size:10px;color:var(--ink3)">pre-registered study: held out of sample at t+5 only; at t+20 no better than always-bullish \u2014 the v15 challenger\u2019s channel</span></h3><p>Oil $'+orr.oil.toFixed(2)+' at the <b class="'+regClr+'">'+orr.regime+'</b> end of its 120d range ('+orr.pctl+'th pctl). '+orr.note+spikeTxt+' <span class="dim">Validated: oil\u2019s same-day correlation with silver is ~0; its effect lands over ~20 days. This is a forecast horizon, not a confirmation of today\u2019s move.</span></p>';
     } else {
       html+='<h3>Oil anchor</h3><p>'+v.oil_check+'</p>';
     }
@@ -482,9 +495,14 @@ async function restore(){
     const r=await fetch('data/tilt-log.json',{cache:'no-cache'});
     if(r.ok){const srv=await r.json();
       if(Array.isArray(srv)){
+        // Server rows are authoritative and are taken WHOLE. Several server rows can
+        // share a timestamp (a superseded v1 auto row and the recorder-v2 row for the
+        // same date are both "D 21:00"), so merging by t overwrote the clean row with
+        // the contaminated one. Local rows survive only if the server has never seen
+        // their timestamp, i.e. genuinely unsynced manual entries.
         SERVER_TS=new Set(srv.map(s=>s.t));
-        for(const s of srv){const i=LOG.findIndex(x=>x.t===s.t); if(i>=0)LOG[i]=s; else LOG.push(s);}
-        LOG.sort((a,b)=>a.t<b.t?-1:1);
+        LOG=srv.concat(LOG.filter(x=>!SERVER_TS.has(x.t)));
+        LOG.sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:(a.superseded?1:0)-(b.superseded?1:0));
       }
     }
   }catch(e){}
@@ -492,6 +510,7 @@ async function restore(){
   regimeDiscriminator(); // display-only, reads committed files — fire and forget
   physicalLayer();       // display-only, reads committed files — fire and forget
   studyPanel();          // pre-registered backtest ledger — display-only
+  scoreboard();          // every forecaster on the same dates — display-only
 }
 // ---- CONTRADICTION LEDGER ----------------------------------------------------
 // Flags fire when two instruments disagree. They are LOGGED WITH EVERY VERDICT
@@ -597,6 +616,55 @@ function renderFlags(flags){
     return;
   }
   el.innerHTML='<div class="falsify" style="margin-top:8px"><b class="warn">CONTRADICTION LEDGER: '+flags.length+' active flag'+(flags.length===1?'':'s')+'</b> <span class="dim" style="font-size:10px">logged with the verdict · wired into nothing until each passes its pre-committed test</span><br>'+flags.map(f=>'• <b>'+f.id+'</b> — '+f.note).join('<br>')+'</div>';
+}
+// ---- FORECASTER SCOREBOARD (display-only) ------------------------------------
+// Every forecaster the project tracks, scored on the SAME recorder-v2 dates and
+// horizons: the champion (v13), the two shadow challengers, momentum, always-
+// bullish (silver's drift) and fading the champion. Answers "who should I have
+// listened to?" without cherry-picking: a forecaster's abstains are counted as
+// abstains, never as hits or misses. Rows before 2026-09-25 are the recomputed,
+// in-sample-adjacent window (and v15's derivation window) — labelled as such.
+async function scoreboard(){
+  const box=$('boardBox'); if(!box)return;
+  const get=async f=>{try{const r=await fetch('data/'+f,{cache:'no-cache'});return r.ok?await r.json():[];}catch(e){return [];}};
+  const [s14,s15]=await Promise.all([get('shadow-v14.json'),get('shadow-v15.json')]);
+  const champ=LOG.filter(r=>r.source==='auto'&&r.recorder==='v2');
+  if(!champ.length){box.innerHTML='';return;}
+  const byDate=a=>{const m={};(Array.isArray(a)?a:[]).forEach(r=>{if(r.recorder==='v2'&&!r.superseded)m[r.t.slice(0,10)]=r;});return m;};
+  const m14=byDate(s14),m15=byDate(s15);
+  const LIVE='2026-09-25';
+  const F=[
+    {k:'v13',name:'v13 champion',call:r=>r.tilt},
+    {k:'v14',name:'v14 challenger (5d oil)',call:r=>(m14[r.t.slice(0,10)]||{}).tilt},
+    {k:'v15',name:'v15 challenger (oil level)',call:r=>(m15[r.t.slice(0,10)]||{}).tilt},
+    {k:'momo',name:'momentum 20d',call:r=>r.momoDir},
+    {k:'up',name:'always bullish',call:r=>'bullish'},
+    {k:'fade',name:'fade v13',call:r=>r.tilt==='bullish'?'bearish':r.tilt==='bearish'?'bullish':'balanced'},
+  ];
+  const tally={};F.forEach(f=>tally[f.k]={all:[0,0,0],live:[0,0,0]}); // [hits, directional calls, abstains]
+  champ.forEach(r=>{
+    const live=r.t.slice(0,10)>=LIVE;
+    ['5','10','20'].forEach(h=>{
+      const pct=r['pct'+h]; if(pct==null)return;
+      F.forEach(f=>{
+        const c=f.call(r); if(!c)return;
+        for(const bucket of live?['all','live']:['all']){
+          const t=tally[f.k][bucket];
+          if(c==='balanced'){t[2]++;continue;}
+          t[1]++; if((c==='bullish'&&pct>0)||(c==='bearish'&&pct<0))t[0]++;
+        }
+      });
+    });
+  });
+  const last=champ[champ.length-1];
+  const cur={v13:last.tilt,v14:(m14[last.t.slice(0,10)]||{}).tilt,v15:(m15[last.t.slice(0,10)]||{}).tilt,momo:null,up:'bullish',fade:last.tilt==='bullish'?'bearish':last.tilt==='bearish'?'bullish':'balanced'};
+  try{const o=await loadHistOHLC();if(o.length>=21)cur.momo=o[o.length-1].c>=o[o.length-21].c?'bullish':'bearish';}catch(e){}
+  const cls=c=>c==='bullish'?'bull':c==='bearish'?'bear':'dim';
+  const pc=t=>t[1]?'<b class="'+(t[0]/t[1]>=0.55?'bull':t[0]/t[1]<=0.45?'bear':'dim')+'">'+Math.round(t[0]/t[1]*100)+'%</b> <span class="dim">('+t[1]+(t[2]?', '+t[2]+' abst':'')+')</span>':'<span class="dim">— ('+t[2]+' abst)</span>';
+  const rows=F.map(f=>'<tr><td class="ctitle">'+f.name+'</td><td class="'+cls(cur[f.k])+'">'+(cur[f.k]||'—').toUpperCase()+'</td><td>'+pc(tally[f.k].all)+'</td><td>'+pc(tally[f.k].live)+'</td></tr>').join('');
+  box.innerHTML='<div style="font-size:12px;margin-bottom:6px"><b class="gold">SCOREBOARD</b> <span class="dim">every forecaster on the same recorder-v2 dates · directional hit rate over scored t+5/10/20 horizon-calls (n) · latest call as of '+last.t.slice(0,10)+'</span></div>'
+    +'<table style="font-size:11px"><thead><tr><th>forecaster</th><th>latest call</th><th>recomputed Jul 20–Sep 24 (in-sample-adjacent)</th><th>live since '+LIVE+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div class="read" style="margin-top:6px;font-size:11px">Silver rose after the engine’s bullish <i>and</i> bearish calls about equally in the recomputed window, so its direction carried no information; "fade v13" beat v13 only by being long in a rising market and still trailed plain "always bullish". A forecaster has to beat momentum <i>and</i> always-bullish on the live column before it means anything. Overlapping windows: these n overstate the evidence (see effective sample below).</div>';
 }
 // ---- PREDICTOR STUDY LEDGER (display-only) — scripts/study-predictors.js, pre-registered
 // 2026-09-25: hypotheses, IS/OOS split and pass bar written before the first run.
@@ -762,7 +830,7 @@ async function effectiveSample(){
   [5,10,20].forEach(n=>{
     const spans=[];
     LOG.forEach(r=>{
-      if(!prim.has(r.t)||r['hit'+n]==null)return;
+      if(!prim.has(r)||r['hit'+n]==null)return;
       const i=entryIndex(ohlc,r.t.slice(0,10));
       if(i>=0)spans.push([i,i+n]);
     });
@@ -780,13 +848,19 @@ async function effectiveSample(){
 // more than being 55% and wrong. Balanced verdicts are abstains — no directional
 // probability to calibrate — so they're excluded from calls but not from momentum.
 function calibration(){
-  const calls=[],momo=[];
+  const calls=[],momo=[];let up=0,fade=0;
   const prim=primaryTs();
   LOG.forEach(r=>{
-    if(!prim.has(r.t))return; // same-day dup — excluded from aggregates
+    if(!prim.has(r))return; // same-day dup / superseded — excluded from aggregates
     ['5','10','20'].forEach(h=>{
-      if(r['hit'+h]!=null&&(r.tilt==='bullish'||r.tilt==='bearish')&&r.confidence!=null)
+      if(r['hit'+h]!=null&&(r.tilt==='bullish'||r.tilt==='bearish')&&r.confidence!=null){
         calls.push({p:r.confidence/100,hit:r['hit'+h]?1:0});
+        // the two other baselines, on the SAME directional horizon-calls:
+        // always-bullish (silver's drift) and fading the engine (opposite call)
+        const pct=r['pct'+h];
+        if(pct>0)up++;
+        if((r.tilt==='bullish'&&pct<0)||(r.tilt==='bearish'&&pct>0))fade++;
+      }
       if(r['momoHit'+h]!=null)momo.push(r['momoHit'+h]?1:0);
     });
   });
@@ -797,7 +871,9 @@ function calibration(){
     realized:calls.reduce((a,c)=>a+c.hit,0)/calls.length*100,
     brier:calls.reduce((a,c)=>a+Math.pow(c.p-c.hit,2),0)/calls.length,
     momoN:momo.length,
-    momoRate:momo.length?momo.reduce((a,b)=>a+b,0)/momo.length*100:null
+    momoRate:momo.length?momo.reduce((a,b)=>a+b,0)/momo.length*100:null,
+    upRate:up/calls.length*100,
+    fadeRate:fade/calls.length*100
   };
 }
 // ---- OIL-REGIME DISCRIMINATOR (display-only; falsifier pre-committed in the panel) ----
@@ -835,17 +911,21 @@ async function regimeDiscriminator(){
 // commitment; later same-day entries are post-tape revisions — kept and scored
 // individually, but excluded from all aggregates. Computed fresh each call so
 // unsynced local entries obey the same rule as server rows.
+// Returns the set of primary ROW OBJECTS (not timestamps: rows can share a t).
+// Superseded rows (v1 auto rows re-recorded by recorder v2, or logged on a
+// non-session) never claim the day — same rule as scripts/score-tilt.js.
 function primaryTs(){
   const seenDay=new Set(),prim=new Set();
-  for(const r of [...LOG].sort((a,b)=>a.t<b.t?-1:1)){
+  for(const r of [...LOG].sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0)){
+    if(r.superseded)continue;
     const d=r.t.slice(0,10);
-    if(!seenDay.has(d)){seenDay.add(d);prim.add(r.t);}
+    if(!seenDay.has(d)){seenDay.add(d);prim.add(r);}
   }
   return prim;
 }
 function hitRate(){
   const prim=primaryTs();
-  const P=LOG.filter(r=>prim.has(r.t));
+  const P=LOG.filter(r=>prim.has(r));
   const s5=P.filter(r=>r.hit5!=null);const s10=P.filter(r=>r.hit10!=null);const s20=P.filter(r=>r.hit20!=null);
   return {n5:s5.length,hit5:s5.length?Math.round(s5.filter(r=>r.hit5).length/s5.length*100):null,
           n10:s10.length,hit10:s10.length?Math.round(s10.filter(r=>r.hit10).length/s10.length*100):null,
@@ -867,7 +947,7 @@ function render(){
     scoreLine+='</div>';
     const cal=calibration();
     if(cal){
-      scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries \u2014 the bar any tilt must beat':'')+'<div id="effSample" style="margin-top:3px"></div></div>';
+      scoreLine+='<div style="font-size:11px;padding:4px 0 6px;border-bottom:1px solid var(--line);margin-bottom:6px"><b class="gold">Calibration ('+cal.n+' directional horizon-calls):</b> stated avg <b>'+Math.round(cal.stated)+'%</b> vs realized <b class="'+(cal.realized<cal.stated-10?'bear':'dim')+'">'+Math.round(cal.realized)+'%</b> \u00b7 Brier <b class="'+(cal.brier>0.25?'bear':'bull')+'">'+cal.brier.toFixed(2)+'</b> (always-50% = 0.25, lower better)'+(cal.momoRate!=null?' \u00b7 momentum baseline hit <b>'+Math.round(cal.momoRate)+'%</b> on the same entries':'')+' \u00b7 on the same directional calls: <b>always-bullish '+Math.round(cal.upRate)+'%</b>, <b>fading the engine '+Math.round(cal.fadeRate)+'%</b> \u2014 a tilt must beat momentum AND always-bullish; fading only "wins" by being bullish in a rising market, so it must beat always-bullish too'+'<div id="effSample" style="margin-top:3px"></div></div>';
     }
   }
   const prim=primaryTs();
@@ -876,10 +956,10 @@ function render(){
     if(r.hit5!=null)scoreTag+=' <span class="'+(r.hit5?'bull':'bear')+'" style="font-size:10px">[+5d '+(r.pct5>=0?'+':'')+r.pct5.toFixed(1)+'% '+(r.hit5?'\u2713':'\u2717')+']</span>';
     if(r.hit10!=null)scoreTag+=' <span class="'+(r.hit10?'bull':'bear')+'" style="font-size:10px">[+10d '+(r.pct10>=0?'+':'')+r.pct10.toFixed(1)+'% '+(r.hit10?'\u2713':'\u2717')+']</span>';
     if(r.hit20!=null)scoreTag+=' <span class="'+(r.hit20?'bull':'bear')+'" style="font-size:10px">[+20d '+(r.pct20>=0?'+':'')+r.pct20.toFixed(1)+'% '+(r.hit20?'\u2713':'\u2717')+']</span>';
-    const dupTag=prim.has(r.t)?'':' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Later same-day entry \u2014 scored for reference but excluded from hit rate, calibration, and Brier (first entry of the day is the commitment)">dup\u00b7not counted</span>';
-    const srcTag=r.source==='auto'?' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Logged automatically by the daily server-side run — the engine speaks every trading day, including abstains, so the record is not self-selected">auto</span>':'';
+    const dupTag=prim.has(r)?'':r.superseded?' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="'+String(r.inputNote||'Superseded by recorder v2').replace(/"/g,'&quot;')+'">superseded\u00b7not counted</span>':' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Later same-day entry \u2014 scored for reference but excluded from hit rate, calibration, and Brier (first entry of the day is the commitment)">dup\u00b7not counted</span>';
+    const srcTag=r.source==='auto'?' <span class="dim" style="font-size:9px;border:1px solid var(--line);padding:0 4px" title="Logged automatically by the daily server-side run \u2014 the engine speaks every trading day, including abstains, so the record is not self-selected">auto'+(r.recorder?'\u00b7'+r.recorder:'')+'</span>':'';
     const flagTag=(Array.isArray(r.flags)&&r.flags.length)?' <span class="warn" style="font-size:9px" title="Contradiction flags active when this verdict was logged \u2014 annotations for the flagged-vs-unflagged test, wired into nothing">\u2691'+r.flags.length+' '+r.flags.join(',')+'</span>':'';
-    return '<div class="logrow"'+(prim.has(r.t)?'':' style="opacity:0.55"')+'>'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+srcTag+dupTag+flagTag+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
+    return '<div class="logrow"'+(prim.has(r)?'':' style="opacity:0.55"')+'>'+r.t+' \u00b7 $'+r.spot.toFixed(2)+' \u00b7 <b class="'+(r.tilt==='bullish'?'bull':r.tilt==='bearish'?'bear':'dim')+'">'+r.tilt.toUpperCase()+'</b> @ '+r.confidence+'%'+srcTag+dupTag+flagTag+scoreTag+' \u00b7 '+(r.headline||'').slice(0,56)+'</div>';
   }).join('');
 }
 $('logBtn').addEventListener('click',async()=>{
