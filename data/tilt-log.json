@@ -2179,14 +2179,15 @@
   "p10": 65.47,
   "pct10": 1.15,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 61.155,
+  "pct20": -5.51,
+  "hit20": true,
   "dup": false,
   "momoDir": "bullish",
   "momoHit5": false,
   "momoHit10": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit20": false
  },
  {
   "t": "2026-09-02 21:00",
@@ -2206,9 +2207,9 @@
   "p10": 66.36,
   "pct10": 0.67,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 61.155,
+  "pct20": -7.23,
+  "hit20": true,
   "dup": true,
   "momoDir": "bullish",
   "scoredFrom": "ohlc-v3",
@@ -2216,7 +2217,8 @@
   "momoHit10": true,
   "superseded": true,
   "supersededBy": "v2",
-  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)"
+  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
+  "momoHit20": false
  },
  {
   "t": "2026-09-03 21:00",
@@ -2863,16 +2865,17 @@
   "p5": 63.457,
   "pct5": -3.07,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 61.155,
+  "pct10": -6.59,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "momoHit5": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit10": true
  },
  {
   "t": "2026-09-17 21:00",
@@ -2889,9 +2892,9 @@
   "p5": 63.775,
   "pct5": -3.07,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 61.155,
+  "pct10": -7.05,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
@@ -2901,7 +2904,8 @@
   "momoHit5": false,
   "superseded": true,
   "supersededBy": "v2",
-  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)"
+  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
+  "momoHit10": false
  },
  {
   "t": "2026-09-18 21:00",
@@ -3144,9 +3148,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 61.155,
+  "pct5": -3.63,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3155,7 +3159,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-09-24 21:00",
@@ -3169,9 +3174,9 @@
   ],
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 61.155,
+  "pct5": -4.73,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3183,7 +3188,8 @@
   "scoredFrom": "ohlc-v3",
   "superseded": true,
   "supersededBy": "v2",
-  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)"
+  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
+  "momoHit5": true
  },
  {
   "t": "2026-09-25 21:00",
@@ -3267,6 +3273,39 @@
    "oilChg5": -5.51,
    "oilPct120": 50,
    "chg": -0.9,
+   "regimeLevel": null
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-09-30 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-09-30T18:25:06.781Z",
+  "recordedAt": "2026-10-01T18:49:32.488Z",
+  "inputsAt": "2026-09-30T18:25:06.781Z",
+  "spot": 60.098,
+  "tilt": "bearish",
+  "confidence": 40,
+  "headline": "Iran/oil channel only: stagflation tilt, oil rising +1.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
+  "flags": [],
+  "inputs": {
+   "oilChg": 1.16,
+   "oilChg5": -1.89,
+   "oilPct120": 53.3,
+   "chg": -0.94,
    "regimeLevel": null
   },
   "source": "auto",
