@@ -2548,14 +2548,15 @@
   "p10": 63.457,
   "pct10": -1.29,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 59.37,
+  "pct20": -7.64,
+  "hit20": true,
   "dup": false,
   "momoDir": "bearish",
   "momoHit5": false,
   "momoHit10": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit20": true
  },
  {
   "t": "2026-09-10 21:00",
@@ -2575,9 +2576,9 @@
   "p10": 63.775,
   "pct10": -0.49,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 59.37,
+  "pct20": -7.36,
+  "hit20": true,
   "dup": true,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
@@ -2585,7 +2586,8 @@
   "momoHit10": true,
   "superseded": true,
   "supersededBy": "v2",
-  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)"
+  "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
+  "momoHit20": true
  },
  {
   "t": "2026-09-11 21:00",
@@ -3167,16 +3169,17 @@
   "p5": 61.155,
   "pct5": -3.63,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 59.37,
+  "pct10": -6.44,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-09-24 21:00",
@@ -3193,9 +3196,9 @@
   "p5": 61.155,
   "pct5": -4.73,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 59.37,
+  "pct10": -7.51,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
@@ -3205,7 +3208,8 @@
   "superseded": true,
   "supersededBy": "v2",
   "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-09-25 21:00",
@@ -3363,9 +3367,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 59.37,
+  "pct5": -2.23,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3374,7 +3378,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-10-02 21:00",
@@ -3460,6 +3465,41 @@
    "oilChg5": 0.07,
    "oilPct120": 51.7,
    "chg": 0.49,
+   "regimeLevel": null
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-10-07 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-10-07T19:18:30.085Z",
+  "recordedAt": "2026-10-08T19:15:10.208Z",
+  "inputsAt": "2026-10-07T19:18:30.085Z",
+  "spot": 59.899,
+  "tilt": "bullish",
+  "confidence": 40,
+  "headline": "Iran/oil channel only: relief tilt, oil falling -1.3% into a unclear (no deep anchors) regime. One channel’s read — see scope note before tr",
+  "flags": [
+   "ratio-confirmer"
+  ],
+  "inputs": {
+   "oilChg": -1.3,
+   "oilChg5": -2.37,
+   "oilPct120": 47.5,
+   "chg": -2.07,
    "regimeLevel": null
   },
   "source": "auto",
