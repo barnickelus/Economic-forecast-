@@ -3059,14 +3059,15 @@
   "p10": 61.87,
   "pct10": -6.16,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 58.025,
+  "pct20": -11.99,
+  "hit20": false,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-09-22 21:00",
@@ -3084,9 +3085,9 @@
   "p10": 61.87,
   "pct10": -8.63,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 58.025,
+  "pct20": -14.31,
+  "hit20": false,
   "dup": true,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
@@ -3094,7 +3095,8 @@
   "supersededBy": "v2",
   "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-09-23 21:00",
@@ -3494,16 +3496,17 @@
   "p5": 60.39,
   "pct5": -1.27,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 58.025,
+  "pct10": -5.14,
+  "hit10": false,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-10-07 21:00",
@@ -3669,9 +3672,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 58.025,
+  "pct5": -1.92,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3680,7 +3683,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-10-14 21:00",
@@ -3770,6 +3774,41 @@
    "oilChg5": 10.41,
    "oilPct120": 88.3,
    "chg": 0.28,
+   "regimeLevel": null
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-10-19 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-10-19T19:15:44.231Z",
+  "recordedAt": "2026-10-20T17:56:32.564Z",
+  "inputsAt": "2026-10-19T19:15:44.231Z",
+  "spot": 56.974,
+  "tilt": "bearish",
+  "confidence": 40,
+  "headline": "Iran/oil channel only: stagflation tilt, oil rising +2.2% with unclear (no deep anchors). One channel’s read — other channels not modeled he",
+  "flags": [
+   "curve-incoherent"
+  ],
+  "inputs": {
+   "oilChg": 2.22,
+   "oilChg5": 10.58,
+   "oilPct120": 93.3,
+   "chg": -0.04,
    "regimeLevel": null
   },
   "source": "auto",
