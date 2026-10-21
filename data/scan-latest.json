@@ -1,445 +1,445 @@
 {
- "fetchedAt": "2026-10-12T21:04:21.445Z",
+ "fetchedAt": "2026-10-21T18:58:01.894Z",
  "results": {
   "XLE": {
-   "last": 66.01,
-   "d1": 1.4,
-   "d5": 4,
-   "d20": 2.3,
-   "verdict": "improving"
+   "last": 68.46,
+   "d1": 0.7,
+   "d5": 1.2,
+   "d20": 9.8,
+   "verdict": "TURNING_UP"
   },
   "XLF": {
-   "last": 55.05,
-   "d1": 0.6,
-   "d5": 2.2,
-   "d20": -3.5,
-   "verdict": "improving"
+   "last": 55.99,
+   "d1": 0.5,
+   "d5": 2.7,
+   "d20": 2.6,
+   "verdict": "TURNING_UP"
   },
   "XLK": {
-   "last": 196.36,
-   "d1": -1.2,
-   "d5": -2.3,
-   "d20": 6.6,
-   "verdict": "basing"
+   "last": 188.17,
+   "d1": 1.5,
+   "d5": -1.2,
+   "d20": -3.7,
+   "verdict": "turning_down"
   },
   "XLV": {
-   "last": 171.99,
-   "d1": 0.7,
+   "last": 178.91,
+   "d1": -0.5,
    "d5": 2.8,
-   "d20": 2.5,
-   "verdict": "basing"
+   "d20": 6,
+   "verdict": "TURNING_UP"
   },
   "XLI": {
-   "last": 169.15,
-   "d1": -0.1,
-   "d5": -0.6,
-   "d20": -0.5,
+   "last": 167.92,
+   "d1": 0.7,
+   "d5": 0.5,
+   "d20": -1.3,
    "verdict": "basing"
   },
   "XLP": {
-   "last": 84.41,
-   "d1": 1.2,
-   "d5": 4.2,
-   "d20": 0,
-   "verdict": "improving"
-  },
-  "XLU": {
-   "last": 41.63,
-   "d1": 0.5,
-   "d5": 4.2,
-   "d20": -0.5,
+   "last": 86.98,
+   "d1": -0.9,
+   "d5": 1.1,
+   "d20": 5.5,
    "verdict": "TURNING_UP"
   },
+  "XLU": {
+   "last": 42.12,
+   "d1": 0.6,
+   "d5": 1,
+   "d20": 6,
+   "verdict": "trending"
+  },
   "XLY": {
-   "last": 112.27,
-   "d1": -0.5,
-   "d5": 1.7,
-   "d20": -0.5,
-   "verdict": "improving"
+   "last": 115.54,
+   "d1": 0,
+   "d5": 3.6,
+   "d20": 4.4,
+   "verdict": "TURNING_UP"
   },
   "XLB": {
-   "last": 49.44,
-   "d1": 0,
-   "d5": -0.1,
-   "d20": -2.1,
-   "verdict": "basing"
+   "last": 51.19,
+   "d1": -0.1,
+   "d5": 3.1,
+   "d20": 1.8,
+   "verdict": "TURNING_UP"
   },
   "XLRE": {
-   "last": 41.92,
-   "d1": 0.7,
-   "d5": 3.1,
-   "d20": -2.8,
-   "verdict": "basing"
+   "last": 42.12,
+   "d1": -0.6,
+   "d5": 1.5,
+   "d20": 0.7,
+   "verdict": "TURNING_UP"
   },
   "XBI": {
-   "last": 151.4,
-   "d1": -1.5,
-   "d5": -3.1,
-   "d20": -3.9,
-   "verdict": "turning_down"
+   "last": 153.27,
+   "d1": 0,
+   "d5": 4.4,
+   "d20": -1.2,
+   "verdict": "basing"
   },
   "SMH": {
-   "last": 590.99,
-   "d1": -2,
-   "d5": -6.8,
-   "d20": 9.1,
+   "last": 555.61,
+   "d1": 1.7,
+   "d5": -1.6,
+   "d20": -7.6,
    "verdict": "turning_down"
   },
   "XME": {
-   "last": 104.85,
-   "d1": -1.4,
-   "d5": -2.7,
-   "d20": -4.8,
-   "verdict": "turning_down"
+   "last": 101.05,
+   "d1": 0.7,
+   "d5": 1.2,
+   "d20": -7.8,
+   "verdict": "basing"
   },
   "KRE": {
-   "last": 69.56,
-   "d1": 0.8,
-   "d5": -1.2,
-   "d20": -6.1,
-   "verdict": "turning_down"
-  },
-  "ITB": {
-   "last": 83.99,
-   "d1": -0.9,
-   "d5": -1.9,
-   "d20": -6.7,
-   "verdict": "turning_down"
-  },
-  "XOP": {
-   "last": 194.29,
-   "d1": 1.4,
-   "d5": 3.7,
-   "d20": 0.4,
+   "last": 70.35,
+   "d1": -0.4,
+   "d5": 2.6,
+   "d20": 0,
    "verdict": "improving"
   },
+  "ITB": {
+   "last": 86.49,
+   "d1": -1,
+   "d5": 3.7,
+   "d20": -2.6,
+   "verdict": "improving"
+  },
+  "XOP": {
+   "last": 199.91,
+   "d1": -0.1,
+   "d5": 1,
+   "d20": 9.4,
+   "verdict": "TURNING_UP"
+  },
   "URA": {
-   "last": 37.72,
-   "d1": -3,
-   "d5": -6.1,
-   "d20": -10.6,
-   "verdict": "turning_down"
+   "last": 35.42,
+   "d1": 0.7,
+   "d5": -0.4,
+   "d20": -15.7,
+   "verdict": "basing"
   },
   "LIT": {
-   "last": 68.37,
-   "d1": -2,
-   "d5": -2.5,
-   "d20": -2.3,
-   "verdict": "basing"
+   "last": 63.15,
+   "d1": -1.7,
+   "d5": -4.9,
+   "d20": -9.2,
+   "verdict": "turning_down"
   },
   "MSFT": {
-   "last": 541.15,
-   "d1": 1.1,
-   "d5": 3,
-   "d20": 7.1,
-   "verdict": "TURNING_UP"
+   "last": 531.31,
+   "d1": -0.1,
+   "d5": -0.4,
+   "d20": 6.1,
+   "verdict": "basing"
   },
   "GOOGL": {
-   "last": 352.72,
-   "d1": 0.3,
-   "d5": 1.8,
-   "d20": 1,
-   "verdict": "TURNING_UP"
+   "last": 333.71,
+   "d1": -1.9,
+   "d5": -4,
+   "d20": -1.2,
+   "verdict": "turning_down"
   },
   "AMZN": {
-   "last": 259.53,
-   "d1": -1.1,
+   "last": 262.32,
+   "d1": -0.1,
    "d5": 3.2,
-   "d20": 2.4,
-   "verdict": "TURNING_UP"
+   "d20": 5.2,
+   "verdict": "trending"
   },
   "META": {
-   "last": 742.96,
-   "d1": 3.4,
-   "d5": 0.1,
-   "d20": 11.6,
-   "verdict": "basing"
+   "last": 707.59,
+   "d1": 1.9,
+   "d5": -4.1,
+   "d20": -4.9,
+   "verdict": "turning_down"
   },
   "AVGO": {
-   "last": 354.73,
-   "d1": -1.9,
-   "d5": -2.1,
-   "d20": 2.9,
-   "verdict": "basing"
+   "last": 336.24,
+   "d1": 0.6,
+   "d5": -2.9,
+   "d20": -5.3,
+   "verdict": "turning_down"
   },
   "AMD": {
-   "last": 594.24,
-   "d1": -2.3,
-   "d5": -5.9,
-   "d20": 20.4,
+   "last": 554.29,
+   "d1": 3.7,
+   "d5": -2.9,
+   "d20": -9.8,
    "verdict": "turning_down"
   },
   "MU": {
-   "last": 989.04,
-   "d1": -3.9,
-   "d5": -7,
-   "d20": 7,
-   "verdict": "turning_down"
+   "last": 912.62,
+   "d1": 1.8,
+   "d5": -0.2,
+   "d20": -14.9,
+   "verdict": "basing"
   },
   "INTC": {
-   "last": 101.35,
-   "d1": -3.2,
-   "d5": -12.8,
-   "d20": 4.3,
+   "last": 92.31,
+   "d1": 0.7,
+   "d5": -5.9,
+   "d20": -24.7,
    "verdict": "turning_down"
   },
   "CRM": {
-   "last": 233.92,
-   "d1": 2.1,
-   "d5": 1.8,
-   "d20": -9.8,
-   "verdict": "basing"
+   "last": 241.82,
+   "d1": -0.3,
+   "d5": 2.5,
+   "d20": 1.8,
+   "verdict": "TURNING_UP"
   },
   "ORCL": {
-   "last": 137.39,
-   "d1": -2.8,
-   "d5": -3.6,
-   "d20": -5.1,
-   "verdict": "basing"
+   "last": 128.53,
+   "d1": -2,
+   "d5": -1.5,
+   "d20": -11.1,
+   "verdict": "turning_down"
   },
   "NFLX": {
-   "last": 70.61,
-   "d1": 0.4,
-   "d5": 4.6,
-   "d20": -12.1,
-   "verdict": "improving"
+   "last": 65.47,
+   "d1": -4.7,
+   "d5": -7.2,
+   "d20": -8.3,
+   "verdict": "turning_down"
   },
   "GDX": {
-   "last": 88.53,
-   "d1": -0.8,
-   "d5": 1.3,
-   "d20": -6,
+   "last": 85.78,
+   "d1": -0.4,
+   "d5": 2.9,
+   "d20": -8.3,
    "verdict": "basing"
   },
   "GDXJ": {
-   "last": 112.92,
-   "d1": -1.3,
-   "d5": 0.1,
-   "d20": -6.6,
+   "last": 107.28,
+   "d1": -0.5,
+   "d5": 2.4,
+   "d20": -11.5,
    "verdict": "basing"
   },
   "SIL": {
-   "last": 86.06,
-   "d1": -0.9,
-   "d5": -0.1,
-   "d20": -7.7,
+   "last": 80.61,
+   "d1": -1,
+   "d5": 1.4,
+   "d20": -12.6,
    "verdict": "basing"
   },
   "SILJ": {
-   "last": 27.04,
-   "d1": -1.3,
-   "d5": -0.3,
-   "d20": -7.9,
+   "last": 25.19,
+   "d1": -0.4,
+   "d5": 1.8,
+   "d20": -14.3,
    "verdict": "basing"
   },
   "AU": {
-   "last": 93.44,
-   "d1": -0.8,
-   "d5": -1.1,
-   "d20": -7,
+   "last": 90.85,
+   "d1": 0,
+   "d5": 2.3,
+   "d20": -8,
    "verdict": "basing"
   },
   "AG": {
-   "last": 16.99,
-   "d1": -1.7,
-   "d5": -3,
-   "d20": -9.6,
-   "verdict": "turning_down"
-  },
-  "NEM": {
-   "last": 117.15,
-   "d1": -0.6,
-   "d5": 1.1,
-   "d20": -4.8,
+   "last": 15.97,
+   "d1": -0.1,
+   "d5": 4.7,
+   "d20": -16.2,
    "verdict": "basing"
   },
-  "GOLD": {
-   "last": 39.73,
-   "d1": -2.4,
-   "d5": -4.6,
-   "d20": -16,
-   "verdict": "turning_down"
-  },
-  "PAAS": {
-   "last": 45.71,
-   "d1": -1.2,
-   "d5": 0.9,
+  "NEM": {
+   "last": 116.12,
+   "d1": -0.6,
+   "d5": 4.1,
    "d20": -6,
    "verdict": "basing"
   },
+  "GOLD": {
+   "last": 38.58,
+   "d1": 1,
+   "d5": -0.4,
+   "d20": -11.3,
+   "verdict": "basing"
+  },
+  "PAAS": {
+   "last": 43.24,
+   "d1": -2.4,
+   "d5": 2.1,
+   "d20": -10.1,
+   "verdict": "basing"
+  },
   "WPM": {
-   "last": 138.11,
-   "d1": -0.4,
-   "d5": 1.4,
-   "d20": -7.7,
+   "last": 130.78,
+   "d1": -0.3,
+   "d5": 0.9,
+   "d20": -10.1,
    "verdict": "basing"
   },
   "FNV": {
-   "last": 245.75,
-   "d1": 0.4,
-   "d5": 2.1,
-   "d20": -6.1,
+   "last": 241.57,
+   "d1": 0.2,
+   "d5": 2.8,
+   "d20": -7.4,
    "verdict": "basing"
   },
   "HL": {
-   "last": 16.84,
-   "d1": -1.3,
-   "d5": -1,
-   "d20": -10.5,
+   "last": 15.02,
+   "d1": 0,
+   "d5": 0.8,
+   "d20": -17.8,
    "verdict": "basing"
   },
   "CDE": {
-   "last": 16.76,
-   "d1": -2.2,
-   "d5": -1.7,
-   "d20": -15.7,
-   "verdict": "turning_down"
+   "last": 14.95,
+   "d1": -1.2,
+   "d5": -0.2,
+   "d20": -22.6,
+   "verdict": "basing"
   },
   "FSM": {
-   "last": 10.76,
-   "d1": -1.5,
-   "d5": -3.4,
-   "d20": -7.5,
-   "verdict": "turning_down"
+   "last": 10.29,
+   "d1": -1,
+   "d5": 1.2,
+   "d20": -11.7,
+   "verdict": "basing"
   },
   "EXK": {
-   "last": 8.54,
-   "d1": -1.3,
-   "d5": -0.7,
-   "d20": -12.1,
+   "last": 8.25,
+   "d1": 0.6,
+   "d5": 5.4,
+   "d20": -10.9,
    "verdict": "basing"
   },
   "SLV": {
-   "last": 54.35,
-   "d1": -0.8,
-   "d5": -1.4,
-   "d20": -4.4,
-   "verdict": "turning_down"
+   "last": 51.64,
+   "d1": -0.9,
+   "d5": 2.8,
+   "d20": -11.2,
+   "verdict": "basing"
   },
   "GLD": {
-   "last": 382.15,
-   "d1": -0.6,
-   "d5": 0.7,
-   "d20": -2.7,
+   "last": 377.32,
+   "d1": -0.1,
+   "d5": 0.4,
+   "d20": -4,
    "verdict": "basing"
   },
   "XOM": {
-   "last": 172.15,
-   "d1": 1.9,
-   "d5": 5,
-   "d20": 4.3,
-   "verdict": "improving"
-  },
-  "CVX": {
-   "last": 215,
-   "d1": 1.4,
-   "d5": 4.1,
-   "d20": 1.3,
-   "verdict": "improving"
-  },
-  "OXY": {
-   "last": 61.13,
-   "d1": 1.7,
-   "d5": 4.8,
-   "d20": -1.1,
-   "verdict": "improving"
-  },
-  "SLB": {
-   "last": 48.77,
-   "d1": -0.4,
-   "d5": -3,
-   "d20": -8.5,
-   "verdict": "turning_down"
-  },
-  "HAL": {
-   "last": 32.6,
-   "d1": 0.2,
-   "d5": -0.5,
-   "d20": -6.9,
-   "verdict": "basing"
-  },
-  "FCX": {
-   "last": 73.29,
-   "d1": -0.5,
-   "d5": 1,
-   "d20": 5.7,
+   "last": 178.67,
+   "d1": 0.5,
+   "d5": 0.9,
+   "d20": 10.8,
    "verdict": "trending"
   },
-  "SCCO": {
-   "last": 208.69,
-   "d1": -0.2,
-   "d5": 1.7,
-   "d20": 10.8,
+  "CVX": {
+   "last": 227.85,
+   "d1": 1,
+   "d5": 2.6,
+   "d20": 10.9,
    "verdict": "TURNING_UP"
   },
+  "OXY": {
+   "last": 63.04,
+   "d1": 0.2,
+   "d5": 2.7,
+   "d20": 9.9,
+   "verdict": "TURNING_UP"
+  },
+  "SLB": {
+   "last": 51.21,
+   "d1": 2.5,
+   "d5": 5.6,
+   "d20": -1.3,
+   "verdict": "TURNING_UP"
+  },
+  "HAL": {
+   "last": 33.83,
+   "d1": 0.7,
+   "d5": 3.1,
+   "d20": 2.5,
+   "verdict": "TURNING_UP"
+  },
+  "FCX": {
+   "last": 68.23,
+   "d1": -0.9,
+   "d5": -2,
+   "d20": -6,
+   "verdict": "turning_down"
+  },
+  "SCCO": {
+   "last": 195.23,
+   "d1": -3.5,
+   "d5": -2.7,
+   "d20": -3.3,
+   "verdict": "turning_down"
+  },
   "ALB": {
-   "last": 98.51,
-   "d1": -2.7,
-   "d5": -5.6,
-   "d20": -14.4,
+   "last": 94.17,
+   "d1": -1.7,
+   "d5": -3.9,
+   "d20": -17,
    "verdict": "turning_down"
   },
   "CCJ": {
-   "last": 86.12,
-   "d1": -2.2,
-   "d5": -1.5,
-   "d20": -7.7,
-   "verdict": "turning_down"
+   "last": 81.82,
+   "d1": 1.6,
+   "d5": 0.4,
+   "d20": -9.9,
+   "verdict": "basing"
   },
   "COIN": {
-   "last": 180.39,
-   "d1": 0.6,
-   "d5": -4.2,
-   "d20": -5.8,
-   "verdict": "turning_down"
+   "last": 178.26,
+   "d1": 4.3,
+   "d5": 3.1,
+   "d20": -10,
+   "verdict": "basing"
   },
   "MSTR": {
-   "last": 152.68,
-   "d1": -1.1,
-   "d5": -7.1,
-   "d20": 11.5,
-   "verdict": "turning_down"
+   "last": 153.83,
+   "d1": 7.8,
+   "d5": 7.4,
+   "d20": -5.2,
+   "verdict": "basing"
   },
   "PLTR": {
-   "last": 209,
-   "d1": 0,
-   "d5": 10.3,
-   "d20": 20.6,
-   "verdict": "TURNING_UP"
+   "last": 199.69,
+   "d1": 3.7,
+   "d5": -0.6,
+   "d20": 4.1,
+   "verdict": "basing"
   },
   "SPY": {
-   "last": 778.1,
-   "d1": -0.1,
+   "last": 772.38,
+   "d1": 0.4,
    "d5": 0.4,
-   "d20": 2.3,
-   "verdict": "improving"
+   "d20": 0.6,
+   "verdict": "basing"
   },
   "QQQ": {
-   "last": 746.04,
-   "d1": -0.7,
-   "d5": -1.3,
-   "d20": 5.2,
+   "last": 724.78,
+   "d1": 1,
+   "d5": -0.6,
+   "d20": -2.2,
    "verdict": "basing"
   },
   "TSLA": {
-   "last": 378.03,
-   "d1": -1.2,
-   "d5": -0.2,
-   "d20": 5.3,
-   "verdict": "trending"
+   "last": 386.4,
+   "d1": 3.4,
+   "d5": 5.2,
+   "d20": 1.7,
+   "verdict": "basing"
   },
   "NVDA": {
-   "last": 226.32,
-   "d1": -1.3,
-   "d5": -5.3,
-   "d20": 7.3,
+   "last": 220.84,
+   "d1": 2,
+   "d5": -0.2,
+   "d20": -2.1,
    "verdict": "basing"
   },
   "AAPL": {
-   "last": 340.97,
-   "d1": 1.3,
-   "d5": 2.4,
-   "d20": 2.4,
+   "last": 344.12,
+   "d1": 1.4,
+   "d5": 0.3,
+   "d20": 2.1,
    "verdict": "improving"
   }
  }
