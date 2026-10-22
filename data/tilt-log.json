@@ -3189,14 +3189,15 @@
   "p10": 59.37,
   "pct10": -6.44,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 54.995,
+  "pct20": -13.34,
+  "hit20": true,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-09-24 21:00",
@@ -3216,9 +3217,9 @@
   "p10": 59.37,
   "pct10": -7.51,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 54.995,
+  "pct20": -14.32,
+  "hit20": true,
   "dup": true,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
@@ -3226,7 +3227,8 @@
   "supersededBy": "v2",
   "inputNote": "v1 evening-run recorder: spot/oil read from the mis-dated post-22:00 UTC bar — superseded by recorder v2 (same date, as-of inputs)",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-09-25 21:00",
@@ -3572,16 +3574,17 @@
   "p5": 57.18,
   "pct5": -3.19,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 54.995,
+  "pct10": -6.89,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-10-09 21:00",
@@ -3747,9 +3750,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 54.995,
+  "pct5": -3.24,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3758,7 +3761,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-10-16 21:00",
@@ -3849,6 +3853,42 @@
    "oilPct120": 88.3,
    "chg": 1.28,
    "regimeLevel": 11.5
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-10-21 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-10-21T23:59:14.973Z",
+  "recordedAt": "2026-10-22T17:56:16.704Z",
+  "inputsAt": "2026-10-21T23:59:14.973Z",
+  "spot": 57.422,
+  "tilt": "bullish",
+  "confidence": 28,
+  "headline": "Iran/oil channel: contracts and oil disagree — no confident call. (Other channels not modeled — see scope note.)",
+  "flags": [
+   "ratio-confirmer",
+   "curve-incoherent"
+  ],
+  "inputs": {
+   "oilChg": -4.56,
+   "oilChg5": 2.17,
+   "oilPct120": 80.8,
+   "chg": -0.49,
+   "regimeLevel": 13.5
   },
   "source": "auto",
   "contractsSeen": 20,
