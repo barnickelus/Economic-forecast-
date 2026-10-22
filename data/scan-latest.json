@@ -1,445 +1,445 @@
 {
- "fetchedAt": "2026-10-21T18:58:01.894Z",
+ "fetchedAt": "2026-10-22T18:07:55.784Z",
  "results": {
   "XLE": {
-   "last": 68.46,
-   "d1": 0.7,
-   "d5": 1.2,
-   "d20": 9.8,
+   "last": 67.44,
+   "d1": -1,
+   "d5": 1.3,
+   "d20": 7.7,
    "verdict": "TURNING_UP"
   },
   "XLF": {
-   "last": 55.99,
-   "d1": 0.5,
-   "d5": 2.7,
-   "d20": 2.6,
+   "last": 56.53,
+   "d1": 0.9,
+   "d5": 2.3,
+   "d20": 3.7,
    "verdict": "TURNING_UP"
   },
   "XLK": {
-   "last": 188.17,
-   "d1": 1.5,
-   "d5": -1.2,
-   "d20": -3.7,
+   "last": 182.21,
+   "d1": -3.4,
+   "d5": -3.7,
+   "d20": -6.4,
    "verdict": "turning_down"
   },
   "XLV": {
-   "last": 178.91,
-   "d1": -0.5,
-   "d5": 2.8,
-   "d20": 6,
+   "last": 180.87,
+   "d1": 1.1,
+   "d5": 2.1,
+   "d20": 6.5,
    "verdict": "TURNING_UP"
   },
   "XLI": {
-   "last": 167.92,
-   "d1": 0.7,
-   "d5": 0.5,
-   "d20": -1.3,
-   "verdict": "basing"
+   "last": 165.69,
+   "d1": -1.6,
+   "d5": -1.3,
+   "d20": -1.9,
+   "verdict": "turning_down"
   },
   "XLP": {
-   "last": 86.98,
-   "d1": -0.9,
-   "d5": 1.1,
-   "d20": 5.5,
+   "last": 89.48,
+   "d1": 2.7,
+   "d5": 3.2,
+   "d20": 9.5,
    "verdict": "TURNING_UP"
   },
   "XLU": {
-   "last": 42.12,
-   "d1": 0.6,
-   "d5": 1,
-   "d20": 6,
-   "verdict": "trending"
+   "last": 42.6,
+   "d1": 1.4,
+   "d5": 2.3,
+   "d20": 8.2,
+   "verdict": "TURNING_UP"
   },
   "XLY": {
-   "last": 115.54,
-   "d1": 0,
-   "d5": 3.6,
-   "d20": 4.4,
+   "last": 114.86,
+   "d1": -0.6,
+   "d5": 1.3,
+   "d20": 4.1,
    "verdict": "TURNING_UP"
   },
   "XLB": {
-   "last": 51.19,
-   "d1": -0.1,
-   "d5": 3.1,
-   "d20": 1.8,
+   "last": 51.44,
+   "d1": 0.2,
+   "d5": 1.7,
+   "d20": 3.5,
    "verdict": "TURNING_UP"
   },
   "XLRE": {
-   "last": 42.12,
-   "d1": -0.6,
-   "d5": 1.5,
-   "d20": 0.7,
-   "verdict": "TURNING_UP"
+   "last": 42.31,
+   "d1": 0.6,
+   "d5": 0.8,
+   "d20": 1.6,
+   "verdict": "improving"
   },
   "XBI": {
-   "last": 153.27,
-   "d1": 0,
-   "d5": 4.4,
-   "d20": -1.2,
-   "verdict": "basing"
+   "last": 150.7,
+   "d1": -1.4,
+   "d5": 0.6,
+   "d20": -3.4,
+   "verdict": "improving"
   },
   "SMH": {
-   "last": 555.61,
-   "d1": 1.7,
-   "d5": -1.6,
-   "d20": -7.6,
+   "last": 525.08,
+   "d1": -5.7,
+   "d5": -6,
+   "d20": -12.6,
    "verdict": "turning_down"
   },
   "XME": {
-   "last": 101.05,
-   "d1": 0.7,
-   "d5": 1.2,
-   "d20": -7.8,
-   "verdict": "basing"
+   "last": 96.76,
+   "d1": -4.5,
+   "d5": -4.5,
+   "d20": -10.4,
+   "verdict": "turning_down"
   },
   "KRE": {
-   "last": 70.35,
-   "d1": -0.4,
-   "d5": 2.6,
-   "d20": 0,
+   "last": 72.2,
+   "d1": 2.2,
+   "d5": 3.5,
+   "d20": 1.8,
    "verdict": "improving"
   },
   "ITB": {
-   "last": 86.49,
-   "d1": -1,
-   "d5": 3.7,
-   "d20": -2.6,
+   "last": 90.39,
+   "d1": 4.4,
+   "d5": 4.2,
+   "d20": 2.4,
    "verdict": "improving"
   },
   "XOP": {
-   "last": 199.91,
-   "d1": -0.1,
-   "d5": 1,
-   "d20": 9.4,
-   "verdict": "TURNING_UP"
-  },
-  "URA": {
-   "last": 35.42,
-   "d1": 0.7,
-   "d5": -0.4,
-   "d20": -15.7,
+   "last": 197.16,
+   "d1": -0.9,
+   "d5": 1.2,
+   "d20": 7.1,
    "verdict": "basing"
   },
+  "URA": {
+   "last": 34.03,
+   "d1": -4.3,
+   "d5": -5.8,
+   "d20": -16.7,
+   "verdict": "turning_down"
+  },
   "LIT": {
-   "last": 63.15,
-   "d1": -1.7,
-   "d5": -4.9,
-   "d20": -9.2,
+   "last": 60.62,
+   "d1": -4.1,
+   "d5": -7.5,
+   "d20": -11.9,
    "verdict": "turning_down"
   },
   "MSFT": {
-   "last": 531.31,
-   "d1": -0.1,
-   "d5": -0.4,
-   "d20": 6.1,
+   "last": 523.22,
+   "d1": -1.8,
+   "d5": -3,
+   "d20": 5.1,
    "verdict": "basing"
   },
   "GOOGL": {
-   "last": 333.71,
-   "d1": -1.9,
-   "d5": -4,
-   "d20": -1.2,
+   "last": 324.52,
+   "d1": -3.1,
+   "d5": -7.1,
+   "d20": -5.2,
    "verdict": "turning_down"
   },
   "AMZN": {
-   "last": 262.32,
-   "d1": -0.1,
-   "d5": 3.2,
-   "d20": 5.2,
-   "verdict": "trending"
+   "last": 250.02,
+   "d1": -4.7,
+   "d5": -1.9,
+   "d20": 0.3,
+   "verdict": "basing"
   },
   "META": {
-   "last": 707.59,
-   "d1": 1.9,
-   "d5": -4.1,
-   "d20": -4.9,
+   "last": 644.46,
+   "d1": -7.6,
+   "d5": -12.5,
+   "d20": -17.1,
    "verdict": "turning_down"
   },
   "AVGO": {
-   "last": 336.24,
-   "d1": 0.6,
-   "d5": -2.9,
-   "d20": -5.3,
+   "last": 324.14,
+   "d1": -4,
+   "d5": -5.9,
+   "d20": -7.5,
    "verdict": "turning_down"
   },
   "AMD": {
-   "last": 554.29,
-   "d1": 3.7,
-   "d5": -2.9,
-   "d20": -9.8,
+   "last": 509.8,
+   "d1": -7.8,
+   "d5": -9.3,
+   "d20": -19,
    "verdict": "turning_down"
   },
   "MU": {
-   "last": 912.62,
-   "d1": 1.8,
-   "d5": -0.2,
-   "d20": -14.9,
-   "verdict": "basing"
+   "last": 862.01,
+   "d1": -5.7,
+   "d5": -7.4,
+   "d20": -20.2,
+   "verdict": "turning_down"
   },
   "INTC": {
-   "last": 92.31,
-   "d1": 0.7,
-   "d5": -5.9,
-   "d20": -24.7,
+   "last": 85.95,
+   "d1": -7.5,
+   "d5": -9.9,
+   "d20": -32.5,
    "verdict": "turning_down"
   },
   "CRM": {
-   "last": 241.82,
-   "d1": -0.3,
-   "d5": 2.5,
-   "d20": 1.8,
+   "last": 249.76,
+   "d1": 3.3,
+   "d5": 1.2,
+   "d20": 4.8,
    "verdict": "TURNING_UP"
   },
   "ORCL": {
-   "last": 128.53,
-   "d1": -2,
-   "d5": -1.5,
-   "d20": -11.1,
+   "last": 123.2,
+   "d1": -4.6,
+   "d5": -8.4,
+   "d20": -11.7,
    "verdict": "turning_down"
   },
   "NFLX": {
-   "last": 65.47,
-   "d1": -4.7,
-   "d5": -7.2,
-   "d20": -8.3,
+   "last": 67.07,
+   "d1": 3.1,
+   "d5": -7.6,
+   "d20": -6.5,
    "verdict": "turning_down"
   },
   "GDX": {
-   "last": 85.78,
-   "d1": -0.4,
-   "d5": 2.9,
-   "d20": -8.3,
-   "verdict": "basing"
+   "last": 81.69,
+   "d1": -5.8,
+   "d5": -6.1,
+   "d20": -11.5,
+   "verdict": "turning_down"
   },
   "GDXJ": {
-   "last": 107.28,
-   "d1": -0.5,
-   "d5": 2.4,
-   "d20": -11.5,
-   "verdict": "basing"
+   "last": 101.36,
+   "d1": -6.6,
+   "d5": -7.5,
+   "d20": -15.4,
+   "verdict": "turning_down"
   },
   "SIL": {
-   "last": 80.61,
-   "d1": -1,
-   "d5": 1.4,
-   "d20": -12.6,
-   "verdict": "basing"
+   "last": 76,
+   "d1": -6.6,
+   "d5": -7.7,
+   "d20": -16.4,
+   "verdict": "turning_down"
   },
   "SILJ": {
-   "last": 25.19,
-   "d1": -0.4,
-   "d5": 1.8,
-   "d20": -14.3,
-   "verdict": "basing"
+   "last": 23.66,
+   "d1": -7,
+   "d5": -7.7,
+   "d20": -18.2,
+   "verdict": "turning_down"
   },
   "AU": {
-   "last": 90.85,
-   "d1": 0,
-   "d5": 2.3,
-   "d20": -8,
-   "verdict": "basing"
+   "last": 85.53,
+   "d1": -6.5,
+   "d5": -6.6,
+   "d20": -13.2,
+   "verdict": "turning_down"
   },
   "AG": {
-   "last": 15.97,
-   "d1": -0.1,
-   "d5": 4.7,
-   "d20": -16.2,
-   "verdict": "basing"
+   "last": 15.1,
+   "d1": -6.2,
+   "d5": -6.2,
+   "d20": -19.5,
+   "verdict": "turning_down"
   },
   "NEM": {
-   "last": 116.12,
-   "d1": -0.6,
-   "d5": 4.1,
-   "d20": -6,
+   "last": 111.94,
+   "d1": -4.5,
+   "d5": -3.3,
+   "d20": -7.7,
    "verdict": "basing"
   },
   "GOLD": {
-   "last": 38.58,
-   "d1": 1,
-   "d5": -0.4,
-   "d20": -11.3,
-   "verdict": "basing"
+   "last": 38.19,
+   "d1": -1.6,
+   "d5": -3.6,
+   "d20": -12.2,
+   "verdict": "turning_down"
   },
   "PAAS": {
-   "last": 43.24,
-   "d1": -2.4,
-   "d5": 2.1,
-   "d20": -10.1,
-   "verdict": "basing"
+   "last": 41.13,
+   "d1": -5.8,
+   "d5": -6,
+   "d20": -13.4,
+   "verdict": "turning_down"
   },
   "WPM": {
-   "last": 130.78,
-   "d1": -0.3,
-   "d5": 0.9,
-   "d20": -10.1,
-   "verdict": "basing"
+   "last": 123.53,
+   "d1": -6.5,
+   "d5": -7.2,
+   "d20": -14.1,
+   "verdict": "turning_down"
   },
   "FNV": {
-   "last": 241.57,
-   "d1": 0.2,
-   "d5": 2.8,
-   "d20": -7.4,
-   "verdict": "basing"
+   "last": 232.82,
+   "d1": -4.4,
+   "d5": -3.3,
+   "d20": -10.4,
+   "verdict": "turning_down"
   },
   "HL": {
-   "last": 15.02,
-   "d1": 0,
-   "d5": 0.8,
-   "d20": -17.8,
-   "verdict": "basing"
+   "last": 14.08,
+   "d1": -7,
+   "d5": -9.5,
+   "d20": -21.5,
+   "verdict": "turning_down"
   },
   "CDE": {
-   "last": 14.95,
-   "d1": -1.2,
-   "d5": -0.2,
-   "d20": -22.6,
-   "verdict": "basing"
+   "last": 13.89,
+   "d1": -8.2,
+   "d5": -9.9,
+   "d20": -26.7,
+   "verdict": "turning_down"
   },
   "FSM": {
-   "last": 10.29,
-   "d1": -1,
-   "d5": 1.2,
-   "d20": -11.7,
-   "verdict": "basing"
+   "last": 9.52,
+   "d1": -7.9,
+   "d5": -9.6,
+   "d20": -17.2,
+   "verdict": "turning_down"
   },
   "EXK": {
-   "last": 8.25,
-   "d1": 0.6,
-   "d5": 5.4,
-   "d20": -10.9,
-   "verdict": "basing"
+   "last": 7.63,
+   "d1": -8.2,
+   "d5": -8,
+   "d20": -16.7,
+   "verdict": "turning_down"
   },
   "SLV": {
-   "last": 51.64,
-   "d1": -0.9,
-   "d5": 2.8,
-   "d20": -11.2,
-   "verdict": "basing"
+   "last": 49.45,
+   "d1": -5.4,
+   "d5": -4.8,
+   "d20": -14.2,
+   "verdict": "turning_down"
   },
   "GLD": {
-   "last": 377.32,
-   "d1": -0.1,
-   "d5": 0.4,
-   "d20": -4,
-   "verdict": "basing"
+   "last": 370.06,
+   "d1": -2.3,
+   "d5": -3.3,
+   "d20": -5.5,
+   "verdict": "turning_down"
   },
   "XOM": {
-   "last": 178.67,
-   "d1": 0.5,
-   "d5": 0.9,
-   "d20": 10.8,
-   "verdict": "trending"
+   "last": 177.4,
+   "d1": -0.4,
+   "d5": 1.6,
+   "d20": 9.4,
+   "verdict": "TURNING_UP"
   },
   "CVX": {
-   "last": 227.85,
-   "d1": 1,
-   "d5": 2.6,
-   "d20": 10.9,
+   "last": 226.32,
+   "d1": -0.2,
+   "d5": 3.2,
+   "d20": 10.1,
    "verdict": "TURNING_UP"
   },
   "OXY": {
-   "last": 63.04,
-   "d1": 0.2,
-   "d5": 2.7,
-   "d20": 9.9,
+   "last": 62.53,
+   "d1": -0.3,
+   "d5": 3.1,
+   "d20": 7.7,
    "verdict": "TURNING_UP"
   },
   "SLB": {
-   "last": 51.21,
-   "d1": 2.5,
-   "d5": 5.6,
-   "d20": -1.3,
-   "verdict": "TURNING_UP"
+   "last": 49.22,
+   "d1": -3.7,
+   "d5": 1.8,
+   "d20": -4.3,
+   "verdict": "basing"
   },
   "HAL": {
-   "last": 33.83,
-   "d1": 0.7,
-   "d5": 3.1,
-   "d20": 2.5,
-   "verdict": "TURNING_UP"
+   "last": 33.08,
+   "d1": -2.7,
+   "d5": 0.6,
+   "d20": 1,
+   "verdict": "basing"
   },
   "FCX": {
-   "last": 68.23,
-   "d1": -0.9,
-   "d5": -2,
-   "d20": -6,
+   "last": 64.86,
+   "d1": -5.9,
+   "d5": -7.4,
+   "d20": -10,
    "verdict": "turning_down"
   },
   "SCCO": {
-   "last": 195.23,
-   "d1": -3.5,
-   "d5": -2.7,
-   "d20": -3.3,
+   "last": 183.54,
+   "d1": -7.3,
+   "d5": -9,
+   "d20": -9,
    "verdict": "turning_down"
   },
   "ALB": {
-   "last": 94.17,
-   "d1": -1.7,
-   "d5": -3.9,
-   "d20": -17,
+   "last": 91.96,
+   "d1": -2.7,
+   "d5": -6.3,
+   "d20": -15,
    "verdict": "turning_down"
   },
   "CCJ": {
-   "last": 81.82,
-   "d1": 1.6,
-   "d5": 0.4,
-   "d20": -9.9,
-   "verdict": "basing"
+   "last": 78.56,
+   "d1": -4.2,
+   "d5": -5.6,
+   "d20": -10.9,
+   "verdict": "turning_down"
   },
   "COIN": {
-   "last": 178.26,
-   "d1": 4.3,
-   "d5": 3.1,
-   "d20": -10,
-   "verdict": "basing"
+   "last": 167.12,
+   "d1": -5.6,
+   "d5": -9.1,
+   "d20": -16.1,
+   "verdict": "turning_down"
   },
   "MSTR": {
-   "last": 153.83,
-   "d1": 7.8,
-   "d5": 7.4,
-   "d20": -5.2,
-   "verdict": "basing"
+   "last": 143.63,
+   "d1": -6.4,
+   "d5": -5.1,
+   "d20": -11.1,
+   "verdict": "turning_down"
   },
   "PLTR": {
-   "last": 199.69,
-   "d1": 3.7,
-   "d5": -0.6,
-   "d20": 4.1,
+   "last": 196.66,
+   "d1": -2.5,
+   "d5": -1.9,
+   "d20": 2.1,
    "verdict": "basing"
   },
   "SPY": {
-   "last": 772.38,
-   "d1": 0.4,
-   "d5": 0.4,
-   "d20": 0.6,
-   "verdict": "basing"
+   "last": 762.24,
+   "d1": -1.4,
+   "d5": -1.2,
+   "d20": -0.6,
+   "verdict": "turning_down"
   },
   "QQQ": {
-   "last": 724.78,
-   "d1": 1,
-   "d5": -0.6,
-   "d20": -2.2,
-   "verdict": "basing"
+   "last": 704.27,
+   "d1": -2.9,
+   "d5": -3.3,
+   "d20": -5,
+   "verdict": "turning_down"
   },
   "TSLA": {
-   "last": 386.4,
-   "d1": 3.4,
-   "d5": 5.2,
-   "d20": 1.7,
-   "verdict": "basing"
+   "last": 377.89,
+   "d1": -2.2,
+   "d5": 4.3,
+   "d20": 0,
+   "verdict": "improving"
   },
   "NVDA": {
-   "last": 220.84,
-   "d1": 2,
-   "d5": -0.2,
-   "d20": -2.1,
-   "verdict": "basing"
+   "last": 212.33,
+   "d1": -4.3,
+   "d5": -2.3,
+   "d20": -5.5,
+   "verdict": "turning_down"
   },
   "AAPL": {
-   "last": 344.12,
-   "d1": 1.4,
-   "d5": 0.3,
-   "d20": 2.1,
+   "last": 346.14,
+   "d1": 0.6,
+   "d5": 1.2,
+   "d20": 3,
    "verdict": "improving"
   }
  }
