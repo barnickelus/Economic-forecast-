@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T18:28:13.202Z",
+  "generatedAt": "2026-10-25T21:02:02.995Z",
   "tickers": [
     {
       "ticker": "SI=F",
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 80572.16,
-      "changePct": -0.2706692348983303,
+      "spot": 80357.21,
+      "changePct": -0.5367266379511753,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 6.508,
-      "changePct": 2.286833868814888,
+      "spot": 6.5075,
+      "changePct": 2.278975322881517,
       "healthyCount": 2,
       "totalCount": 2
     },
