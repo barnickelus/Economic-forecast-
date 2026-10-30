@@ -3438,14 +3438,15 @@
   "p10": 57.305,
   "pct10": -4.46,
   "hit10": false,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 49.14,
+  "pct20": -18.07,
+  "hit20": false,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
   "momoHit5": false,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-10-05 21:00",
@@ -3799,16 +3800,17 @@
   "p5": 53.935,
   "pct5": -5.37,
   "hit5": true,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 49.14,
+  "pct10": -13.78,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v3",
-  "momoHit5": true
+  "momoHit5": true,
+  "momoHit10": true
  },
  {
   "t": "2026-10-19 21:00",
@@ -3977,9 +3979,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 49.14,
+  "pct5": -8.51,
+  "hit5": true,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -3988,7 +3990,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v3",
+  "momoHit5": true
  },
  {
   "t": "2026-10-26 21:00",
@@ -4078,6 +4081,42 @@
    "oilChg5": 5.8,
    "oilPct120": 94.2,
    "chg": -1.54,
+   "regimeLevel": null
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v3"
+ },
+ {
+  "t": "2026-10-29 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-10-29T18:55:34.351Z",
+  "recordedAt": "2026-10-30T18:33:28.189Z",
+  "inputsAt": "2026-10-29T18:55:34.351Z",
+  "spot": 52.191,
+  "tilt": "bullish",
+  "confidence": 22,
+  "headline": "Iran/oil channel only: relief tilt, into a unclear (no deep anchors) regime. One channel’s read — see scope note before treating as a silver",
+  "flags": [
+   "ratio-confirmer",
+   "curve-incoherent"
+  ],
+  "inputs": {
+   "oilChg": -0.76,
+   "oilChg5": 2.54,
+   "oilPct120": 90.8,
+   "chg": -2.37,
    "regimeLevel": null
   },
   "source": "auto",
