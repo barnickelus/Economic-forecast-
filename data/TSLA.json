@@ -6,7 +6,7 @@
     "sectorETF": "XLY",
     "typicalVolAnnual": 0.55
   },
-  "fetchedAt": "2026-10-31T11:39:40.601Z",
+  "fetchedAt": "2026-10-31T16:23:19.861Z",
   "sources": {
     "asset": "yahoo:TSLA",
     "sector": "yahoo:XLY"
@@ -11456,7 +11456,7 @@
     "source": "TSLA"
   },
   "macro": {
-    "fetchedAt": "2026-10-31T11:39:38.257Z",
+    "fetchedAt": "2026-10-31T16:23:18.435Z",
     "log": [
       "✓ DX-Y.NYB",
       "✓ CL=F",
