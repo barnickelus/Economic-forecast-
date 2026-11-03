@@ -2351,23 +2351,23 @@
  },
  {
   "date": "2026-11-03",
-  "fetchedAt": "2026-11-03T02:53:17.482Z",
-  "front": 50.15,
-  "shortRatePct": 3.982,
+  "fetchedAt": "2026-11-03T20:03:22.656Z",
+  "front": 49.585,
+  "shortRatePct": 4.03,
   "curve": [
    {
     "sym": "SIH27.CMX",
-    "price": 50.73,
-    "spreadPct": 1.16,
-    "annualizedPct": 2.96,
-    "impliedLeasePct": 1.02
+    "price": 50.2,
+    "spreadPct": 1.24,
+    "annualizedPct": 3.19,
+    "impliedLeasePct": 0.84
    },
    {
     "sym": "SIK27.CMX",
-    "price": 51.82,
-    "spreadPct": 3.33,
-    "annualizedPct": 5.9,
-    "impliedLeasePct": -1.92
+    "price": 50.715,
+    "spreadPct": 2.28,
+    "annualizedPct": 4.07,
+    "impliedLeasePct": -0.04
    }
   ],
   "slvOunces": null
