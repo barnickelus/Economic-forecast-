@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-11-05T00:01:56.546Z",
+  "generatedAt": "2026-11-05T07:03:29.271Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 52.44,
-      "changePct": 5.753520269160507,
+      "spot": 52.75,
+      "changePct": 1.2087511147852825,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 4080.1,
-      "changePct": 3.5453279138789004,
+      "spot": 4135.5,
+      "changePct": 1.5344954578934447,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 80475.35,
-      "changePct": 4.047192744040865,
+      "spot": 80570.64,
+      "changePct": 4.170393910566752,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 88.24,
-      "changePct": -8.169420998089045,
+      "spot": 87.15,
+      "changePct": -1.100774757544648,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 101.492,
-      "changePct": -0.3710638425350486,
+      "spot": 101.233,
+      "changePct": -0.2728816179697413,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 6.419,
-      "changePct": 0.6349457608477493,
+      "spot": 6.397,
+      "changePct": -0.09370417060865582,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -136,8 +136,8 @@
       "filename": "BZ_F.json",
       "name": "BZ=F",
       "assetClass": "equity",
-      "spot": 94.83,
-      "changePct": -8.465249617075823,
+      "spot": 94.15,
+      "changePct": -0.49672662538471923,
       "healthyCount": 2,
       "totalCount": 2
     }
