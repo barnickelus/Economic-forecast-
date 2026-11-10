@@ -4,8 +4,8 @@
  *
  * Reads data/tilt-log.json and fills t+5/10/20 scores from the committed
  * silver OHLC (data/SI_F.json -> historical.ohlc) at EXACT trading-day
- * offsets. Never touches a live quote: a horizon is only scored once a
- * committed close exists that far out. Idempotent — safe to run on every
+ * offsets. Never touches a live quote: a horizon is only scored once its
+ * bar is FINAL, i.e. a later-dated bar exists (the newest bar is still trading). Idempotent — safe to run on every
  * Actions pass; already-scored horizons are left alone.
  *
  * Also computes the momentum baseline per entry (sign of the trailing
@@ -55,7 +55,14 @@ function entryIndex(ohlc, d) {
 }
 // Bumping this marker forces one clean re-score of every row whenever the
 // scoring rule itself changes (v2 = corrected non-trading-day anchor).
-const SCORE_VERSION = 'ohlc-v3'; // v3 = weekend pseudo-bars excluded from the scoring series
+const SCORE_VERSION = 'ohlc-v4'; // v3 = weekend pseudo-bars excluded; v4 = final bars only, clean re-score
+// A daily bar is FINAL only once a later-dated bar exists. The newest bar is still
+// trading for most of its session; scoring from it froze a mid-session price into
+// the log (203 of 364 horizon scores, 16 hit flags — 2026-11-10 forward-log audit).
+const isFinal = (series, i) => i >= 0 && i < series.length - 1;
+// On a rule change every score is cleared before re-scoring, so a horizon whose
+// bar is not final yet goes back to unscored instead of keeping its old value.
+const clearScores = r => { for (const k of ['p5', 'pct5', 'hit5', 'p10', 'pct10', 'hit10', 'p20', 'pct20', 'hit20', 'momoHit5', 'momoHit10', 'momoHit20']) if (k in r) r[k] = null; };
 
 // ONE OBSERVATION PER DAY: the FIRST entry of each calendar day is the scored
 // commitment; later same-day entries are revisions made after seeing more tape,
@@ -84,11 +91,14 @@ for (const r of log) {
   // scores with idx -1 and momoDir lands null. It must stay eligible for
   // recomputation once the bar arrives, or that entry is silently dropped
   // from the momentum baseline.
-  if (r.momoDir == null) r.momoDir = (idx >= 20) ? (ohlc[idx].c >= ohlc[idx - 20].c ? 'bullish' : 'bearish') : null;
+  if (r.scoredFrom !== SCORE_VERSION) clearScores(r);
+  // Recomputed every run: an entry logged intraday first sees its own day's bar while it
+  // is still forming. The value settles once that bar is final and never moves again.
+  r.momoDir = (idx >= 20) ? (ohlc[idx].c >= ohlc[idx - 20].c ? 'bullish' : 'bearish') : null;
   for (const [n, pk, pctk, hitk] of HORIZONS) {
     if (r[pk] != null && r.scoredFrom === SCORE_VERSION) continue;
     const target = idx < 0 ? -1 : idx + n;
-    const c = (target >= 0 && target < ohlc.length) ? ohlc[target].c : null;
+    const c = isFinal(ohlc, target) ? ohlc[target].c : null;
     if (c == null) continue; // no committed close that far out yet
     r[pk] = +c.toFixed(3);
     r[pctk] = +(((c - r.spot) / r.spot) * 100).toFixed(2);
@@ -191,10 +201,11 @@ for (const [VARIANT, SHADOW_NAME, COUNT_FROM] of [['v14', 'shadow-v14.json', nul
     for (const r of shadow) {
       if (!r || !r.t || r.spot == null || !r.tilt) continue;
       const idx = entryIndex(ohlc, String(r.t).slice(0, 10));
+      if (r.scoredFrom !== SCORE_VERSION) clearScores(r);
       for (const [n, pk, pctk, hitk] of HORIZONS) {
         if (r[pk] != null && r.scoredFrom === SCORE_VERSION) continue;
         const target = idx < 0 ? -1 : idx + n;
-        const c = (target >= 0 && target < ohlc.length) ? ohlc[target].c : null;
+        const c = isFinal(ohlc, target) ? ohlc[target].c : null;
         if (c == null) continue;
         r[pk] = +c.toFixed(3); r[pctk] = +(((c - r.spot) / r.spot) * 100).toFixed(2);
         r[hitk] = (r.tilt === 'bullish' && r[pctk] > 0) || (r.tilt === 'bearish' && r[pctk] < 0) || (r.tilt === 'balanced' && Math.abs(r[pctk]) < 2);
