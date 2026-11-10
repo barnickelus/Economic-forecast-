@@ -33,6 +33,16 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   8/15 independent windows toward the promotion gate. Flip rate 63%. v15
   on the same (in-sample) window: 9/18 directional t+5 hits — the study's
   t+5 pass did not show up in this slice; treat it as noise until live.
+- SCORE RULE v4 (2026-11-10). A git-history audit (`scripts/forward_log_audit.py`)
+  found the scorer had been filling horizons from the still-forming bar: 203 of
+  364 recorded horizon scores were written before the outcome session closed,
+  213 prices differed from the final close (median 0.69%, max 3.93%) and 16 hit
+  flags were wrong (5 on primary rows). Shadow v14/v15 had the same defect (9
+  and 6 flags), so the promotion comparison was scored that way too. Aggregates
+  moved by at most one call. EVERY PERCENTAGE ABOVE THIS LINE WAS COMPUTED
+  UNDER v3 — re-derive before comparing with v4 numbers. The same audit found
+  no entry ever edited or removed, and 76 of 132 entries on record before any
+  later session closed (the other 56 are mostly the 2026-09-25 reconstruction).
 - FADE ANALYSIS (2026-09-26, "would the opposite bet have been better?"):
   fading beat following in every population, but NONE of it is an edge.
   Recorder-v2 window: silver rose after bullish calls (+1.6% t+5, +5.2%
@@ -134,6 +144,18 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   exact t+5/10/20 trading days (never live spot). Shows calibration (stated vs
   realized), Brier (0.25 = always-50% baseline), and a momentum baseline
   (trailing 20d sign — the reigning champion any tilt must beat).
+  SCORE VERSION ohlc-v4 (2026-11-10): a horizon is scored ONLY from a FINAL bar
+  (a later-dated bar exists). The scorer lives twice — `scripts/score-tilt.js`
+  and `scoreLog()` in index.html — and the two must change together; on a
+  version bump both clear every old score before re-scoring.
+- `scripts/forward_log_audit.py` + `.github/workflows/audit.yml` — INDEPENDENT
+  AUDIT, daily, from git history alone; runs none of the engine or scorer code.
+  Reports when each entry was first committed, and FAILS (opens one deduped
+  `AUDIT:` issue) if any entry's direction/confidence/spot was ever changed,
+  any entry removed, any final close revised, or any recorded score differs
+  from the final committed close (main log and both shadow logs). Writes
+  `data/audit-latest.json`. Python stdlib only. It is a second implementation
+  of the scoring rule on purpose — do not make it import the scorer.
 - Durable tilt log: `data/tilt-log.json`, scored 2x daily by
   `scripts/score-tilt.js` in the fetch-odds workflow. Verdicts arrive via
   owner-gated GitHub issues ("TILT:" title + fenced json block) parsed by
@@ -204,6 +226,14 @@ Purpose: structured, falsifiable read of silver's regime — NOT a price oracle.
   snapshots up to 2.7% off the final close before the post-settlement gate
   (below) fixed it. Anything reading the last bar of historical.ohlc during
   market hours is reading a moving number.
+- THE SCORER ITSELF did exactly that until 2026-11-10: it scored a horizon as
+  soon as a bar with the outcome date existed, and never refreshed a filled
+  score, so a mid-session price was frozen into the log. Rule now (ohlc-v4): a
+  bar is final only when a later-dated bar exists. Any new consumer of
+  historical.ohlc must use the same test, not `i < ohlc.length`.
+- A score-version bump must CLEAR old scores before re-scoring. The old loop
+  skipped a horizon when no close was available but still stamped the row with
+  the new version, so a stale value survived the bump and was never revisited.
 
 ## Work queue
 1. ~~Verify odds logger deployed~~ DONE 2026-07-19: first run committed 20 sane

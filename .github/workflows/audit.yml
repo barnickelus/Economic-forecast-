@@ -1,0 +1,78 @@
+name: Audit Forward Log
+
+# Independent check of the forward log, from git history alone. It reads the
+# committed files and their history and runs NONE of the forecasting or scoring
+# code. It reports:
+#   1. when each entry was first committed (on record before the outcome, or late);
+#   2. whether any entry's direction, confidence or entry price was ever changed,
+#      or any entry removed;
+#   3. whether any final daily close changed after the fact;
+#   4. whether every recorded score equals the FINAL committed close.
+# 2-4 are integrity failures: the run fails and opens one deduped issue.
+#
+# Scheduled only, no push trigger: a run racing the scorer's own re-score after a
+# rule change would raise a false alarm. Crons run hours late on this repo; nothing
+# here depends on the hour. Commits only data/audit-latest.json, which no other
+# workflow touches.
+
+on:
+  schedule:
+    - cron: '40 23 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write   # opens an issue when an integrity check fails
+
+concurrency:
+  group: forward-log-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repo with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Audit the forward log
+        id: audit
+        run: |
+          set +e
+          python3 scripts/forward_log_audit.py --repo . \
+            --also-scores data/shadow-v14.json data/shadow-v15.json \
+            --summary-json data/audit-latest.json --check > /tmp/audit.md
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          cat /tmp/audit.md >> "$GITHUB_STEP_SUMMARY"
+          sed -n '/^## 6\. Integrity check/,$p' /tmp/audit.md
+          exit 0
+
+      - name: Commit the audit summary
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/audit-latest.json 2>/dev/null || true
+          if git diff --staged --quiet; then
+            echo "no changes — skipping commit"
+          else
+            git commit -m "audit: $(date -u +%Y-%m-%d) forward-log integrity"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
+            git push
+          fi
+
+      - name: Alert on integrity failure
+        if: steps.audit.outputs.code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(gh issue list --state open --search 'AUDIT in:title' --json number --jq '.[].number')" ]; then
+            gh issue create --title "AUDIT: forward-log integrity alert $(date -u +%Y-%m-%d)" \
+              --body "$(printf 'The scheduled forward-log audit failed (exit code %s).\n\n%s\n\nOpened automatically by audit.yml; close after fixing. It reopens if the condition persists.' "${{ steps.audit.outputs.code }}" "$(sed -n '/^## 6\. Integrity check/,$p' /tmp/audit.md)")"
+          else
+            echo "open AUDIT issue already exists — not duplicating"
+          fi
+          exit 1
