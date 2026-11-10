@@ -27,7 +27,7 @@
   "p20": 66.121,
   "pct20": 16.41,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-21 21:00",
@@ -57,7 +57,7 @@
   "p20": 63.941,
   "pct20": 8.68,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-22 21:00",
@@ -87,7 +87,7 @@
   "p20": 65.734,
   "pct20": 9.52,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-23 21:00",
@@ -117,7 +117,7 @@
   "p20": 68.026,
   "pct20": 17.7,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-24 21:00",
@@ -147,7 +147,7 @@
   "p20": 69.466,
   "pct20": 18.43,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-27 21:00",
@@ -177,7 +177,7 @@
   "p20": 68.541,
   "pct20": 17.22,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-28 21:00",
@@ -207,7 +207,7 @@
   "p20": 68.636,
   "pct20": 19.79,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-29 21:00",
@@ -237,7 +237,7 @@
   "p20": 67.99,
   "pct20": 17.5,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-30 21:00",
@@ -267,7 +267,7 @@
   "p20": 69.429,
   "pct20": 18.05,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-07-31 21:00",
@@ -297,7 +297,7 @@
   "p20": 66.995,
   "pct20": 16.33,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-03 21:00",
@@ -327,7 +327,7 @@
   "p20": 66.221,
   "pct20": 14.83,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-04 21:00",
@@ -357,7 +357,7 @@
   "p20": 64.618,
   "pct20": 7.6,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-05 21:00",
@@ -387,7 +387,7 @@
   "p20": 64.723,
   "pct20": 4.23,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-06 21:00",
@@ -417,7 +417,7 @@
   "p20": 66.973,
   "pct20": 9.01,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-07 21:00",
@@ -447,7 +447,7 @@
   "p20": 66.047,
   "pct20": 4.29,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-10 21:00",
@@ -477,7 +477,7 @@
   "p20": 66.297,
   "pct20": 1.83,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-11 21:00",
@@ -507,7 +507,7 @@
   "p20": 67.942,
   "pct20": 4.9,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-12 21:00",
@@ -537,7 +537,7 @@
   "p20": 64.284,
   "pct20": -1.94,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-13 21:00",
@@ -567,7 +567,7 @@
   "p20": 64.554,
   "pct20": -0.49,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-14 21:00",
@@ -597,7 +597,7 @@
   "p20": 63.513,
   "pct20": -2.27,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-17 21:00",
@@ -627,7 +627,7 @@
   "p20": 63.236,
   "pct20": -4.36,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-18 21:00",
@@ -657,7 +657,7 @@
   "p20": 64.288,
   "pct20": 0.54,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-19 21:00",
@@ -687,7 +687,7 @@
   "p20": 65.47,
   "pct20": -0.4,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-20 21:00",
@@ -717,7 +717,7 @@
   "p20": 66.556,
   "pct20": -2.16,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-21 21:00",
@@ -747,7 +747,7 @@
   "p20": 65.825,
   "pct20": -5.24,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-24 21:00",
@@ -777,7 +777,7 @@
   "p20": 65.932,
   "pct20": -3.81,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-25 21:00",
@@ -807,7 +807,7 @@
   "p20": 64.382,
   "pct20": -6.2,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-26 21:00",
@@ -837,7 +837,7 @@
   "p20": 63.457,
   "pct20": -6.67,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-27 21:00",
@@ -864,10 +864,10 @@
   "p10": 64.554,
   "pct10": -7.02,
   "hit10": false,
-  "p20": 64.815,
-  "pct20": -6.65,
+  "p20": 64.245,
+  "pct20": -7.47,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-28 21:00",
@@ -894,10 +894,10 @@
   "p10": 63.513,
   "pct10": -5.2,
   "hit10": false,
-  "p20": 61.21,
-  "pct20": -8.63,
+  "p20": 61.22,
+  "pct20": -8.62,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-08-31 21:00",
@@ -924,10 +924,10 @@
   "p10": 63.236,
   "pct10": -4.51,
   "hit10": false,
-  "p20": 61.475,
-  "pct20": -7.17,
+  "p20": 60.668,
+  "pct20": -8.39,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-01 21:00",
@@ -954,10 +954,10 @@
   "p10": 64.288,
   "pct10": -0.51,
   "hit10": true,
-  "p20": 60.515,
-  "pct20": -6.35,
+  "p20": 60.098,
+  "pct20": -6.99,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-02 21:00",
@@ -984,10 +984,10 @@
   "p10": 65.47,
   "pct10": 1.15,
   "hit10": true,
-  "p20": 61.155,
-  "pct20": -5.51,
+  "p20": 60.725,
+  "pct20": -6.18,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-03 21:00",
@@ -1014,10 +1014,10 @@
   "p10": 66.556,
   "pct10": -0.62,
   "hit10": true,
-  "p20": 60.52,
-  "pct20": -9.64,
+  "p20": 59.977,
+  "pct20": -10.45,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-04 21:00",
@@ -1044,10 +1044,10 @@
   "p10": 65.825,
   "pct10": -0.34,
   "hit10": true,
-  "p20": 61.4,
-  "pct20": -7.04,
+  "p20": 60.869,
+  "pct20": -7.84,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-08 21:00",
@@ -1074,10 +1074,10 @@
   "p10": 65.932,
   "pct10": -0.55,
   "hit10": true,
-  "p20": 61.87,
-  "pct20": -6.68,
+  "p20": 61.168,
+  "pct20": -7.74,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-09 21:00",
@@ -1104,10 +1104,10 @@
   "p10": 64.382,
   "pct10": -5.24,
   "hit10": true,
-  "p20": 59.92,
-  "pct20": -11.81,
+  "p20": 59.899,
+  "pct20": -11.84,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-10 21:00",
@@ -1134,10 +1134,10 @@
   "p10": 63.457,
   "pct10": -1.29,
   "hit10": true,
-  "p20": 59.37,
-  "pct20": -7.64,
+  "p20": 59.064,
+  "pct20": -8.12,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-11 21:00",
@@ -1161,13 +1161,13 @@
   "p5": 66.556,
   "pct5": 3.1,
   "hit5": false,
-  "p10": 64.815,
-  "pct10": 0.4,
-  "hit10": false,
-  "p20": 61.09,
-  "pct20": -5.37,
+  "p10": 64.245,
+  "pct10": -0.48,
+  "hit10": true,
+  "p20": 60.67,
+  "pct20": -6.02,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-14 21:00",
@@ -1191,13 +1191,13 @@
   "p5": 65.825,
   "pct5": 3.64,
   "hit5": false,
-  "p10": 61.21,
-  "pct10": -3.63,
+  "p10": 61.22,
+  "pct10": -3.61,
   "hit10": true,
-  "p20": 61.44,
-  "pct20": -3.26,
+  "p20": 60.141,
+  "pct20": -5.31,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-15 21:00",
@@ -1221,13 +1221,13 @@
   "p5": 65.932,
   "pct5": 4.26,
   "hit5": false,
-  "p10": 61.475,
-  "pct10": -2.78,
+  "p10": 60.668,
+  "pct10": -4.06,
   "hit10": true,
-  "p20": 60.39,
-  "pct20": -4.5,
+  "p20": 59.161,
+  "pct20": -6.44,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-16 21:00",
@@ -1251,13 +1251,13 @@
   "p5": 64.382,
   "pct5": 0.15,
   "hit5": false,
-  "p10": 60.515,
-  "pct10": -5.87,
+  "p10": 60.098,
+  "pct10": -6.52,
   "hit10": true,
-  "p20": 55.805,
-  "pct20": -13.2,
+  "p20": 55.55,
+  "pct20": -13.59,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-17 21:00",
@@ -1281,13 +1281,13 @@
   "p5": 63.457,
   "pct5": -3.07,
   "hit5": true,
-  "p10": 61.155,
-  "pct10": -6.59,
+  "p10": 60.725,
+  "pct10": -7.25,
   "hit10": true,
-  "p20": 57.18,
-  "pct20": -12.66,
+  "p20": 56.837,
+  "pct20": -13.19,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-18 21:00",
@@ -1308,16 +1308,16 @@
    "regimeLevel": null
   },
   "inSample": true,
-  "p5": 64.815,
-  "pct5": -2.62,
+  "p5": 64.245,
+  "pct5": -3.47,
   "hit5": true,
-  "p10": 60.52,
-  "pct10": -9.07,
+  "p10": 59.977,
+  "pct10": -9.88,
   "hit10": true,
-  "p20": 57.305,
-  "pct20": -13.9,
+  "p20": 56.995,
+  "pct20": -14.37,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-21 21:00",
@@ -1338,16 +1338,16 @@
    "regimeLevel": null
   },
   "inSample": true,
-  "p5": 61.21,
-  "pct5": -7.01,
+  "p5": 61.22,
+  "pct5": -7,
   "hit5": true,
-  "p10": 61.4,
-  "pct10": -6.72,
+  "p10": 60.869,
+  "pct10": -7.53,
   "hit10": true,
-  "p20": 57.355,
-  "pct20": -12.87,
+  "p20": 56.974,
+  "pct20": -13.45,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-22 21:00",
@@ -1368,16 +1368,16 @@
    "regimeLevel": 23.5
   },
   "inSample": true,
-  "p5": 61.475,
-  "pct5": -6.76,
+  "p5": 60.668,
+  "pct5": -7.98,
   "hit5": true,
-  "p10": 61.87,
-  "pct10": -6.16,
+  "p10": 61.168,
+  "pct10": -7.23,
   "hit10": true,
-  "p20": 58.025,
-  "pct20": -11.99,
+  "p20": 57.706,
+  "pct20": -12.48,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-23 21:00",
@@ -1398,16 +1398,16 @@
    "regimeLevel": null
   },
   "inSample": true,
-  "p5": 60.515,
-  "pct5": -6.01,
+  "p5": 60.098,
+  "pct5": -6.65,
   "hit5": false,
-  "p10": 59.92,
-  "pct10": -6.93,
+  "p10": 59.899,
+  "pct10": -6.96,
   "hit10": false,
-  "p20": 57.73,
-  "pct20": -10.33,
+  "p20": 57.422,
+  "pct20": -10.81,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-24 21:00",
@@ -1428,16 +1428,16 @@
    "regimeLevel": 22.5
   },
   "inSample": true,
-  "p5": 61.155,
-  "pct5": -3.63,
+  "p5": 60.725,
+  "pct5": -4.31,
   "hit5": true,
-  "p10": 59.37,
-  "pct10": -6.44,
+  "p10": 59.064,
+  "pct10": -6.92,
   "hit10": true,
-  "p20": 54.995,
-  "pct20": -13.34,
+  "p20": 54.764,
+  "pct20": -13.7,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-25 21:00",
@@ -1457,16 +1457,16 @@
    "chg": 1.24,
    "regimeLevel": 27.5
   },
-  "p5": 60.52,
-  "pct5": -5.8,
+  "p5": 59.977,
+  "pct5": -6.64,
   "hit5": false,
-  "p10": 61.09,
-  "pct10": -4.91,
+  "p10": 60.67,
+  "pct10": -5.56,
   "hit10": false,
-  "p20": 53.935,
-  "pct20": -16.05,
+  "p20": 53.711,
+  "pct20": -16.4,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-28 21:00",
@@ -1486,16 +1486,16 @@
    "chg": -4.71,
    "regimeLevel": 4.5
   },
-  "p5": 61.4,
-  "pct5": 0.29,
-  "hit5": false,
-  "p10": 61.44,
-  "pct10": 0.36,
-  "hit10": false,
-  "p20": 53.895,
-  "pct20": -11.97,
+  "p5": 60.869,
+  "pct5": -0.57,
+  "hit5": true,
+  "p10": 60.141,
+  "pct10": -1.76,
+  "hit10": true,
+  "p20": 54.108,
+  "pct20": -11.62,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-29 21:00",
@@ -1515,16 +1515,16 @@
    "chg": -0.9,
    "regimeLevel": null
   },
-  "p5": 61.87,
-  "pct5": 1.98,
+  "p5": 61.168,
+  "pct5": 0.82,
   "hit5": true,
-  "p10": 60.39,
-  "pct10": -0.46,
-  "hit10": true,
-  "p20": 54.29,
+  "p10": 59.161,
+  "pct10": -2.48,
+  "hit10": false,
+  "p20": 54.293,
   "pct20": -10.51,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-09-30 21:00",
@@ -1544,16 +1544,16 @@
    "chg": -0.94,
    "regimeLevel": null
   },
-  "p5": 59.92,
-  "pct5": -0.3,
+  "p5": 59.899,
+  "pct5": -0.33,
   "hit5": true,
-  "p10": 55.805,
-  "pct10": -7.14,
+  "p10": 55.55,
+  "pct10": -7.57,
   "hit10": false,
-  "p20": 54.2,
-  "pct20": -9.81,
+  "p20": 53.457,
+  "pct20": -11.05,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-01 21:00",
@@ -1573,16 +1573,16 @@
    "chg": 1.04,
    "regimeLevel": null
   },
-  "p5": 59.37,
-  "pct5": -2.23,
+  "p5": 59.064,
+  "pct5": -2.74,
   "hit5": false,
-  "p10": 57.18,
-  "pct10": -5.84,
+  "p10": 56.837,
+  "pct10": -6.4,
   "hit10": false,
-  "p20": 52.08,
-  "pct20": -14.24,
+  "p20": 52.191,
+  "pct20": -14.05,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-02 21:00",
@@ -1602,16 +1602,16 @@
    "chg": -1.23,
    "regimeLevel": null
   },
-  "p5": 61.09,
-  "pct5": 1.86,
+  "p5": 60.67,
+  "pct5": 1.16,
   "hit5": true,
-  "p10": 57.305,
-  "pct10": -4.46,
+  "p10": 56.995,
+  "pct10": -4.97,
   "hit10": false,
-  "p20": 49.14,
-  "pct20": -18.07,
+  "p20": 49.097,
+  "pct20": -18.14,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-05 21:00",
@@ -1631,16 +1631,16 @@
    "chg": 1.49,
    "regimeLevel": 18.5
   },
-  "p5": 61.44,
-  "pct5": 0.94,
-  "hit5": false,
-  "p10": 57.355,
-  "pct10": -5.77,
+  "p5": 60.141,
+  "pct5": -1.2,
+  "hit5": true,
+  "p10": 56.974,
+  "pct10": -6.4,
   "hit10": true,
-  "p20": 49.79,
-  "pct20": -18.2,
+  "p20": 50.72,
+  "pct20": -16.67,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-06 21:00",
@@ -1660,16 +1660,16 @@
    "chg": 0.49,
    "regimeLevel": null
   },
-  "p5": 60.39,
-  "pct5": -1.27,
-  "hit5": true,
-  "p10": 58.025,
-  "pct10": -5.14,
+  "p5": 59.161,
+  "pct5": -3.28,
+  "hit5": false,
+  "p10": 57.706,
+  "pct10": -5.66,
   "hit10": false,
-  "p20": 49.585,
-  "pct20": -18.94,
+  "p20": 49.587,
+  "pct20": -18.93,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-07 21:00",
@@ -1689,16 +1689,16 @@
    "chg": -2.07,
    "regimeLevel": null
   },
-  "p5": 55.805,
-  "pct5": -6.83,
+  "p5": 55.55,
+  "pct5": -7.26,
   "hit5": false,
-  "p10": 57.73,
-  "pct10": -3.62,
+  "p10": 57.422,
+  "pct10": -4.14,
   "hit10": false,
-  "p20": 52.35,
-  "pct20": -12.6,
+  "p20": 52.12,
+  "pct20": -12.99,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-08 21:00",
@@ -1718,16 +1718,16 @@
    "chg": -1.39,
    "regimeLevel": 18.5
   },
-  "p5": 57.18,
-  "pct5": -3.19,
+  "p5": 56.837,
+  "pct5": -3.77,
   "hit5": true,
-  "p10": 54.995,
-  "pct10": -6.89,
+  "p10": 54.764,
+  "pct10": -7.28,
   "hit10": true,
-  "p20": 52.235,
-  "pct20": -11.56,
+  "p20": 52.233,
+  "pct20": -11.57,
   "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-09 21:00",
@@ -1747,16 +1747,16 @@
    "chg": 2.72,
    "regimeLevel": null
   },
-  "p5": 57.305,
-  "pct5": -5.55,
+  "p5": 56.995,
+  "pct5": -6.06,
   "hit5": false,
-  "p10": 53.935,
-  "pct10": -11.1,
+  "p10": 53.711,
+  "pct10": -11.47,
   "hit10": false,
-  "p20": 51.89,
-  "pct20": -14.47,
+  "p20": 51.803,
+  "pct20": -14.62,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-12 21:00",
@@ -1776,16 +1776,16 @@
    "chg": -0.87,
    "regimeLevel": null
   },
-  "p5": 57.355,
-  "pct5": -4.63,
+  "p5": 56.974,
+  "pct5": -5.27,
   "hit5": false,
-  "p10": 53.895,
-  "pct10": -10.39,
+  "p10": 54.108,
+  "pct10": -10.03,
   "hit10": false,
-  "p20": 52.485,
-  "pct20": -12.73,
+  "p20": 52.564,
+  "pct20": -12.6,
   "hit20": false,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-13 21:00",
@@ -1805,16 +1805,16 @@
    "chg": -1.63,
    "regimeLevel": null
   },
-  "p5": 58.025,
-  "pct5": -1.92,
+  "p5": 57.706,
+  "pct5": -2.46,
   "hit5": true,
-  "p10": 54.29,
+  "p10": 54.293,
   "pct10": -8.23,
   "hit10": true,
-  "p20": 53.025,
-  "pct20": -10.37,
-  "hit20": true,
-  "scoredFrom": "ohlc-v3"
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-14 21:00",
@@ -1834,16 +1834,16 @@
    "chg": -6.1,
    "regimeLevel": null
   },
-  "p5": 57.73,
-  "pct5": 3.92,
+  "p5": 57.422,
+  "pct5": 3.37,
   "hit5": false,
-  "p10": 54.2,
-  "pct10": -2.43,
+  "p10": 53.457,
+  "pct10": -3.77,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-15 21:00",
@@ -1863,16 +1863,16 @@
    "chg": 2.32,
    "regimeLevel": null
   },
-  "p5": 54.995,
-  "pct5": -3.24,
+  "p5": 54.764,
+  "pct5": -3.65,
   "hit5": true,
-  "p10": 52.08,
-  "pct10": -8.37,
+  "p10": 52.191,
+  "pct10": -8.17,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-16 21:00",
@@ -1892,16 +1892,16 @@
    "chg": 0.28,
    "regimeLevel": null
   },
-  "p5": 53.935,
-  "pct5": -5.37,
+  "p5": 53.711,
+  "pct5": -5.76,
   "hit5": true,
-  "p10": 49.14,
-  "pct10": -13.78,
+  "p10": 49.097,
+  "pct10": -13.86,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-19 21:00",
@@ -1921,16 +1921,16 @@
    "chg": -0.04,
    "regimeLevel": null
   },
-  "p5": 53.895,
-  "pct5": -5.4,
+  "p5": 54.108,
+  "pct5": -5.03,
   "hit5": true,
-  "p10": 49.79,
-  "pct10": -12.61,
+  "p10": 50.72,
+  "pct10": -10.98,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-20 21:00",
@@ -1950,16 +1950,16 @@
    "chg": 1.28,
    "regimeLevel": 11.5
   },
-  "p5": 54.29,
-  "pct5": -5.92,
+  "p5": 54.293,
+  "pct5": -5.91,
   "hit5": true,
-  "p10": 49.585,
+  "p10": 49.587,
   "pct10": -14.07,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-21 21:00",
@@ -1979,16 +1979,16 @@
    "chg": -0.49,
    "regimeLevel": 13.5
   },
-  "p5": 54.2,
-  "pct5": -5.61,
+  "p5": 53.457,
+  "pct5": -6.91,
   "hit5": true,
-  "p10": 52.35,
-  "pct10": -8.83,
+  "p10": 52.12,
+  "pct10": -9.23,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-22 21:00",
@@ -2008,16 +2008,16 @@
    "chg": -4.63,
    "regimeLevel": null
   },
-  "p5": 52.08,
-  "pct5": -4.9,
+  "p5": 52.191,
+  "pct5": -4.7,
   "hit5": true,
-  "p10": 52.235,
+  "p10": 52.233,
   "pct10": -4.62,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-23 21:00",
@@ -2037,16 +2037,16 @@
    "chg": -1.92,
    "regimeLevel": null
   },
-  "p5": 49.14,
-  "pct5": -8.51,
+  "p5": 49.097,
+  "pct5": -8.59,
   "hit5": true,
-  "p10": 51.89,
-  "pct10": -3.39,
+  "p10": 51.803,
+  "pct10": -3.55,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-26 21:00",
@@ -2066,16 +2066,16 @@
    "chg": 0.74,
    "regimeLevel": null
   },
-  "p5": 49.79,
-  "pct5": -7.98,
+  "p5": 50.72,
+  "pct5": -6.26,
   "hit5": true,
-  "p10": 52.485,
-  "pct10": -3,
+  "p10": 52.564,
+  "pct10": -2.85,
   "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-27 21:00",
@@ -2095,16 +2095,16 @@
    "chg": 0.34,
    "regimeLevel": null
   },
-  "p5": 49.585,
+  "p5": 49.587,
   "pct5": -8.67,
   "hit5": true,
-  "p10": 53.025,
-  "pct10": -2.34,
-  "hit10": true,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-28 21:00",
@@ -2124,8 +2124,8 @@
    "chg": -1.54,
    "regimeLevel": null
   },
-  "p5": 52.35,
-  "pct5": -2.07,
+  "p5": 52.12,
+  "pct5": -2.5,
   "hit5": true,
   "p10": null,
   "pct10": null,
@@ -2133,7 +2133,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-29 21:00",
@@ -2153,7 +2153,7 @@
    "chg": -2.37,
    "regimeLevel": null
   },
-  "p5": 52.235,
+  "p5": 52.233,
   "pct5": 0.08,
   "hit5": false,
   "p10": null,
@@ -2162,7 +2162,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-10-30 21:00",
@@ -2182,8 +2182,8 @@
    "chg": -5.93,
    "regimeLevel": null
   },
-  "p5": 51.89,
-  "pct5": 5.69,
+  "p5": 51.803,
+  "pct5": 5.51,
   "hit5": false,
   "p10": null,
   "pct10": null,
@@ -2191,7 +2191,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-02 21:00",
@@ -2211,8 +2211,8 @@
    "chg": 3.31,
    "regimeLevel": null
   },
-  "p5": 52.485,
-  "pct5": 3.48,
+  "p5": 52.564,
+  "pct5": 3.64,
   "hit5": false,
   "p10": null,
   "pct10": null,
@@ -2220,7 +2220,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-03 21:00",
@@ -2240,16 +2240,16 @@
    "chg": -2.23,
    "regimeLevel": 11.5
   },
-  "p5": 53.025,
-  "pct5": 6.93,
-  "hit5": false,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
   "p10": null,
   "pct10": null,
   "hit10": null,
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-04 21:00",
@@ -2278,7 +2278,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-05 21:00",
@@ -2307,7 +2307,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-06 21:00",
@@ -2336,7 +2336,7 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  },
  {
   "t": "2026-11-09 21:00",
@@ -2365,6 +2365,6 @@
   "p20": null,
   "pct20": null,
   "hit20": null,
-  "scoredFrom": "ohlc-v3"
+  "scoredFrom": "ohlc-v4"
  }
 ]
