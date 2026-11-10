@@ -772,12 +772,16 @@ function entryIndex(ohlc,d){
 }
 // bumped whenever the scoring rule changes, forcing one clean re-score of every
 // row (v2 = corrected non-trading-day anchor)
-const SCORE_VERSION='ohlc-v3'; // v3 = weekend pseudo-bars excluded
+// v4 = FINAL bars only. A daily bar is final once a later-dated bar exists; the newest
+// bar is still trading. Must stay identical to scripts/score-tilt.js.
+const SCORE_VERSION='ohlc-v4'; // v3 = weekend pseudo-bars excluded
+const isFinalBar=(ohlc,i)=>i>=0&&i<ohlc.length-1;
+const clearScores=r=>{['p5','pct5','hit5','p10','pct10','hit10','p20','pct20','hit20','momoHit5','momoHit10','momoHit20'].forEach(k=>{if(k in r)r[k]=null;});};
 function closeNTradingDaysAfter(ohlc,entryDateStr,n){
   const idx=entryIndex(ohlc,entryDateStr);
   if(idx<0)return null;
   const target=idx+n;
-  return target<ohlc.length?ohlc[target].c:null;
+  return isFinalBar(ohlc,target)?ohlc[target].c:null;
 }
 async function scoreLog(){
   if(!LOG.length)return;
@@ -793,12 +797,14 @@ async function scoreLog(){
     // == null, not === undefined: an entry logged before its t+0 bar commits
     // scores with idx -1 and momoDir lands null; it must stay eligible for
     // recompute or it drops out of the baseline forever
-    if(r.momoDir==null) r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
+    if(r.scoredFrom!==SCORE_VERSION) clearScores(r); // rule changed: drop every old score first
+    // recomputed every load: an intraday entry first sees its own day's bar while it forms
+    r.momoDir=(idx>=20)?(ohlc[idx].c>=ohlc[idx-20].c?'bullish':'bearish'):null;
     horizons.forEach(([n,pk,pctk,hitk])=>{
       if(r[pk]!=null&&r.scoredFrom===SCORE_VERSION)return; // already scored under the current rule
       const target=idx<0?-1:idx+n;
-      const c=(target>=0&&target<ohlc.length)?ohlc[target].c:null;
-      if(c==null)return; // no committed close that far out yet — do not guess from live spot
+      const c=isFinalBar(ohlc,target)?ohlc[target].c:null;
+      if(c==null)return; // no FINAL committed close that far out yet — do not guess from a live or forming bar
       r[pk]=c; r[pctk]=((c-r.spot)/r.spot)*100;
       r[hitk]=(r.tilt==='bullish'&&r[pctk]>0)||(r.tilt==='bearish'&&r[pctk]<0)||(r.tilt==='balanced'&&Math.abs(r[pctk])<2);
     });
