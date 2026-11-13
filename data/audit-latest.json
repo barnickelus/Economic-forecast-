@@ -1,11 +1,11 @@
 {
- "audited_commit": "444657f569d2f4dbb19e58b780b20777a418c398",
- "entries": 133,
+ "audited_commit": "eb0867e34ee515887f064bfa6531b04691f287cc",
+ "entries": 134,
  "immutability": {
   "core_field_changes": [],
   "entries_removed_from_history": [],
   "entries_with_any_commitment_change": 48,
-  "entries_with_claimed_record_time": 81,
+  "entries_with_claimed_record_time": 82,
   "entries_with_core_field_changes": 0,
   "max_seconds_between_claimed_record_time_and_commit": 206,
   "other_field_changes": {
@@ -14,32 +14,32 @@
   }
  },
  "integrity_failures": [],
- "last_price_date": "2026-11-12",
+ "last_price_date": "2026-11-13",
  "log_path": "data/tilt-log.json",
  "other_logs": {
   "data/shadow-v14.json": {
    "differs_from_final_close": 0,
    "examples": [],
    "hit_flag_differs": 0,
-   "horizon_scores": 286,
+   "horizon_scores": 289,
    "not_yet_verifiable": 0
   },
   "data/shadow-v15.json": {
    "differs_from_final_close": 0,
    "examples": [],
    "hit_flag_differs": 0,
-   "horizon_scores": 208,
+   "horizon_scores": 211,
    "not_yet_verifiable": 0
   }
  },
  "precommitment": {
   "first_authors": {
    "Claude": 48,
-   "github-actions[bot]": 85
+   "github-actions[bot]": 86
   },
-  "on_record_before_any_later_close": 77,
+  "on_record_before_any_later_close": 78,
   "sessions_closed_before_first_commit": {
-   "0": 77,
+   "0": 78,
    "1": 3,
    "2": 1,
    "3": 2,
@@ -47,18 +47,18 @@
    "5+": 49
   }
  },
- "price_bars": 1257,
+ "price_bars": 1258,
  "price_path": "data/SI_F.json",
  "price_stability": {
   "changed": [],
-  "final_bars_checked": 117
+  "final_bars_checked": 119
  },
- "primary_entries": 87,
+ "primary_entries": 88,
  "reproduction": {
   "differs_from_final_close": 0,
-  "final_but_unscored": 0,
+  "final_but_unscored": 3,
   "hit_flag_differs": 0,
-  "horizon_scores": 364,
+  "horizon_scores": 367,
   "max_abs_pct_difference": null,
   "median_abs_pct_difference": null,
   "mismatches": [],
@@ -72,37 +72,36 @@
   "all_primary": {
    "by_horizon": {
     "t+10": {
-     "always_bullish_rate": 0.349,
-     "brier": 0.2587,
-     "calls": 63,
-     "engine_hits": 30,
-     "engine_rate": 0.476,
+     "always_bullish_rate": 0.338,
+     "brier": 0.2571,
+     "calls": 65,
+     "engine_hits": 31,
+     "engine_rate": 0.477,
      "independent_calls_each": [
-      5,
       8,
       5,
       5,
       7,
       7,
+      7,
+      7,
       6,
-      6,
-      6,
-      8
+      8,
+      5
      ],
      "independent_rate_max": 0.8,
      "independent_rate_min": 0.25,
      "independent_subsamples": 10,
-     "momentum_calls": 63,
-     "momentum_rate": 0.603
+     "momentum_calls": 65,
+     "momentum_rate": 0.615
     },
     "t+20": {
-     "always_bullish_rate": 0.333,
-     "brier": 0.259,
-     "calls": 54,
-     "engine_hits": 26,
-     "engine_rate": 0.481,
+     "always_bullish_rate": 0.321,
+     "brier": 0.2626,
+     "calls": 56,
+     "engine_hits": 28,
+     "engine_rate": 0.5,
      "independent_calls_each": [
-      3,
       4,
       2,
       2,
@@ -118,38 +117,39 @@
       2,
       4,
       3,
-      2,
-      2,
       3,
-      5
+      3,
+      3,
+      5,
+      3
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 20,
-     "momentum_calls": 54,
-     "momentum_rate": 0.463
+     "momentum_calls": 56,
+     "momentum_rate": 0.482
     },
     "t+5": {
-     "always_bullish_rate": 0.471,
-     "brier": 0.2722,
-     "calls": 68,
-     "engine_hits": 29,
-     "engine_rate": 0.426,
+     "always_bullish_rate": 0.457,
+     "brier": 0.268,
+     "calls": 70,
+     "engine_hits": 30,
+     "engine_rate": 0.429,
      "independent_calls_each": [
+      16,
       13,
-      15,
       12,
-      12,
-      16
+      16,
+      13
      ],
-     "independent_rate_max": 0.75,
+     "independent_rate_max": 0.769,
      "independent_rate_min": 0.154,
      "independent_subsamples": 5,
-     "momentum_calls": 68,
-     "momentum_rate": 0.515
+     "momentum_calls": 70,
+     "momentum_rate": 0.529
     }
    },
-   "entries": 87
+   "entries": 88
   },
   "committed_late": {
    "by_horizon": {
@@ -160,7 +160,6 @@
      "engine_hits": 16,
      "engine_rate": 0.41,
      "independent_calls_each": [
-      4,
       6,
       3,
       3,
@@ -169,7 +168,8 @@
       2,
       3,
       4,
-      6
+      6,
+      4
      ],
      "independent_rate_max": 0.667,
      "independent_rate_min": 0.25,
@@ -184,7 +184,6 @@
      "engine_hits": 18,
      "engine_rate": 0.462,
      "independent_calls_each": [
-      2,
       4,
       2,
       1,
@@ -203,7 +202,8 @@
       1,
       1,
       2,
-      4
+      4,
+      2
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
@@ -219,10 +219,10 @@
      "engine_rate": 0.308,
      "independent_calls_each": [
       8,
-      8,
       6,
       7,
-      10
+      10,
+      8
      ],
      "independent_rate_max": 0.571,
      "independent_rate_min": 0.0,
@@ -236,37 +236,36 @@
   "on_record_first": {
    "by_horizon": {
     "t+10": {
-     "always_bullish_rate": 0.292,
-     "brier": 0.2835,
-     "calls": 24,
-     "engine_hits": 14,
-     "engine_rate": 0.583,
+     "always_bullish_rate": 0.269,
+     "brier": 0.2774,
+     "calls": 26,
+     "engine_hits": 15,
+     "engine_rate": 0.577,
      "independent_calls_each": [
-      1,
       2,
       2,
       2,
       3,
       3,
+      5,
       4,
-      3,
       2,
-      2
+      2,
+      1
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 10,
-     "momentum_calls": 24,
-     "momentum_rate": 0.75
+     "momentum_calls": 26,
+     "momentum_rate": 0.769
     },
     "t+20": {
-     "always_bullish_rate": 0.467,
-     "brier": 0.2725,
-     "calls": 15,
-     "engine_hits": 8,
-     "engine_rate": 0.533,
+     "always_bullish_rate": 0.412,
+     "brier": 0.2828,
+     "calls": 17,
+     "engine_hits": 10,
+     "engine_rate": 0.588,
      "independent_calls_each": [
-      1,
       1,
       1,
       1,
@@ -276,7 +275,8 @@
       1,
       1,
       1,
-      1,
+      2,
+      2,
       1,
       1,
       1
@@ -284,32 +284,32 @@
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 14,
-     "momentum_calls": 15,
-     "momentum_rate": 0.6
+     "momentum_calls": 17,
+     "momentum_rate": 0.647
     },
     "t+5": {
-     "always_bullish_rate": 0.31,
-     "brier": 0.2762,
-     "calls": 29,
-     "engine_hits": 17,
-     "engine_rate": 0.586,
+     "always_bullish_rate": 0.29,
+     "brier": 0.2666,
+     "calls": 31,
+     "engine_hits": 18,
+     "engine_rate": 0.581,
      "independent_calls_each": [
-      5,
+      8,
       7,
-      6,
       5,
-      6
+      6,
+      5
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.2,
      "independent_subsamples": 5,
-     "momentum_calls": 29,
-     "momentum_rate": 0.655
+     "momentum_calls": 31,
+     "momentum_rate": 0.677
     }
    },
-   "entries": 39,
+   "entries": 40,
    "first": "2026-07-20 00:50",
-   "last": "2026-11-10 21:00"
+   "last": "2026-11-11 21:00"
   }
  },
  "schema": "synapse-forward-log-audit:0"
