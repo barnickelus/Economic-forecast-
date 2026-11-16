@@ -3812,14 +3812,15 @@
   "p10": 49.097,
   "pct10": -13.86,
   "hit10": true,
-  "p20": null,
-  "pct20": null,
-  "hit20": null,
+  "p20": 49.031,
+  "pct20": -13.97,
+  "hit20": true,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v4",
   "momoHit5": true,
-  "momoHit10": true
+  "momoHit10": true,
+  "momoHit20": true
  },
  {
   "t": "2026-10-19 21:00",
@@ -4181,16 +4182,17 @@
   "p5": 51.803,
   "pct5": 5.51,
   "hit5": false,
-  "p10": null,
-  "pct10": null,
-  "hit10": null,
+  "p10": 49.031,
+  "pct10": -0.13,
+  "hit10": true,
   "p20": null,
   "pct20": null,
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
   "scoredFrom": "ohlc-v4",
-  "momoHit5": false
+  "momoHit5": false,
+  "momoHit10": true
  },
  {
   "t": "2026-11-02 21:00",
@@ -4362,9 +4364,9 @@
   },
   "source": "auto",
   "contractsSeen": 20,
-  "p5": null,
-  "pct5": null,
-  "hit5": null,
+  "p5": 49.031,
+  "pct5": -5.35,
+  "hit5": false,
   "p10": null,
   "pct10": null,
   "hit10": null,
@@ -4373,7 +4375,8 @@
   "hit20": null,
   "dup": false,
   "momoDir": "bearish",
-  "scoredFrom": "ohlc-v4"
+  "scoredFrom": "ohlc-v4",
+  "momoHit5": true
  },
  {
   "t": "2026-11-09 21:00",
@@ -4499,6 +4502,41 @@
    "oilPct120": 51.7,
    "chg": -3.68,
    "regimeLevel": 8.2
+  },
+  "source": "auto",
+  "contractsSeen": 20,
+  "p5": null,
+  "pct5": null,
+  "hit5": null,
+  "p10": null,
+  "pct10": null,
+  "hit10": null,
+  "p20": null,
+  "pct20": null,
+  "hit20": null,
+  "dup": false,
+  "momoDir": "bearish",
+  "scoredFrom": "ohlc-v4"
+ },
+ {
+  "t": "2026-11-13 21:00",
+  "recorder": "v2",
+  "oddsAt": "2026-11-13T20:27:10.499Z",
+  "recordedAt": "2026-11-16T00:58:46.654Z",
+  "inputsAt": "2026-11-13T20:27:10.499Z",
+  "spot": 49.031,
+  "tilt": "bearish",
+  "confidence": 28,
+  "headline": "Iran/oil channel only: stagflation tilt, with escalation-leaning. One channel’s read — other channels not modeled here.",
+  "flags": [
+   "curve-incoherent"
+  ],
+  "inputs": {
+   "oilChg": -0.2,
+   "oilChg5": -2.5,
+   "oilPct120": 50.8,
+   "chg": -1.88,
+   "regimeLevel": 7.5
   },
   "source": "auto",
   "contractsSeen": 20,
