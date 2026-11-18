@@ -1,11 +1,11 @@
 {
- "audited_commit": "14d7d27af8353cdc2e35759df434da7d8f25235d",
- "entries": 137,
+ "audited_commit": "fe5d1c479c7caf03b992c61629f25bc506330aca",
+ "entries": 138,
  "immutability": {
   "core_field_changes": [],
   "entries_removed_from_history": [],
   "entries_with_any_commitment_change": 48,
-  "entries_with_claimed_record_time": 85,
+  "entries_with_claimed_record_time": 86,
   "entries_with_core_field_changes": 0,
   "max_seconds_between_claimed_record_time_and_commit": 206,
   "other_field_changes": {
@@ -14,32 +14,32 @@
   }
  },
  "integrity_failures": [],
- "last_price_date": "2026-11-17",
+ "last_price_date": "2026-11-18",
  "log_path": "data/tilt-log.json",
  "other_logs": {
   "data/shadow-v14.json": {
    "differs_from_final_close": 0,
    "examples": [],
    "hit_flag_differs": 0,
-   "horizon_scores": 298,
+   "horizon_scores": 301,
    "not_yet_verifiable": 3
   },
   "data/shadow-v15.json": {
    "differs_from_final_close": 0,
    "examples": [],
    "hit_flag_differs": 0,
-   "horizon_scores": 220,
+   "horizon_scores": 223,
    "not_yet_verifiable": 3
   }
  },
  "precommitment": {
   "first_authors": {
    "Claude": 48,
-   "github-actions[bot]": 89
+   "github-actions[bot]": 90
   },
-  "on_record_before_any_later_close": 81,
+  "on_record_before_any_later_close": 82,
   "sessions_closed_before_first_commit": {
-   "0": 81,
+   "0": 82,
    "1": 3,
    "2": 1,
    "3": 2,
@@ -51,14 +51,14 @@
  "price_path": "data/SI_F.json",
  "price_stability": {
   "changed": [],
-  "final_bars_checked": 120
+  "final_bars_checked": 121
  },
- "primary_entries": 91,
+ "primary_entries": 92,
  "reproduction": {
   "differs_from_final_close": 0,
   "final_but_unscored": 0,
   "hit_flag_differs": 0,
-  "horizon_scores": 376,
+  "horizon_scores": 379,
   "max_abs_pct_difference": null,
   "median_abs_pct_difference": null,
   "mismatches": [],
@@ -72,38 +72,37 @@
   "all_primary": {
    "by_horizon": {
     "t+10": {
-     "always_bullish_rate": 0.333,
-     "brier": 0.2586,
-     "calls": 66,
+     "always_bullish_rate": 0.328,
+     "brier": 0.2572,
+     "calls": 67,
      "engine_hits": 32,
-     "engine_rate": 0.485,
+     "engine_rate": 0.478,
      "independent_calls_each": [
+      7,
+      7,
+      7,
+      7,
+      7,
+      9,
       5,
-      7,
-      7,
-      7,
-      7,
-      7,
       8,
       5,
-      8,
       5
      ],
      "independent_rate_max": 0.8,
      "independent_rate_min": 0.25,
      "independent_subsamples": 10,
-     "momentum_calls": 66,
-     "momentum_rate": 0.621
+     "momentum_calls": 67,
+     "momentum_rate": 0.627
     },
     "t+20": {
-     "always_bullish_rate": 0.316,
-     "brier": 0.2643,
-     "calls": 57,
-     "engine_hits": 29,
-     "engine_rate": 0.509,
+     "always_bullish_rate": 0.31,
+     "brier": 0.2659,
+     "calls": 58,
+     "engine_hits": 30,
+     "engine_rate": 0.517,
      "independent_calls_each": [
       2,
-      2,
       3,
       3,
       3,
@@ -118,38 +117,39 @@
       3,
       3,
       4,
-      5,
+      6,
       3,
       4,
+      2,
       2
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 20,
-     "momentum_calls": 57,
-     "momentum_rate": 0.491
+     "momentum_calls": 58,
+     "momentum_rate": 0.5
     },
     "t+5": {
-     "always_bullish_rate": 0.457,
-     "brier": 0.268,
-     "calls": 70,
+     "always_bullish_rate": 0.451,
+     "brier": 0.2654,
+     "calls": 71,
      "engine_hits": 30,
-     "engine_rate": 0.429,
+     "engine_rate": 0.423,
      "independent_calls_each": [
-      12,
-      16,
+      17,
       13,
       16,
-      13
+      13,
+      12
      ],
      "independent_rate_max": 0.769,
      "independent_rate_min": 0.154,
      "independent_subsamples": 5,
-     "momentum_calls": 70,
-     "momentum_rate": 0.529
+     "momentum_calls": 71,
+     "momentum_rate": 0.535
     }
    },
-   "entries": 91
+   "entries": 92
   },
   "committed_late": {
    "by_horizon": {
@@ -160,7 +160,6 @@
      "engine_hits": 16,
      "engine_rate": 0.41,
      "independent_calls_each": [
-      3,
       4,
       4,
       2,
@@ -169,6 +168,7 @@
       6,
       4,
       6,
+      3,
       3
      ],
      "independent_rate_max": 0.667,
@@ -185,7 +185,6 @@
      "engine_rate": 0.462,
      "independent_calls_each": [
       1,
-      1,
       2,
       1,
       2,
@@ -203,7 +202,8 @@
       4,
       2,
       4,
-      2
+      2,
+      1
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
@@ -218,11 +218,11 @@
      "engine_hits": 12,
      "engine_rate": 0.308,
      "independent_calls_each": [
-      7,
       10,
       8,
       8,
-      6
+      6,
+      7
      ],
      "independent_rate_max": 0.571,
      "independent_rate_min": 0.0,
@@ -236,37 +236,36 @@
   "on_record_first": {
    "by_horizon": {
     "t+10": {
-     "always_bullish_rate": 0.259,
-     "brier": 0.2805,
-     "calls": 27,
+     "always_bullish_rate": 0.25,
+     "brier": 0.2762,
+     "calls": 28,
      "engine_hits": 16,
-     "engine_rate": 0.593,
+     "engine_rate": 0.571,
      "independent_calls_each": [
-      2,
       3,
       3,
       5,
       4,
       3,
-      2,
+      3,
       1,
+      2,
       2,
       2
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 10,
-     "momentum_calls": 27,
-     "momentum_rate": 0.778
+     "momentum_calls": 28,
+     "momentum_rate": 0.786
     },
     "t+20": {
-     "always_bullish_rate": 0.389,
-     "brier": 0.2871,
-     "calls": 18,
-     "engine_hits": 11,
-     "engine_rate": 0.611,
+     "always_bullish_rate": 0.368,
+     "brier": 0.2909,
+     "calls": 19,
+     "engine_hits": 12,
+     "engine_rate": 0.632,
      "independent_calls_each": [
-      1,
       1,
       1,
       2,
@@ -275,6 +274,7 @@
       1,
       1,
       1,
+      2,
       2,
       2,
       2,
@@ -284,32 +284,32 @@
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
      "independent_subsamples": 14,
-     "momentum_calls": 18,
-     "momentum_rate": 0.667
+     "momentum_calls": 19,
+     "momentum_rate": 0.684
     },
     "t+5": {
-     "always_bullish_rate": 0.29,
-     "brier": 0.2666,
-     "calls": 31,
+     "always_bullish_rate": 0.281,
+     "brier": 0.2608,
+     "calls": 32,
      "engine_hits": 18,
-     "engine_rate": 0.581,
+     "engine_rate": 0.562,
      "independent_calls_each": [
-      5,
-      6,
+      7,
       5,
       8,
-      7
+      7,
+      5
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.2,
      "independent_subsamples": 5,
-     "momentum_calls": 31,
-     "momentum_rate": 0.677
+     "momentum_calls": 32,
+     "momentum_rate": 0.688
     }
    },
-   "entries": 43,
+   "entries": 44,
    "first": "2026-07-20 00:50",
-   "last": "2026-11-16 21:00"
+   "last": "2026-11-17 21:00"
   }
  },
  "schema": "synapse-forward-log-audit:0"
