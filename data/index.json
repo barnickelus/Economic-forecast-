@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-11-25T19:41:26.369Z",
+  "generatedAt": "2026-11-26T02:30:46.759Z",
   "tickers": [
     {
       "ticker": "SI=F",
       "filename": "SI_F.json",
       "name": "Silver",
       "assetClass": "commodity",
-      "spot": 41.04,
-      "changePct": 0.6869521344383207,
+      "spot": 41.95,
+      "changePct": 4.738844376783384,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -16,8 +16,8 @@
       "filename": "GC_F.json",
       "name": "Gold",
       "assetClass": "commodity",
-      "spot": 3577.6,
-      "changePct": 0.440778744116845,
+      "spot": 3616.7,
+      "changePct": 2.2880239282390304,
       "healthyCount": 2,
       "totalCount": 3
     },
@@ -26,8 +26,8 @@
       "filename": "AAPL.json",
       "name": "Apple",
       "assetClass": "equity",
-      "spot": 355.32,
-      "changePct": 0.35303545906858924,
+      "spot": 355.58,
+      "changePct": 0.4264672648193404,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -36,8 +36,8 @@
       "filename": "NVDA.json",
       "name": "Nvidia",
       "assetClass": "equity",
-      "spot": 148.45,
-      "changePct": -4.460036468681486,
+      "spot": 149.3,
+      "changePct": -3.91299053401242,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -46,8 +46,8 @@
       "filename": "TSLA.json",
       "name": "Tesla",
       "assetClass": "equity",
-      "spot": 383.085,
-      "changePct": -0.41462844601995547,
+      "spot": 380.14,
+      "changePct": -1.1801998446037438,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -56,8 +56,8 @@
       "filename": "SPY.json",
       "name": "S&P 500 ETF",
       "assetClass": "index",
-      "spot": 717.38,
-      "changePct": -0.1947785469560891,
+      "spot": 716.7,
+      "changePct": -0.2893832900323734,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -66,8 +66,8 @@
       "filename": "QQQ.json",
       "name": "Nasdaq 100",
       "assetClass": "index",
-      "spot": 633.79,
-      "changePct": -0.6754389203635193,
+      "spot": 633.93,
+      "changePct": -0.6534987847489659,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -76,8 +76,8 @@
       "filename": "BTC-USD.json",
       "name": "Bitcoin",
       "assetClass": "crypto",
-      "spot": 60017.87,
-      "changePct": 0.45207443688401966,
+      "spot": 60859.76,
+      "changePct": 1.8611480502539746,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -86,8 +86,8 @@
       "filename": "CL_F.json",
       "name": "Crude Oil",
       "assetClass": "commodity",
-      "spot": 83.66,
-      "changePct": 1.9622143672884265,
+      "spot": 83.95,
+      "changePct": 0.3226573779153315,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -96,8 +96,8 @@
       "filename": "_TNX.json",
       "name": "10Y Treasury Yield",
       "assetClass": "macro",
-      "spot": 4.836,
-      "changePct": -1.38661925261217,
+      "spot": 4.848,
+      "changePct": -1.1419210373581148,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -106,8 +106,8 @@
       "filename": "DX-Y.NYB.json",
       "name": "US Dollar Index",
       "assetClass": "macro",
-      "spot": 103.607,
-      "changePct": -0.19554721449557133,
+      "spot": 103.732,
+      "changePct": 0.059806918250008875,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -116,8 +116,8 @@
       "filename": "HG_F.json",
       "name": "Copper",
       "assetClass": "commodity",
-      "spot": 5.477,
-      "changePct": 2.135194502425673,
+      "spot": 5.5145,
+      "changePct": 3.413033656342631,
       "healthyCount": 2,
       "totalCount": 2
     },
@@ -136,8 +136,8 @@
       "filename": "BZ_F.json",
       "name": "BZ=F",
       "assetClass": "equity",
-      "spot": 90.51,
-      "changePct": -0.9737434475062968,
+      "spot": 90.73,
+      "changePct": -4.101047019681592,
       "healthyCount": 2,
       "totalCount": 2
     }
