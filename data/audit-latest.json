@@ -1,5 +1,5 @@
 {
- "audited_commit": "59282943a82c99fa984693e6ef639dceb646997c",
+ "audited_commit": "ce5c7a6d0b97fd6264ff61f87cc1041f8d347bfa",
  "entries": 144,
  "immutability": {
   "core_field_changes": [],
@@ -14,7 +14,7 @@
   }
  },
  "integrity_failures": [],
- "last_price_date": "2026-11-26",
+ "last_price_date": "2026-11-27",
  "log_path": "data/tilt-log.json",
  "other_logs": {
   "data/shadow-v14.json": {
