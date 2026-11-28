@@ -1,5 +1,5 @@
 {
- "audited_commit": "ce5c7a6d0b97fd6264ff61f87cc1041f8d347bfa",
+ "audited_commit": "4c00bf8be2b8b8fae4acae25f428562da6c45bf8",
  "entries": 144,
  "immutability": {
   "core_field_changes": [],
@@ -47,7 +47,7 @@
    "5+": 49
   }
  },
- "price_bars": 1258,
+ "price_bars": 1257,
  "price_path": "data/SI_F.json",
  "price_stability": {
   "changed": [],
@@ -78,7 +78,6 @@
      "engine_hits": 35,
      "engine_rate": 0.486,
      "independent_calls_each": [
-      6,
       9,
       6,
       5,
@@ -87,7 +86,8 @@
       7,
       7,
       7,
-      9
+      9,
+      6
      ],
      "independent_rate_max": 0.833,
      "independent_rate_min": 0.222,
@@ -102,7 +102,6 @@
      "engine_hits": 33,
      "engine_rate": 0.516,
      "independent_calls_each": [
-      2,
       3,
       2,
       2,
@@ -120,6 +119,7 @@
       4,
       4,
       3,
+      2,
       2,
       2
      ],
@@ -136,11 +136,11 @@
      "engine_hits": 33,
      "engine_rate": 0.434,
      "independent_calls_each": [
-      14,
       17,
       14,
       13,
-      18
+      18,
+      14
      ],
      "independent_rate_max": 0.786,
      "independent_rate_min": 0.214,
@@ -160,7 +160,6 @@
      "engine_hits": 16,
      "engine_rate": 0.41,
      "independent_calls_each": [
-      4,
       6,
       3,
       3,
@@ -169,7 +168,8 @@
       2,
       3,
       4,
-      6
+      6,
+      4
      ],
      "independent_rate_max": 0.667,
      "independent_rate_min": 0.25,
@@ -185,7 +185,6 @@
      "engine_rate": 0.462,
      "independent_calls_each": [
       2,
-      2,
       1,
       2,
       3,
@@ -201,6 +200,7 @@
       1,
       2,
       1,
+      2,
       2,
       2,
       2
@@ -219,10 +219,10 @@
      "engine_rate": 0.308,
      "independent_calls_each": [
       8,
-      8,
       6,
       7,
-      10
+      10,
+      8
      ],
      "independent_rate_max": 0.571,
      "independent_rate_min": 0.0,
@@ -242,7 +242,6 @@
      "engine_hits": 19,
      "engine_rate": 0.576,
      "independent_calls_each": [
-      2,
       3,
       3,
       2,
@@ -251,7 +250,8 @@
       5,
       4,
       3,
-      3
+      3,
+      2
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.0,
@@ -296,11 +296,11 @@
      "engine_hits": 21,
      "engine_rate": 0.568,
      "independent_calls_each": [
-      6,
       9,
       8,
       6,
-      8
+      8,
+      6
      ],
      "independent_rate_max": 1.0,
      "independent_rate_min": 0.333,
